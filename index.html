@@ -24,13 +24,34 @@
     </script>
   </head>
   <body class="text-gray-800 w-3/4 mx-auto">
-    <header class="py-8"></header>
+    <header class="py-8">
+      <nav class="flex justify-center mb-4">
+        <a
+          href="/"
+          class="mx-2 px-4 py-2 border-b-2 border-transparent hover:border-b-2 hover:border-blue-800"
+        >
+          Home
+        </a>
+        <a
+          href="/blog"
+          class="mx-2 px-4 py-2 border-b-2 border-transparent hover:border-b-2 hover:border-blue-800"
+        >
+          Blog
+        </a>
+        <a
+          href="#contact"
+          class="mx-2 px-4 py-2 border-b-2 border-transparent hover:border-b-2 hover:border-blue-800"
+        >
+          Contact
+        </a>
+      </nav>
+    </header>
 
     <section class="flex flex-col gap-8 mb-8">
       <!-- hero -->
       <div class="flex justify-between">
         <div>
-          <h2 class="text-xl font-bold mb-4">Hi, I am Pedro Pablo Camellon!</h2>
+          <h2 class="text-xl font-bold mb-4">Hi 👋, I am Pedro Pablo Camellon!</h2>
 
           <ul>
             <li>- Passionate Collaborator</li>
@@ -54,7 +75,7 @@
 
       <!-- about me -->
       <div>
-        <h2 class="text-lg font-bold">About Me</h2>
+        <h2 class="text-lg font-bold" id="about-me">About Me</h2>
 
         <p>
           🚀💼 As a seasoned Full Stack Developer with over 7 years of
@@ -80,7 +101,7 @@
 
       <!-- academic background -->
       <div>
-        <h2 class="text-lg font-bold">Academic Background</h2>
+        <h3 class="text-lg font-bold">Academic Background</h2>
         <p>
           One of my notable academic achievements includes a project where I
           applied PyTorch, a Python framework, to detect lung nodules in X-rays.
@@ -92,7 +113,7 @@
 
       <!-- lets connect -->
       <div>
-        <h2 class="text-lg font-bold">Let's Connect</h2>
+        <h2 class="text-lg font-bold" id="contact">Let's Connect</h2>
         <p>
           I am passionate about collaborating on innovative projects. Let's
           connect to explore how my expertise can add value to your endeavors.
