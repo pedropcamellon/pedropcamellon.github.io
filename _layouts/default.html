@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/x-icon" href="/img/favicon.png">
+  <link rel="icon" type="image/x-icon" href="{{ '/img/favicon.png' | relative_url }}">
   <title>{{ page.title }} - Pedro Camellon</title>
   
   <script type="text/javascript">
@@ -18,10 +18,10 @@
     <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
       <div class="col-md-3 mb-2 mb-md-0"></div>
       <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-        <li><a href="/" class="nav-link px-4">Home</a></li>
-        <li><a href="/blog.html" class="nav-link px-4">Blog</a></li>
-        <li><a href="/projects" class="nav-link px-4">Projects</a></li>
-        <li><a href="/#contact" class="nav-link px-4">Contact Me</a></li>
+        <li><a href="{{ '/' | relative_url }}" class="nav-link px-4">Home</a></li>
+        <li><a href="{{ '/blog.html' | relative_url }}" class="nav-link px-4">Blog</a></li>
+        <li><a href="{{ '/projects' | relative_url }}" class="nav-link px-4">Projects</a></li>
+        <li><a href="{{ '/#contact' | relative_url }}" class="nav-link px-4">Contact Me</a></li>
       </ul>
       <div class="col-md-3 text-end"></div>
     </header>
