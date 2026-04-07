@@ -3,10 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <link rel="icon" type="image/x-icon" href="/img/favicon.png" />
-
-    <title>Pedro Camellon - Blog</title>
+    <title>Blog - Pedro Camellon</title>
 
     <script type="text/javascript">
       (function (c, l, a, r, i, t, y) {
@@ -23,700 +20,555 @@
       })(window, document, "clarity", "script", "kykpoeffvx");
     </script>
 
-    <!-- Bootstrap CSS -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-      crossorigin="anonymous"
-    />
+    <link rel="stylesheet" href="/css/main.css" />
+    <link rel="stylesheet" href="/css/pages.css" />
   </head>
+  <body>
+    <nav>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/blog.html">Blog</a></li>
+        <li><a href="/projects.html">Projects</a></li>
+        <li><a href="/#contact">Contact</a></li>
+      </ul>
+    </nav>
 
-  <body class="text-gray-800">
-    <div class="container">
-      <header
-        class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom"
-      >
-        <div class="col-md-3 mb-2 mb-md-0"></div>
+    <main>
+      <article>
+        <h1>Blog</h1>
+         <h2>Articles</h2>
 
-        <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-          <li><a href="/" class="nav-link px-4">Home</a></li>
-          <li>
-            <a href="/blog.html" class="nav-link px-4 link-secondary">Blog</a>
-          </li>
-          <li>
-            <a href="/projects" class="nav-link px-4">Projects</a>
-          </li>
-          <li><a href="/#contact" class="nav-link px-4">Contact Me</a></li>
-        </ul>
+<div class="blog-list">
+  
+  
+  <a href="/dev/blog/workflow-orchestration.html" class="blog-card">
+    
+    <img
+      src="/img/articles/workflow.webp"
+      alt="Evaluating Workflow Orchestration Frameworks"
+      class="blog-image"
+    />
+    
 
-        <div class="col-md-3 text-end"></div>
-      </header>
+    <div class="blog-content">
+      <h3>
+        Evaluating Workflow Orchestration Frameworks <span class="new-badge">NEW</span
+        >
+      </h3>
+      
+      <p>Built hands-on POCs comparing Azure Durable Functions, Temporal, Prefect, and Dapr for orchestrating event-driven AI pipelines. Implemented the same invoice processing workflow (PDF → parse → fan-out/fan-in → aggregate) across all frameworks for an apples-to-apples comparison. Key insights on deterministic replay, multi-service architecture patterns, and how local dev experience impacts iteration speed and debugging.</p>
+       
+      <div class="blog-tags">
+        
+        <span class="tag">python</span>
+        
+        <span class="tag">azure</span>
+        
+        <span class="tag">temporal</span>
+        
+        <span class="tag">orchestration</span>
+        
+        <span class="tag">distributed-systems</span>
+        
+      </div>
+      
     </div>
+  </a>
+  
+  <a href="/dev/blog/candlewise-part-4-automating-deployment-cicd.html" class="blog-card">
+    
+    <img
+      src="/img/articles/candlewise.webp"
+      alt="CandleWise - Part 4: Automating Deployment CI/CD"
+      class="blog-image"
+    />
+    
 
-    <main class="container mb-5">
-      <!-- Articles -->
-      <section class="flex flex-col gap-8 mb-8">
-        <h2 class="text-3xl font-bold">Articles</h2>
+    <div class="blog-content">
+      <h3>
+        CandleWise - Part 4: Automating Deployment CI/CD <span class="new-badge">NEW</span
+        >
+      </h3>
+      
+      <p>Automated my entire infrastructure using Terraform for Azure. Implemented a comprehensive CI/CD pipeline with GitHub Actions that handles my complete deployment strategy - automatically deploying the Next.js frontend to Vercel and the .NET Core backend to Azure App Service.</p>
+       
+      <div class="blog-tags">
+        
+        <span class="tag">azure</span>
+        
+        <span class="tag">devops</span>
+        
+        <span class="tag">github-actions</span>
+        
+        <span class="tag">terraform</span>
+        
+        <span class="tag">dotnet</span>
+        
+        <span class="tag">nextjs</span>
+        
+        <span class="tag">cicd</span>
+        
+      </div>
+      
+    </div>
+  </a>
+  
+  <a href="/dev/blog/zero-cloud-image-clustering.html" class="blog-card">
+    
+    <img
+      src="/img/articles/zero-cloud-img-clustering.webp"
+      alt="Zero-Cloud Image Clustering"
+      class="blog-image"
+    />
+    
 
-        <!-- Evaluating Workflow Orchestration Frameworks -->
+    <div class="blog-content">
+      <h3>
+        Zero-Cloud Image Clustering 
+      </h3>
+      
+      <p>This project uses lightweight models like MobileNet V3 and robust clustering algorithms (HDBSCAN and K-means) to create an efficient local image clstering solution. The implementation uses cosine similarity to compare high-dimensional image embeddings. Most importantly, it shows that modern edge devices can handle complex machine learning workflows while preserving user privacy and reducing dependency on external services.</p>
+       
+    </div>
+  </a>
+  
+  <a href="/dev/blog/gesture-recognition-without-the-cloud-why-on-device-ai-is-a-game-changer.html" class="blog-card">
+    
+    <img
+      src="/img/articles/gesture-recognition.webp"
+      alt="Gesture Recognition Without the Cloud: Why On-Device AI Is a Game-Changer"
+      class="blog-image"
+    />
+    
 
-        <article>
-          <a
-            href="https://pedropcamellon.notion.site/Orchestration-Frameworks-Comparison-2d054742cee980a2a581eaf213704505"
-          >
-            <div
-              class="flex flex-col md:flex-row gap-8 mx-auto p-2 border rounded-lg"
-            >
-              <img
-                src="/img/articles/workflow.webp"
-                alt="Workflow orchestration frameworks comparison"
-                width="auto"
-                height="auto"
-                class="rounded-lg d-block max-w-full md:max-w-52 border"
-              />
-              <div>
-                <h3 class="text-2xl font-bold mb-4">
-                  Evaluating Workflow Orchestration Frameworks
-                  <span class="badge fw-semibold ms-2" style="background-color:#f59e42; font-size:0.85rem; letter-spacing:1px;">NEW</span>
-                </h3>
-                <p>
-                  Built hands-on POCs comparing Azure Durable Functions, Temporal, Prefect, and Dapr for orchestrating event-driven AI pipelines. Implemented the same invoice processing workflow (PDF → parse → fan-out/fan-in → aggregate) across all frameworks for an apples-to-apples comparison. Key insights on deterministic replay, multi-service architecture patterns, and how local dev experience impacts iteration speed and debugging.
-                </p>
-              </div>
-            </div>
-          </a>
-        </article>
+    <div class="blog-content">
+      <h3>
+        Gesture Recognition Without the Cloud: Why On-Device AI Is a Game-Changer 
+      </h3>
+      
+      <p>Implement a privacy-preserving gesture recognition directly on your device using MediaPipe and OpenCV. Process gestures locally without cloud dependencies, ensuring user privacy while maintaining high performance. The solution combines powerful ML models with robust image processing for real-time analysis, all presented through an intuitive Streamlit interface.</p>
+       
+      <div class="blog-tags">
+        
+        <span class="tag">python</span>
+        
+        <span class="tag">streamlit</span>
+        
+        <span class="tag">mediapipe</span>
+        
+        <span class="tag">opencv</span>
+        
+        <span class="tag">on-device-ai</span>
+        
+        <span class="tag">gesture-recognition</span>
+        
+      </div>
+      
+    </div>
+  </a>
+  
+  <a href="/dev/blog/medical-calls-analysis-in-aws-part-1-getting-started.html" class="blog-card">
+    
+    <img
+      src="/img/articles/aws_bedrock.webp"
+      alt="Medical Calls Analysis in AWS (Part 1) - Getting Started"
+      class="blog-image"
+    />
+    
 
-        <!-- END Evaluating Workflow Orchestration Frameworks -->
+    <div class="blog-content">
+      <h3>
+        Medical Calls Analysis in AWS (Part 1) - Getting Started 
+      </h3>
+      
+      <p>This guide focuses on setting up Amazon Bedrock, a serverless AI service by AWS. It covers account setup, AWS CLI configuration, accessing Bedrock, and generating a model response, including a hands-on example and troubleshooting tips.</p>
+       
+      <div class="blog-tags">
+        
+        <span class="tag">aws</span>
+        
+        <span class="tag">amazon-bedrock</span>
+        
+        <span class="tag">serverless-llm</span>
+        
+        <span class="tag">python</span>
+        
+      </div>
+      
+    </div>
+  </a>
+  
+  <a href="/dev/blog/forget-chatbots-ambient-agents-work-while-you-sleep.html" class="blog-card">
+    
+    <img
+      src="/img/articles/eaia.webp"
+      alt="Forget Chatbots! Ambient Agents Work While You Sleep!"
+      class="blog-image"
+    />
+    
 
-        <!-- Zero-Cloud Image Clustering -->
+    <div class="blog-content">
+      <h3>
+        Forget Chatbots! Ambient Agents Work While You Sleep! 
+      </h3>
+       
+    </div>
+  </a>
+  
+  <a href="/dev/blog/marketmind.html" class="blog-card">
+    
+    <img
+      src="/img/articles/market_m_home.webp"
+      alt="MarketMind"
+      class="blog-image"
+    />
+    
 
-        <article>
-          <a
-            href="https://pedropcamellon.notion.site/Zero-Cloud-Image-Clustering-1ef54742cee980019a2fd9806702fd56?pvs=4"
-          >
-            <div
-              class="flex flex-col md:flex-row gap-8 mx-auto p-2 border rounded-lg"
-            >
-              <img
-                src="/img/articles/zero-cloud-img-clustering.webp"
-                alt="A restaurant wallpaper on top of a table"
-                width="auto"
-                height="auto"
-                class="rounded-lg d-block max-w-full md:max-w-52 border"
-              />
-              <div>
-                <h3 class="text-2xl font-bold mb-4">
-                  Zero-Cloud Image Clustering
-                </h3>
-                <p>
-                  This project uses lightweight models like MobileNet V3 and
-                  robust clustering algorithms (HDBSCAN and K-means) to create
-                  an efficient local image clstering solution. The
-                  implementation uses cosine similarity to compare
-                  high-dimensional image embeddings. Most importantly, it shows
-                  that modern edge devices can handle complex machine learning
-                  workflows while preserving user privacy and reducing
-                  dependency on external services.
-                </p>
-              </div>
-            </div>
-          </a>
-        </article>
+    <div class="blog-content">
+      <h3>
+        MarketMind 
+      </h3>
+       
+      <div class="blog-tags">
+        
+        <span class="tag">python</span>
+        
+        <span class="tag">django</span>
+        
+        <span class="tag">llm-agents</span>
+        
+        <span class="tag">web-app</span>
+        
+      </div>
+      
+    </div>
+  </a>
+  
+  <a href="/dev/blog/build-a-restaurant-name-generator-using-langchain-and-streamlit.html" class="blog-card">
+    
+    <img
+      src="/img/articles/restaurant-robot.webp"
+      alt="Build a Restaurant Name Generator using LangChain and Streamlit"
+      class="blog-image"
+    />
+    
 
-        <!-- END Zero-Cloud Image Clustering -->
+    <div class="blog-content">
+      <h3>
+        Build a Restaurant Name Generator using LangChain and Streamlit 
+      </h3>
+      
+      <p>Build an application for generating unique restaurant names using Large Language Models (LLMs) and the LangChain framework. It covers setting up the environment ...</p>
+       
+      <div class="blog-tags">
+        
+        <span class="tag">python</span>
+        
+        <span class="tag">streamlit</span>
+        
+        <span class="tag">langchain</span>
+        
+        <span class="tag">google-gemini</span>
+        
+        <span class="tag">llm-apps</span>
+        
+      </div>
+      
+    </div>
+  </a>
+  
+  <a href="/dev/blog/medical-calls-analysis-in-aws-part-5-automating-aws-deployments-with-terraform.html" class="blog-card">
+    
+    <img
+      src="/img/articles/aws_bedrock.webp"
+      alt="Medical Calls Analysis in AWS (Part 5) - Automating AWS Deployments with Terraform"
+      class="blog-image"
+    />
+    
 
-        <!-- Gesture Recognition Without the Cloud -->
+    <div class="blog-content">
+      <h3>
+        Medical Calls Analysis in AWS (Part 5) - Automating AWS Deployments with Terraform <span class="new-badge">NEW</span
+        >
+      </h3>
+      
+      <p>Learn how to automate AWS resource provisioning and management using Terraform. This guide covers version-controlled infrastructure, consistent deployments, and error-free configuration.</p>
+       
+      <div class="blog-tags">
+        
+        <span class="tag">aws</span>
+        
+        <span class="tag">terraform</span>
+        
+        <span class="tag">infrastructure-as-code</span>
+        
+        <span class="tag">serverless</span>
+        
+        <span class="tag">devops</span>
+        
+      </div>
+      
+    </div>
+  </a>
+  
+  <a href="/dev/blog/candlewise-part-2-integrating-a-third-party-api.html" class="blog-card">
+    
+    <img
+      src="/img/articles/candlewise.webp"
+      alt="CandleWise - Part 2: Integrating a third party API"
+      class="blog-image"
+    />
+    
 
-        <article>
-          <a
-            href="https://pedropcamellon.notion.site/Gesture-Recognition-Without-the-Cloud-Why-On-Device-AI-Is-a-Game-Changer-1ef54742cee9803aa04eed0f7213e8d8?pvs=4"
-          >
-            <div
-              class="flex flex-col md:flex-row gap-8 mx-auto p-2 border rounded-lg"
-            >
-              <img
-                src="/img/articles/gesture-recognition.webp"
-                alt="Image shows Streamlit, OpenCV and MediaPipe logos"
-                width="auto"
-                height="auto"
-                class="rounded-lg d-block max-w-full md:max-w-52 border"
-              />
-              <div>
-                <h3 class="text-2xl font-bold mb-4">
-                  Gesture Recognition Without the Cloud: Why On-Device AI Is a
-                  Game-Changer
-                </h3>
+    <div class="blog-content">
+      <h3>
+        CandleWise - Part 2: Integrating a third party API 
+      </h3>
+      
+      <p>This article discusses the integration of real-time stock data into an application using IHttpClientFactory, a tool that manages HttpClient instances...</p>
+       
+      <div class="blog-tags">
+        
+        <span class="tag">dotnet</span>
+        
+        <span class="tag">csharp</span>
+        
+        <span class="tag">api</span>
+        
+        <span class="tag">aspnet-core</span>
+        
+      </div>
+      
+    </div>
+  </a>
+  
+  <a href="/dev/blog/candlewise-part-3-deploying-app-to-azure.html" class="blog-card">
+    
+    <img
+      src="/img/articles/candlewise.webp"
+      alt="CandleWise - Part 3: Deploying App to Azure"
+      class="blog-image"
+    />
+    
 
-                <p>
-                  Implement a privacy-preserving gesture recognition directly on
-                  your device using MediaPipe and OpenCV. Process gestures
-                  locally without cloud dependencies, ensuring user privacy
-                  while maintaining high performance. The solution combines
-                  powerful ML models with robust image processing for real-time
-                  analysis, all presented through an intuitive Streamlit
-                  interface.
-                </p>
-              </div>
-            </div>
-          </a>
-        </article>
+    <div class="blog-content">
+      <h3>
+        CandleWise - Part 3: Deploying App to Azure 
+      </h3>
+      
+      <p>The blog post details the process of deploying the app to Microsoft Azure. The process involves encapsulating the application within a Docker container, creating a Docker image of the application, and using Visual Studio tools for developing with Docker containers.</p>
+       
+      <div class="blog-tags">
+        
+        <span class="tag">azure</span>
+        
+        <span class="tag">docker</span>
+        
+        <span class="tag">dotnet</span>
+        
+        <span class="tag">devops</span>
+        
+      </div>
+      
+    </div>
+  </a>
+  
+  <a href="/dev/blog/candlewise-part-1-environment-setup.html" class="blog-card">
+    
+    <img
+      src="/img/articles/candlewise.webp"
+      alt="CandleWise - Part 1: Environment Setup"
+      class="blog-image"
+    />
+    
 
-        <!-- END Gesture Recognition Without the Cloud -->
+    <div class="blog-content">
+      <h3>
+        CandleWise - Part 1: Environment Setup 
+      </h3>
+      
+      <p>CandleWise, a portfolio management app that I'm building as part of my exploration journey into .NET Core development. This series documents my learning process with Visual Studio, Docker, and deployment to Azure. In this guide, we'll cover setting up a development environment by installing Visual Studio 2022 and .NET Core 6.0 SDK, then creating an ASP.NET Core Web API project as our foundation....</p>
+       
+      <div class="blog-tags">
+        
+        <span class="tag">dotnet</span>
+        
+        <span class="tag">csharp</span>
+        
+        <span class="tag">visual-studio</span>
+        
+        <span class="tag">aspnet-core</span>
+        
+        <span class="tag">api</span>
+        
+      </div>
+      
+    </div>
+  </a>
+  
+  <a href="/dev/blog/medical-calls-analysis-in-aws-part-2-audio-transcription.html" class="blog-card">
+    
+    <img
+      src="/img/articles/aws_bedrock.webp"
+      alt="Medical Calls Analysis in AWS (Part 2) - Audio Transcription"
+      class="blog-image"
+    />
+    
 
-        <!-- Building a Restaurant Name Generator using LangChain and Streamlit -->
+    <div class="blog-content">
+      <h3>
+        Medical Calls Analysis in AWS (Part 2) - Audio Transcription 
+      </h3>
+       
+    </div>
+  </a>
+  
+  <a href="/dev/blog/medical-calls-analysis-in-aws-part-3-smart-summarization-with-amazon-bedrock.html" class="blog-card">
+    
+    <img
+      src="/img/articles/aws_bedrock.webp"
+      alt="Medical Calls Analysis in AWS (Part 3) - Smart Summarization with Amazon Bedrock"
+      class="blog-image"
+    />
+    
 
-        <article>
-          <a
-            href="https://pedropcamellon.notion.site/Building-an-LLM-based-Restaurant-Name-Generator-app-using-LangChain-and-Streamlit-4228d45516534160b7287393f57d5fbc?pvs=4"
-          >
-            <div
-              class="flex flex-col md:flex-row gap-8 mx-auto p-2 border rounded-lg"
-            >
-              <img
-                src="/img/articles/restaurant-robot.webp"
-                alt="A restaurant wallpaper on top of a table"
-                width="auto"
-                height="auto"
-                class="rounded-lg d-block max-w-full md:max-w-52 border"
-              />
-              <div>
-                <h3 class="text-2xl font-bold mb-4">
-                  Build a Restaurant Name Generator using LangChain and
-                  Streamlit
-                </h3>
+    <div class="blog-content">
+      <h3>
+        Medical Calls Analysis in AWS (Part 3) - Smart Summarization with Amazon Bedrock 
+      </h3>
+       
+    </div>
+  </a>
+  
+  <a href="/dev/blog/medical-calls-analysis-in-aws-part-4-monitoring-with-aws-cloudwatch.html" class="blog-card">
+    
+    <img
+      src="/img/articles/aws_bedrock.webp"
+      alt="Medical Calls Analysis in AWS (Part 4) - Monitoring with AWS CloudWatch"
+      class="blog-image"
+    />
+    
 
-                <p>
-                  Build an application for generating unique restaurant names
-                  using Large Language Models (LLMs) and the LangChain
-                  framework. It covers setting up the environment ...
-                </p>
-              </div>
-            </div>
-          </a>
-        </article>
+    <div class="blog-content">
+      <h3>
+        Medical Calls Analysis in AWS (Part 4) - Monitoring with AWS CloudWatch 
+      </h3>
+       
+    </div>
+  </a>
+  
+  <a href="/dev/blog/dragons-vs-unicorns-part-i-html-and-css.html" class="blog-card">
+    
+    <img
+      src="/img/articles/dragons-vs-unicorns.webp"
+      alt="Dragons vs Unicorns (Part I) - HTML and CSS"
+      class="blog-image"
+    />
+    
 
-        <!-- END Building a Restaurant Name Generator using LangChain and Streamlit -->
+    <div class="blog-content">
+      <h3>
+        Dragons vs Unicorns (Part I) - HTML and CSS 
+      </h3>
+       
+    </div>
+  </a>
+  
+  <a href="/dev/blog/dragons-vs-unicorns-part-ii-javascript.html" class="blog-card">
+    
+    <img
+      src="/img/articles/dragons-vs-unicorns.webp"
+      alt="Dragons vs Unicorns (Part II) - JavaScript"
+      class="blog-image"
+    />
+    
 
-        <article>
-          <a
-            href="https://pedropcamellon.notion.site/Executive-AI-Assistant-17d54742cee9805fbd5ce279c737308a?pvs=4"
-          >
-            <div
-              class="flex flex-col md:flex-row gap-8 mx-auto p-2 border rounded-lg"
-            >
-              <img
-                src="/img/articles/eaia.webp"
-                alt="Executive AI Assistant"
-                width="auto"
-                height="auto"
-                class="rounded-lg d-block max-w-full md:max-w-52 border"
-              />
-              <div>
-                <h3 class="text-2xl font-bold mb-4">
-                  Forget Chatbots! Ambient Agents Work While You Sleep!
-                </h3>
+    <div class="blog-content">
+      <h3>
+        Dragons vs Unicorns (Part II) - JavaScript 
+      </h3>
+       
+    </div>
+  </a>
+  
+  <a href="/dev/blog/dragons-vs-unicorns-part-iii-ai-player.html" class="blog-card">
+    
+    <img
+      src="/img/articles/dragons-vs-unicorns.webp"
+      alt="Dragons vs Unicorns (Part III) - AI Player"
+      class="blog-image"
+    />
+    
 
-                <p>
-                  Today's AI applications predominantly use a standard chat
-                  interface. While this approach is simple to implement, it
-                  creates unnecessary interaction overhead, limits human
-                  scalability, and fails to harness the full potential of LLMs.
-                </p>
-              </div>
-            </div>
-          </a>
-        </article>
+    <div class="blog-content">
+      <h3>
+        Dragons vs Unicorns (Part III) - AI Player 
+      </h3>
+       
+    </div>
+  </a>
+  
+  <a href="/dev/blog/from-idea-to-reality-how-i-created-a-budget-app-using-react.html" class="blog-card">
+    
+    <div class="blog-placeholder"></div>
+    
 
-        <article>
-          <a
-            href="https://pedropcamellon.notion.site/MarketMind-16354742cee980f1bb19d75f8039f27c?pvs=4"
-          >
-            <div
-              class="flex flex-col md:flex-row gap-8 mx-auto p-2 border rounded-lg"
-            >
-              <img
-                src="/img/articles/market_m_home.webp"
-                alt="MarketMind"
-                width="auto"
-                height="auto"
-                class="rounded-lg d-block max-w-full md:max-w-52 border"
-              />
-              <div>
-                <h3 class="text-2xl font-bold mb-4">MarketMind</h3>
+    <div class="blog-content">
+      <h3>
+        From Idea to Reality: How I Created a Budget App Using React 
+      </h3>
+       
+      <div class="blog-tags">
+        
+        <span class="tag">react</span>
+        
+        <span class="tag">javascript</span>
+        
+        <span class="tag">web-development</span>
+        
+        <span class="tag">frontend</span>
+        
+      </div>
+      
+    </div>
+  </a>
+  
+  <a href="/dev/blog/how-to-build-a-currency-converter.html" class="blog-card">
+    
+    <div class="blog-placeholder"></div>
+    
 
-                <p>
-                  MarketMind is a small demo Django-based web application that
-                  integrates with a language model agent to handle search
-                  queries about companies. The application provides a summary of
-                  the latest news and stock price for a given company using
-                  LLM-based agent.
-                </p>
-              </div>
-            </div>
-          </a>
-        </article>
+    <div class="blog-content">
+      <h3>
+        How to build a currency converter 
+      </h3>
+       
+      <div class="blog-tags">
+        
+        <span class="tag">javascript</span>
+        
+        <span class="tag">web-development</span>
+        
+        <span class="tag">fetch-api</span>
+        
+        <span class="tag">async-await</span>
+        
+      </div>
+      
+    </div>
+  </a>
+  
+</div>
 
-        <!-- Medical Calls Analysis in AWS -->
-
-        <h2 class="text-3xl font-bold">Medical Calls Analysis in AWS</h2>
-
-        <article>
-          <a
-            href="https://pedropcamellon.notion.site/Serverless-LLM-with-Amazon-Bedrock-Part-1-Getting-Started-dc152ebec6f74690b9ce5223628314fd?pvs=4"
-          >
-            <div
-              class="flex flex-col md:flex-row gap-8 mx-auto p-2 border rounded-lg"
-            >
-              <img
-                src="/img/articles/aws_bedrock.webp"
-                alt="AWS Bedrock logo"
-                width="auto"
-                height="auto"
-                class="rounded-lg d-block max-w-full md:max-w-52"
-              />
-              <div>
-                <h3 class="text-2xl font-bold mb-4">
-                  Medical Calls Analysis in AWS (Part 1) - Getting Started
-                </h3>
-
-                <p>
-                  This guide focuses on setting up Amazon Bedrock, a serverless
-                  AI service by AWS. It covers account setup, AWS CLI
-                  configuration, accessing Bedrock, and generating a model
-                  response, including a hands-on example and troubleshooting
-                  tips.
-                </p>
-              </div>
-            </div>
-          </a>
-        </article>
-
-        <article>
-          <a
-            href="https://pedropcamellon.notion.site/Serverless-LLM-with-Amazon-Bedrock-Part-2-Transcribing-585179f60e7a4ed18ebd8e4ae8e0a4c1?pvs=4"
-          >
-            <div
-              class="flex flex-col md:flex-row gap-8 mx-auto p-2 border rounded-lg"
-            >
-              <img
-                src="/img/articles/aws_bedrock.webp"
-                alt="AWS Bedrock logo"
-                width="auto"
-                height="auto"
-                class="rounded-lg d-block max-w-full md:max-w-52"
-              />
-              <div>
-                <h3 class="text-2xl font-bold mb-4">
-                  Medical Calls Analysis in AWS (Part 2) - Audio Transcription
-                </h3>
-
-                <p>
-                  Use Amazon Transcribe to transform an audio file into text.
-                  Set up S3 triggers to automatically initiate processing when
-                  new audio files are uploaded, and setup permissions. Use the
-                  boto AWS Python SDK to interact with AWS services.
-                </p>
-              </div>
-            </div>
-          </a>
-        </article>
-
-        <article>
-          <a
-            href="https://pedropcamellon.notion.site/Medical-Calls-Analysis-in-AWS-Part-3-Smart-Summarization-with-Amazon-Bedrock-1e154742cee98081a6eec309ec8bb1a7?pvs=4"
-          >
-            <div
-              class="flex flex-col md:flex-row gap-8 mx-auto p-2 border rounded-lg"
-            >
-              <img
-                src="/img/articles/aws_bedrock.webp"
-                alt="AWS Bedrock logo"
-                width="auto"
-                height="auto"
-                class="rounded-lg d-block max-w-full md:max-w-52"
-              />
-              <div>
-                <h3 class="text-2xl font-bold mb-4">
-                  Medical Calls Analysis in AWS (Part 3) - Smart Summarization
-                  with Amazon Bedrock
-                </h3>
-
-                <p>
-                  Summarize the transcribed JSON files using Amazon Bedrock's
-                  Titan model. Deploy the system using AWS Lambda, and set up S3
-                  triggers to automatically initiate processing when new audio
-                  files are uploaded, creating an efficient solution for
-                  processing and analyzing conversations at scale.
-                </p>
-              </div>
-            </div>
-          </a>
-        </article>
-
-        <!-- Medical Calls Analysis in AWS (Part 4) - Monitoring with AWS CloudWatch -->
-
-        <article>
-          <a
-            href="https://pedropcamellon.notion.site/Medical-Calls-Analysis-in-AWS-Part-4-Monitoring-with-AWS-CloudWatch-1e554742cee980af805ffaa7c8bf9322?pvs=4"
-          >
-            <div
-              class="flex flex-col md:flex-row gap-8 mx-auto p-2 border rounded-lg"
-            >
-              <img
-                src="/img/articles/aws_bedrock.webp"
-                alt="AWS Bedrock logo"
-                width="auto"
-                height="auto"
-                class="rounded-lg d-block max-w-full md:max-w-52"
-              />
-              <div>
-                <h3 class="text-2xl font-bold mb-4">
-                  Medical Calls Analysis in AWS (Part 4) - Monitoring with AWS
-                  CloudWatch
-                </h3>
-
-                <p>
-                  Implement robust monitoring using CloudWatch's integration
-                  with AWS Lambda and Amazon Bedrock. Learn how to set up
-                  comprehensive logging, configure data protection policies, and
-                  create custom alarms. The solution provides complete
-                  visibility into your AI applications while maintaining
-                  security and cost control through CloudWatch's powerful
-                  monitoring capabilities.
-                </p>
-              </div>
-            </div>
-          </a>
-        </article>
-
-        <!-- END Medical Calls Analysis in AWS (Part 4) - Monitoring with AWS CloudWatch -->
-
-        <!-- Medical Calls Analysis in AWS (Part 5) - Automating AWS Deployments with Terraform -->
-
-        <article>
-          <a
-            href="https://pedropcamellon.notion.site/Medical-Calls-Analysis-in-AWS-Part-5-Automating-AWS-Deployments-with-Terraform-fa96d5fbbe0549c38935a6a3a88b1b50?pvs=4"
-          >
-            <div
-              class="flex flex-col md:flex-row gap-8 mx-auto p-2 border rounded-lg"
-            >
-              <img
-                src="/img/articles/aws_bedrock.webp"
-                alt="AWS Bedrock logo"
-                width="auto"
-                height="auto"
-                class="rounded-lg d-block max-w-full md:max-w-52"
-              />
-              <div>
-                <h3 class="text-2xl font-bold mb-4">
-                  Medical Calls Analysis in AWS (Part 5) - Automating AWS
-                  Deployments with Terraform
-                  <span
-                    class="badge fw-semibold ms-2 mb-2"
-                    style="
-                      background-color: #f59e42;
-                      font-size: 0.85rem;
-                      letter-spacing: 1px;
-                    "
-                    >NEW</span
-                  >
-                </h3>
-
-                <p>
-                  Learn how to automate AWS resource provisioning and management
-                  using Terraform. This guide covers version-controlled
-                  infrastructure, consistent deployments, and error-free
-                  configuration.
-                </p>
-              </div>
-            </div>
-          </a>
-        </article>
-
-        <!-- END Medical Calls Analysis in AWS (Part 5) - Automating AWS Deployments with Terraform -->
-
-        <!-- END Medical Calls Analysis in AWS -->
-
-        <!-- CandleWise - A Portfolio Management App -->
-
-        <h2 class="text-3xl font-bold">
-          CandleWise - A Portfolio Management App
-        </h2>
-
-        <article>
-          <a
-            href="https://pedropcamellon.notion.site/Setting-Up-the-Environment-515c79baedcc41a7ac7e0ac956502692?pvs=4"
-          >
-            <div
-              class="flex flex-col md:flex-row gap-8 mx-auto p-2 border rounded-lg"
-            >
-              <img
-                src="/img/articles/candlewise.webp"
-                alt="A stock exchange dashboard"
-                width="auto"
-                height="auto"
-                class="rounded-lg d-block max-w-full md:max-w-52"
-              />
-              <div>
-                <h3 class="text-2xl font-bold mb-4">
-                  CandleWise - Part 1: Environment Setup
-                </h3>
-
-                <p>
-                  CandleWise, a portfolio management app that I'm building as
-                  part of my exploration journey into .NET Core development.
-                  This series documents my learning process with Visual Studio,
-                  Docker, and deployment to Azure. In this guide, we'll cover
-                  setting up a development environment by installing Visual
-                  Studio 2022 and .NET Core 6.0 SDK, then creating an ASP.NET
-                  Core Web API project as our foundation....
-                </p>
-              </div>
-            </div>
-          </a>
-        </article>
-
-        <article>
-          <a
-            href="https://pedropcamellon.notion.site/Building-a-Stock-Exchange-Part-2-Integrating-a-third-party-API-1-a61c3ee233184301b65fd69025c6ea8d?pvs=4"
-          >
-            <div
-              class="flex flex-col md:flex-row gap-8 mx-auto p-2 border rounded-lg"
-            >
-              <img
-                src="/img/articles/candlewise.webp"
-                alt="A stock exchange dashboard"
-                width="auto"
-                height="auto"
-                class="rounded-lg d-block max-w-full md:max-w-52"
-              />
-              <div>
-                <h3 class="text-2xl font-bold mb-4">
-                  CandleWise - Part 2: Integrating a third party API
-                </h3>
-
-                <p>
-                  This article This one discusses the integration of real-time
-                  stock data into an application using IHttpClientFactory, a
-                  tool that manages HttpClient instances...
-                </p>
-              </div>
-            </div>
-          </a>
-        </article>
-
-        <article>
-          <a
-            href="https://pedropcamellon.notion.site/Building-a-Stock-Exchange-Part-3-Deploying-App-to-Azure-cee3cfd4226d4ea1942ac2a396d95f30?pvs=4"
-          >
-            <div
-              class="flex flex-col md:flex-row gap-8 mx-auto p-2 border rounded-lg"
-            >
-              <img
-                src="/img/articles/candlewise.webp"
-                alt="A stock exchange dashboard"
-                width="auto"
-                height="auto"
-                class="rounded-lg d-block max-w-full md:max-w-52"
-              />
-              <div>
-                <h3 class="text-2xl font-bold mb-4">
-                  CandleWise - Part 3: Deploying App to Azure
-                </h3>
-
-                <p>
-                  The blog post details the process of deploying the app to
-                  Microsoft Azure. The process involves encapsulating the
-                  application within a Docker container, creating a Docker image
-                  of the application, and using Visual Studio tools for
-                  developing with Docker containers...
-                </p>
-              </div>
-            </div>
-          </a>
-        </article>
-
-        <article>
-          <a
-            href="https://pedropcamellon.notion.site/CandleWise-Part-4-Automating-Deployment-CI-CD-24354742cee980af99c9fdd8fcf6661c"
-          >
-            <div
-              class="flex flex-col md:flex-row gap-8 mx-auto p-2 border rounded-lg"
-            >
-              <img
-                src="/img/articles/candlewise.webp"
-                alt="A stock exchange dashboard"
-                width="auto"
-                height="auto"
-                class="rounded-lg d-block max-w-full md:max-w-52"
-              />
-              <div>
-                <h3 class="text-2xl font-bold mb-4">
-                  CandleWise - Part 4: Automating Deployment CI/CD
-                  <span
-                    class="badge fw-semibold ms-2 mb-2"
-                    style="
-                      background-color: #f59e42;
-                      font-size: 0.85rem;
-                      letter-spacing: 1px;
-                    "
-                    >NEW</span
-                  >
-                </h3>
-
-                <p>
-                  Automated my entire infrastructure using Terraform for Azure.
-                  Implemented a comprehensive CI/CD pipeline with GitHub Actions
-                  that handles my complete deployment strategy - automatically
-                  deploying the Next.js frontend to Vercel and the .NET Core
-                  backend to Azure App Service...
-                </p>
-              </div>
-            </div>
-          </a>
-        </article>
-
-        <!-- END CandleWise -->
-
-        <!-- Dragons vs Unicorns -->
-
-        <h2 class="text-3xl font-bold">Dragons vs Unicorns</h2>
-
-        <article>
-          <a
-            href="https://pedropcamellon.notion.site/Dragons-vs-Unicorns-Part-I-HTML-and-CSS-11854742cee9800c852bfc628fc1bea1?pvs=4"
-          >
-            <div
-              class="flex flex-col md:flex-row gap-8 mx-auto p-2 border rounded-lg"
-            >
-              <img
-                src="/img/articles/dragons-vs-unicorns.webp"
-                alt="Dragons vs Unicorns main screen"
-                width="auto"
-                height="auto"
-                class="rounded-lg d-block max-w-full md:max-w-52"
-              />
-              <div>
-                <h3 class="text-2xl font-bold mb-4">
-                  Dragons vs Unicorns (Part I) - HTML and CSS
-                </h3>
-
-                <p>
-                  Game making is one of the most popular branches of
-                  programming. It is also a fun way to learn any new programming
-                  language while creating an interesting project. In this
-                  series, we will go step-by-step through implementing a simple
-                  Tic-Tac-Toe-like game using HTML, CSS and JavaScript. I will
-                  called it “Dragons vs Unicorns”. This process will allow us to
-                  cover key features of these three technologies learning while
-                  we put our skills in practice.
-                </p>
-              </div>
-            </div>
-          </a>
-        </article>
-
-        <article>
-          <a
-            href="https://pedropcamellon.notion.site/Dragons-vs-Unicorns-Part-II-JavaScript-11854742cee980d98face18d106cdff7?pvs=4"
-          >
-            <div
-              class="flex flex-col md:flex-row gap-8 mx-auto p-2 border rounded-lg"
-            >
-              <img
-                src="/img/articles/dragons-vs-unicorns.webp"
-                alt="Dragons vs Unicorns main screen"
-                width="auto"
-                height="auto"
-                class="rounded-lg d-block max-w-full md:max-w-52"
-              />
-              <div>
-                <h3 class="text-2xl font-bold mb-4">
-                  Dragons vs Unicorns (Part II) - JavaScript
-                </h3>
-
-                <p>
-                  In the previous post we made the markup and applied some
-                  styles to our Dragons vs Unicorns game app. Now it’s time to
-                  implement the game logic in JavaScript. This part is what
-                  makes the game playful. First, we reference the html elements
-                  for accessing them more easily.
-                </p>
-              </div>
-            </div>
-          </a>
-        </article>
-
-        <article>
-          <a
-            href="https://pedropcamellon.notion.site/Dragons-vs-Unicorns-Part-III-AI-Player-11854742cee980379827c6ced997031f"
-          >
-            <div
-              class="flex flex-col md:flex-row gap-8 mx-auto p-2 border rounded-lg"
-            >
-              <img
-                src="/img/articles/dragons-vs-unicorns.webp"
-                alt="Dragons vs Unicorns main screen"
-                width="auto"
-                height="auto"
-                class="rounded-lg d-block max-w-full md:max-w-52"
-              />
-              <div>
-                <h3 class="text-2xl font-bold mb-4">
-                  Dragons vs Unicorns (Part III) - AI Player
-                </h3>
-
-                <p>
-                  In this post, I will share my experience of enhancing the
-                  "Dragons vs Unicorns" game series integrating an AI opponent
-                  into the game, utilizing the minimax algorithm to create a
-                  challenging computer player. The post provides a detailed
-                  walkthrough of the AI integration process, demonstrating how
-                  we can elevate a simple two-player game into a more complex
-                  and engaging single-player experience.
-                </p>
-              </div>
-            </div>
-          </a>
-        </article>
-
-        <!-- END Dragons vs Unicorns -->
-      </section>
-
-      <!-- end articles -->
+      </article>
     </main>
 
-    <footer
-      class="py-4 text-center text-body-secondary bg-body-tertiary border-top border-bottom"
-    >
-      <!-- Social Links -->
-      <p class="text-lg font-semibold">Follow me on</p>
-
-      <ul class="nav justify-content-center">
-        <li class="nav-item">
-          <a
-            href="https://github.com/pedropcamellon"
-            target="_blank"
-            class="nav-link px-2 text-body-secondary"
-          >
-            Github
-          </a>
-        </li>
-        <li class="nav-item">
-          <a
-            href="https://www.linkedin.com/in/pedropcamellon/"
-            target="_blank"
-            class="nav-link px-2 text-body-secondary"
-          >
-            LinkedIn
-          </a>
-        </li>
-      </ul>
+    <footer>
+      <p style="font-weight: bold; margin-bottom: 1rem;">Follow me on</p>
+      <a href="https://github.com/pedropcamellon" target="_blank">GitHub</a>
+      <a href="https://www.linkedin.com/in/pedropcamellon/" target="_blank"
+        >LinkedIn</a
+      >
     </footer>
-
-    <!-- TODO Remove -->
-    <script src="https://cdn.tailwindcss.com"></script>
   </body>
 </html>
