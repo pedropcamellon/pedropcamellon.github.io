@@ -162,6 +162,30 @@ article a:hover {
   text-decoration: underline;
 }
 
+/* Tables */
+article table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+}
+
+article table th,
+article table td {
+  padding: 0.5rem;
+  text-align: left;
+  border: 1px solid #d0d7de;
+}
+
+article table th {
+  background: #f6f8fa;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+article table tr:hover {
+  background: #f6f8fa;
+}
+
 /* Footer */
 footer {
   border-top: 1px solid #e1e4e8;
