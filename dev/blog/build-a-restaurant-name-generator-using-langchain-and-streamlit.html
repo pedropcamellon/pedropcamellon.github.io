@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Build a Restaurant Name Generator using LangChain and Streamlit - Pedro Camellon</title>
+
+    <script type="text/javascript">
+      (function (c, l, a, r, i, t, y) {
+        c[a] =
+          c[a] ||
+          function () {
+            (c[a].q = c[a].q || []).push(arguments);
+          };
+        t = l.createElement(r);
+        t.async = 1;
+        t.src = "https://www.clarity.ms/tag/" + i;
+        y = l.getElementsByTagName(r)[0];
+        y.parentNode.insertBefore(t, y);
+      })(window, document, "clarity", "script", "kykpoeffvx");
+    </script>
+
+    <link rel="stylesheet" href="/css/main.css" />
+    <link rel="stylesheet" href="/css/pages.css" />
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li><a href="/" >Home</a></li>
+        <li><a href="/blog.html" class="active">Blog</a></li>
+        <li><a href="/projects.html" >Projects</a></li>
+        <li><a href="/#contact">Contact</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <article>
+        <h1>Build a Restaurant Name Generator using LangChain and Streamlit</h1>
+        
+        <div class="post-tags">
+          
+          <span class="tag">python</span>
+          
+          <span class="tag">streamlit</span>
+          
+          <span class="tag">langchain</span>
+          
+          <span class="tag">google-gemini</span>
+          
+          <span class="tag">llm-apps</span>
+          
+        </div>
+         <h1 id="summary">Summary</h1>
+
+<ul>
+  <li>This tutorial demonstrates how to build a restaurant name generator app using LangChain and Streamlit</li>
+  <li>Utilizes Google’s Gemini model through API integration for generating contextually appropriate restaurant names</li>
+  <li>Covers key concepts like prompt engineering, model parameters, and error handling</li>
+  <li>Features a user-friendly interface with cuisine selection and restaurant name generation</li>
+  <li>Includes complete implementation details from environment setup to cloud deployment to Streamlit Community Cloud</li>
+</ul>
+
+<h1 id="introduction">Introduction</h1>
+
+<p>Large Language Models (LLMs) have revolutionized the field of natural language processing by enabling machines to generate human-like text. These models are trained on vast amounts of textual data and can be used for a variety of tasks, including text generation, sentiment analysis, question answering, and much more. As the field of artificial intelligence continues to evolve, AI engineers face the unique challenge of integrating these powerful language models into practical applications. This integration process, often referred to as “Software 2.0”, represents a fundamental shift in how we approach software development. Unlike traditional programming with rigid rules and logic, Software 2.0 leverages AI’s ability to discover subtle patterns and relationships in data that would be extremely difficult to capture through conventional programming approaches.</p>
+
+<p>The role of AI engineers in this new paradigm is to bridge the gap between raw language models and user-friendly applications. This includes handling crucial aspects such as prompt engineering, context management, error handling, and ensuring the model’s outputs are both reliable and useful for end users. They must also address important considerations like scalability, cost optimization, and ethical AI usage.</p>
+
+<p>One of the most successful tools leading this software revolution has been LangChain. Initially released in October 2022, this powerful framework comes with extensive integrations to the most popular model providers and common interfaces for getting started quickly, including prompt templates, memory management, document loading capabilities, and output parsing tools. This comprehensive toolkit enables developers to rapidly prototype robust LLM-powered applications without having to build these common components from scratch.</p>
+
+<p>Another great tool for speeding up initial iteration is Streamlit, which allows developers and data scientists to build data apps and prototypes in pure Python without any front-end experience. They could focus on their application logic rather than wrestling with complex web development frameworks. Using both LangChain and Streamlit together enables rapid development of functional demos, letting developers focus on core functionality rather than wrestling with complex web frameworks.</p>
+
+<h1 id="setting-up-the-environment">Setting Up the Environment</h1>
+
+<p>To get started with the project clone the repository like this:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/pedropcamellon/restaurant-name-generator.git
+<span class="nb">cd </span>restaurant-name-generator
+</code></pre></div></div>
+
+<p>This guide assumes you have Python installed on your machine. For the most up-to-date setup instructions, please refer to the project repository.</p>
+
+<p>The setup process involves using the <code class="language-plaintext highlighter-rouge">uv</code> package manager to handle dependencies and setting up environment variables for the Google Generative AI API. Here’s a quick overview:</p>
+
+<ol>
+  <li>
+    <p>Install the <code class="language-plaintext highlighter-rouge">uv</code> package manager:</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip <span class="nb">install </span>uv
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Sync project dependencies:</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>uv <span class="nb">sync</span>
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<p>You’ll need to set up your environment variables by obtaining a Google Generative AI API key from <a href="https://aistudio.google.com/apikey">Google AI Studio</a>. Create a <code class="language-plaintext highlighter-rouge">.env</code> file in your project directory with:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GOOGLE_API_KEY=YOUR_GOOGLE_API_KEY
+</code></pre></div></div>
+
+<p>Once everything is set up, you can run the application using:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>streamlit run main.py
+</code></pre></div></div>
+
+<p>This will provide you with a local URL to access the application in your browser.</p>
+
+<h1 id="choosing-the-language-model">Choosing the Language Model</h1>
+
+<p>In the initial release of this project, I used the Hugging Face model google/flan-t5-xxl. However, Google now offers direct access to their latest Gemini models through a free API, which provides significant improvements in performance and capabilities.</p>
+
+<p>Here’s how to initialize and use the model:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">langchain_google_genai</span> <span class="kn">import</span> <span class="n">ChatGoogleGenerativeAI</span>
+<span class="kn">from</span> <span class="n">langchain_core.messages</span> <span class="kn">import</span> <span class="n">HumanMessage</span>
+
+<span class="n">llm</span> <span class="o">=</span> <span class="nc">ChatGoogleGenerativeAI</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="sh">"</span><span class="s">gemini-2.0-flash</span><span class="sh">"</span><span class="p">)</span>
+
+<span class="c1"># Generate restaurant names and menu items
+</span><span class="n">response</span> <span class="o">=</span> <span class="n">llm</span><span class="p">.</span><span class="nf">invoke</span><span class="p">(</span><span class="sh">"</span><span class="s">Suggest a name for a Mexican restaurant</span><span class="sh">"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>The Gemini model offers several advantages for our restaurant name generator:</p>
+
+<ul>
+  <li>Enhanced understanding of culinary contexts</li>
+  <li>Better multilingual capabilities for international restaurant names</li>
+  <li>Faster response times for improved user experience</li>
+</ul>
+
+<p>This model also provides advanced capabilities that weren’t used in this project:</p>
+
+<ul>
+  <li><strong>Tool calling:</strong> Ability to interact with external tools and APIs through function calling</li>
+  <li><strong>Structured output:</strong> Capability to generate responses in specific formats like JSON or XML</li>
+  <li><strong>Multimodal processing:</strong> Support for handling multiple types of inputs like text, images and audio</li>
+</ul>
+
+<p>For this restaurant name generator application, we focused solely on text generation capabilities to keep the implementation straightforward.</p>
+
+<h2 id="model-parameters">Model Parameters</h2>
+
+<p>The model’s text generation is controlled by several parameters: <code class="language-plaintext highlighter-rouge">max_new_tokens</code> sets the maximum length of generated text, <code class="language-plaintext highlighter-rouge">top_k</code> determines how many likely next tokens to consider, <code class="language-plaintext highlighter-rouge">temperature</code> controls the randomness of token selection, and <code class="language-plaintext highlighter-rouge">repetition_penalty</code> discourages repetitive text.</p>
+
+<h1 id="tweaking-the-prompt">Tweaking the Prompt</h1>
+
+<p>In the context of working with Large Language Models (LLMs), a prompt is a carefully crafted text input that guides the model to generate desired outputs. Think of it as giving instructions to the model about what kind of response you want. A prompt can range from a simple question to a complex set of instructions with examples and constraints.</p>
+
+<p>The quality and structure of prompts significantly affect how well an LLM performs:</p>
+
+<ul>
+  <li><strong>Clarity and Specificity:</strong> Clear, specific prompts tend to produce more accurate and relevant responses. Vague prompts might lead to inconsistent or off-topic outputs.</li>
+  <li><strong>Context and Examples:</strong> Including relevant context or examples in the prompt helps the model understand the desired format and style of the response.</li>
+  <li><strong>Constraints:</strong> Explicitly stating limitations or requirements in the prompt helps control the model’s output, such as specifying the length, format, or tone of the response.</li>
+  <li><strong>Temperature Impact:</strong> The effectiveness of a prompt can vary based on the model’s temperature setting - a well-structured prompt becomes even more crucial when using higher temperatures that introduce more randomness.</li>
+</ul>
+
+<p>In our restaurant name generator application, the prompt’s design is crucial because it needs to guide the LLM to generate appropriate, creative, and contextually relevant restaurant names while maintaining consistency with the chosen cuisine type.</p>
+
+<p>Before generating restaurant names, we need to define a prompt template. In LangChain, we use the <code class="language-plaintext highlighter-rouge">ChatPromptTemplate</code> class from <code class="language-plaintext highlighter-rouge">langchain_core.prompts</code> to create structured prompts that guide the model’s responses. A prompt template allows us to create reusable prompts with dynamic variables.</p>
+
+<p>Here’s how to create a prompt template:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">langchain_core.prompts</span> <span class="kn">import</span> <span class="n">ChatPromptTemplate</span>
+
+<span class="n">system_template</span> <span class="o">=</span> <span class="sh">"</span><span class="s">I want to open a restaurant. Suggest a good restaurant name based on the cuisine provided by the user. Response must include only the name of the restaurant.</span><span class="sh">"</span>
+
+<span class="n">prompt_template</span> <span class="o">=</span> <span class="n">ChatPromptTemplate</span><span class="p">.</span><span class="nf">from_messages</span><span class="p">([</span>
+    <span class="p">(</span><span class="sh">"</span><span class="s">system</span><span class="sh">"</span><span class="p">,</span> <span class="n">system_template</span><span class="p">),</span>
+    <span class="p">(</span><span class="sh">"</span><span class="s">user</span><span class="sh">"</span><span class="p">,</span> <span class="sh">"</span><span class="s">Cuisine: {cuisine}</span><span class="sh">"</span><span class="p">)</span>
+<span class="p">])</span>
+
+</code></pre></div></div>
+
+<p>This template uses two distinct message roles:</p>
+
+<ul>
+  <li>The “system” message sets the context and behavior rules for the AI. In this case, it explains the task and output format requirements.</li>
+  <li>The “user” message contains the variable input (cuisine) that will change with each request. The {cuisine} placeholder will be replaced with the actual cuisine type when the template is used.</li>
+</ul>
+
+<p>To use the template, you can invoke it with specific values:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">prompt</span> <span class="o">=</span> <span class="n">prompt_template</span><span class="p">.</span><span class="nf">invoke</span><span class="p">({</span><span class="sh">"</span><span class="s">cuisine</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">Italian</span><span class="sh">"</span><span class="p">})</span>
+</code></pre></div></div>
+
+<h1 id="getting-the-restaurant-name">Getting the Restaurant Name</h1>
+
+<p>Now that we have our prompt template set up, we can use it with our LLM to generate restaurant names. Here’s how to get the response from the model:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">response</span> <span class="o">=</span> <span class="n">llm</span><span class="p">.</span><span class="nf">invoke</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Restaurant Name: </span><span class="si">{</span><span class="n">response</span><span class="p">.</span><span class="n">content</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+
+</code></pre></div></div>
+
+<p>When you run this code with “Italian” as the cuisine input, you might get a response like:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Restaurant Name: Bella Notte Ristorante
+</code></pre></div></div>
+
+<p>The model generates a contextually appropriate name based on the cuisine type provided. The response is a simple string containing just the restaurant name, as specified in our system prompt. This makes it easy to process and use the generated name in subsequent steps of our application.</p>
+
+<p>Note that due to the stochastic nature of language models, running the same prompt multiple times may generate different restaurant names. This is actually beneficial for our use case, as it provides variety and allows users to generate multiple options until they find one they like.</p>
+
+<h1 id="building-the-app-with-streamlit">Building the App with Streamlit</h1>
+
+<p>Next, we are going to build and deploy the app using Streamlit. For better code organization, I placed all generation-related logic in a separate module file called <code class="language-plaintext highlighter-rouge">generator.py</code>. This includes the model initialization, prompt templates, and functions for generating the restaurant names.</p>
+
+<p>Let’s create our <code class="language-plaintext highlighter-rouge">main.py</code> file which will serve as the entry point for our Streamlit application:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">streamlit</span> <span class="k">as</span> <span class="n">st</span>
+<span class="kn">from</span> <span class="n">generator</span> <span class="kn">import</span> <span class="n">generate_restaurant_name</span><span class="p">,</span> <span class="n">generate_menu_items</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">st</span><span class="p">.</span><span class="nf">set_page_config</span><span class="p">(</span>
+        <span class="n">page_title</span><span class="o">=</span><span class="sh">"</span><span class="s">Restaurant Name Generator</span><span class="sh">"</span><span class="p">,</span>
+        <span class="n">page_icon</span><span class="o">=</span><span class="sh">"</span><span class="s">🍽️</span><span class="sh">"</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">st</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">"</span><span class="s">🏪 Restaurant Name Generator</span><span class="sh">"</span><span class="p">)</span>
+
+    <span class="c1"># Add a sidebar with information
+</span>    <span class="k">with</span> <span class="n">st</span><span class="p">.</span><span class="n">sidebar</span><span class="p">:</span>
+        <span class="n">st</span><span class="p">.</span><span class="nf">header</span><span class="p">(</span><span class="sh">"</span><span class="s">About</span><span class="sh">"</span><span class="p">)</span>
+        <span class="n">st</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="sh">"</span><span class="s">Generate unique restaurant names based on cuisine type using AI.</span><span class="sh">"</span><span class="p">)</span>
+
+    <span class="c1"># Main content
+</span>    <span class="n">cuisines</span> <span class="o">=</span> <span class="p">[</span><span class="sh">"</span><span class="s">Italian</span><span class="sh">"</span><span class="p">,</span> <span class="sh">"</span><span class="s">Mexican</span><span class="sh">"</span><span class="p">,</span> <span class="sh">"</span><span class="s">Chinese</span><span class="sh">"</span><span class="p">,</span> <span class="sh">"</span><span class="s">Indian</span><span class="sh">"</span><span class="p">,</span> <span class="sh">"</span><span class="s">Japanese</span><span class="sh">"</span><span class="p">,</span> <span class="sh">"</span><span class="s">American</span><span class="sh">"</span><span class="p">,</span> <span class="sh">"</span><span class="s">French</span><span class="sh">"</span><span class="p">,</span> <span class="sh">"</span><span class="s">Thai</span><span class="sh">"</span><span class="p">]</span>
+    <span class="n">cuisine</span> <span class="o">=</span> <span class="n">st</span><span class="p">.</span><span class="nf">selectbox</span><span class="p">(</span><span class="sh">"</span><span class="s">Select a cuisine type:</span><span class="sh">"</span><span class="p">,</span> <span class="n">cuisines</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">st</span><span class="p">.</span><span class="nf">button</span><span class="p">(</span><span class="sh">"</span><span class="s">Generate Restaurant Name</span><span class="sh">"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="sh">"</span><span class="s">primary</span><span class="sh">"</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">st</span><span class="p">.</span><span class="nf">spinner</span><span class="p">(</span><span class="sh">"</span><span class="s">Generating restaurant name...</span><span class="sh">"</span><span class="p">):</span>
+            <span class="c1"># Generate restaurant name
+</span>            <span class="n">restaurant_name</span> <span class="o">=</span> <span class="nf">generate_restaurant_name</span><span class="p">(</span><span class="n">cuisine</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">restaurant_name</span><span class="p">:</span>
+                <span class="n">st</span><span class="p">.</span><span class="nf">header</span><span class="p">(</span><span class="n">restaurant_name</span><span class="p">)</span>
+
+                <span class="c1"># Generate menu items
+</span>                <span class="k">with</span> <span class="n">st</span><span class="p">.</span><span class="nf">spinner</span><span class="p">(</span><span class="sh">"</span><span class="s">Generating menu items...</span><span class="sh">"</span><span class="p">):</span>
+                    <span class="n">menu_items</span> <span class="o">=</span> <span class="nf">generate_menu_items</span><span class="p">(</span><span class="n">restaurant_name</span><span class="p">,</span> <span class="n">cuisine</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">menu_items</span><span class="p">:</span>
+                        <span class="n">st</span><span class="p">.</span><span class="nf">subheader</span><span class="p">(</span><span class="sh">"</span><span class="s">Suggested Menu Items:</span><span class="sh">"</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">menu_items</span><span class="p">[:</span><span class="mi">5</span><span class="p">]:</span>  <span class="c1"># Display top 5 items
+</span>                            <span class="n">st</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="sh">"</span><span class="s">•</span><span class="sh">"</span><span class="p">,</span> <span class="n">item</span><span class="p">.</span><span class="nf">strip</span><span class="p">())</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">st</span><span class="p">.</span><span class="nf">error</span><span class="p">(</span><span class="sh">"</span><span class="s">Failed to generate restaurant name. Please try again.</span><span class="sh">"</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="sh">"</span><span class="s">__main__</span><span class="sh">"</span><span class="p">:</span>
+    <span class="nf">main</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>This Streamlit app provides a user-friendly interface with:</p>
+
+<ul>
+  <li>A custom page title and icon</li>
+  <li>An informative sidebar</li>
+  <li>A dropdown menu for cuisine selection</li>
+  <li>A primary button to trigger the generation</li>
+  <li>Loading spinners for better user experience</li>
+  <li>Error handling for failed generations</li>
+</ul>
+
+<p>The user interface consists of a select box for choosing the cuisine type and a “Generate Name” button. When the user clicks the button, it triggers a function that calls the LLM with the selected cuisine. The generated restaurant name is then displayed on the page.</p>
+
+<p>To run the app, open your terminal and run:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>streamlit run main.py
+</code></pre></div></div>
+
+<p>A new browser window will open, displaying your app.</p>
+
+<h1 id="deploying-to-streamlit-community-cloud">Deploying to Streamlit Community Cloud</h1>
+
+<p>Now that you’ve successfully built the app, let’s deploy it to Streamlit Community Cloud where anyone can use it. Streamlit’s cloud platform makes deploying and sharing your applications seamless.</p>
+
+<p>First, you need to create a GitHub repository for your app. After creating a new repository named “restaurant-name-generator”, prepare the app for deployment by creating a <code class="language-plaintext highlighter-rouge">requirements.txt</code> file that lists all necessary dependencies. This can be done by running the command <code class="language-plaintext highlighter-rouge">pip freeze &gt; requirements.txt</code> in your project directory.</p>
+
+<p>To deploy the app to the Streamlit Community Cloud, go to the Streamlit Community Cloud website and sign in. Click on “New app” and follow the instructions to connect your GitHub repository, specifying the branch and main file path. You can also customize your app’s URL by choosing a custom subdomain. Finally, click “Deploy!” to deploy your app to the Streamlit Community Cloud.</p>
+
+<aside>
+💡
+
+Important
+
+After deployment, make sure to add your Google API key as a secret in your Streamlit Community Cloud app settings. Navigate to your app settings, find the "Secrets" section, and add:
+
+```toml
+GOOGLE_API_KEY = "your-api-key-here"
+```
+
+This ensures your API key remains secure and isn't exposed in your source code. The app will use this environment variable to authenticate with the Google Generative AI API.
+
+</aside>
+
+<p>Congratulations! Your app is now deployed and accessible through the provided URL. Share it with others and let your creativity flow!</p>
+
+<p>Try out the live demo here: <a href="https://restaurant-name-generator-305.streamlit.app/">Restaurant Name Generator</a></p>
+
+<h1 id="conclusions">Conclusions</h1>
+
+<p>I hope this tutorial has given you valuable hands-on experience with LLMs, modern AI tools, and practical development workflows. By following along and building this restaurant name generator, you’ve learned essential skills in LLM integration, prompt engineering, and application architecture. I’ve shown you how to rapidly prototype using Streamlit and LangChain, while introducing you to industry-standard tools and deployment practices. Whether you’re just starting your AI engineering career or looking to expand your skills, I hope this post has helped you take a step forward in your journey.</p>
+
+      </article>
+    </main>
+
+    <footer>
+      <p style="font-weight: bold; margin-bottom: 1rem;">Follow me on</p>
+      <a href="https://github.com/pedropcamellon" target="_blank">GitHub</a>
+      <a href="https://www.linkedin.com/in/pedropcamellon/" target="_blank"
+        >LinkedIn</a
+      >
+    </footer>
+  </body>
+</html>

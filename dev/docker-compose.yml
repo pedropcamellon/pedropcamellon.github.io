@@ -1,0 +1,15 @@
+services:
+  jekyll:
+    image: jekyll/jekyll:4.2.2
+    container_name: jekyll-blog
+    environment:
+      - JEKYLL_ENV=development
+    command: jekyll serve --force_polling --livereload --trace
+    ports:
+      - "4000:4000"
+      - "35729:35729"
+    volumes:
+      - .:/srv/jekyll
+      - ./vendor/bundle:/usr/local/bundle
+    stdin_open: true
+    tty: true
