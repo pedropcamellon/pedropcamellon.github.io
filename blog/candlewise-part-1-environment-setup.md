@@ -3,9 +3,15 @@ layout: default
 title: "CandleWise - Part 1: Environment Setup"
 date: 2024-01-15
 tags: ["dotnet", "csharp", "visual-studio", "aspnet-core", "api"]
+image: "candlewise.webp"
+excerpt: "CandleWise, a portfolio management app that I'm building as
+  part of my exploration journey into .NET Core development.
+  This series documents my learning process with Visual Studio,
+  Docker, and deployment to Azure. In this guide, we'll cover
+  setting up a development environment by installing Visual
+  Studio 2022 and .NET Core 6.0 SDK, then creating an ASP.NET
+  Core Web API project as our foundation...."
 ---
-
-# CandleWise - A Portfolio Management App (Part 1): Environment Setup
 
 ## Introduction
 
@@ -14,8 +20,6 @@ CandleWise is a portfolio management app that I built as part of my exploration 
 I chose .NET Core 6, an open-source, cross-platform framework from Microsoft, for this learning project. As I explored its features and capabilities, I documented how its tools and libraries could be used to build a simple portfolio tracking system, which helped me understand the fundamentals of modern .NET development.
 
 After setting up my environment, I created my first model and configured the API. This established the groundwork for how data was stored and how client-server communication worked. I set up endpoints for creating, reading, updating, and deleting data—critical operations for any portfolio management system.
-
----
 
 ## Setting Up the Environment
 
