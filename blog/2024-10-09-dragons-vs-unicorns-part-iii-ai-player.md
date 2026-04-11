@@ -4,10 +4,7 @@ title: "Dragons vs Unicorns (Part III) - AI Player"
 date: 2024-10-09
 tags: [html, css, javascript]
 image: "dragons-vs-unicorns.webp"
----
-
-In the previous post we made the markup and applied some styles to our Dragons vs Unicorns game app. Now it’s time to implement the game logic in JavaScript. This part is what makes the game playful. First, we reference the html elements for accessing them more easily.
-
+excerpt: "In the previous post we made the markup and applied some styles to our Dragons vs Unicorns game app. Now it’s time to implement the game logic in JavaScript. This part is what makes the game playful. First, we reference the html elements for accessing them more easily."
 ---
 
 I recently rediscovered one of my earliest projects, the "Dragons vs Unicorns" game series, and decided to apply my artificial intelligence expertise to enhance it. This post serves as a continuation of the series, with minimal alterations to the existing HTML structure and core JavaScript logic.
