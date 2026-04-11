@@ -26,9 +26,15 @@ title: Blog
         >{% endif %}
       </h3>
       {% if post.date %}
-      <p class="post-date">{{ post.date | date: "%B %-d, %Y" }}</p>
-      {% endif %}
-      {% if post.excerpt %}
+      <p class="post-date">
+        Published: {{ post.date | date: "%B %-d, %Y" }} {% if post.updated and
+        post.updated != post.date %}
+        <span class="post-updated"
+          >Updated: {{ post.updated | date: "%B %-d, %Y" }}</span
+        >
+        {% endif %}
+      </p>
+      {% endif %} {% if post.excerpt %}
       <p>{{ post.excerpt }}</p>
       {% endif %} {% if post.tags and post.tags.size > 0 %}
       <div class="blog-tags">

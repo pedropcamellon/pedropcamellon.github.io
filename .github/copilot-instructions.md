@@ -28,6 +28,7 @@ Static portfolio/blog site built with Jekyll. Uses custom CSS (main.css, pages.c
      tags: ["tag1", "tag2"]
      image: "article-slug.webp" # optional
      is_new: true # optional, for NEW badge
+     updated: YYYY-MM-DD # optional, shows "Last updated" date
      excerpt: "Short description for blog list card" # optional
      ---
      ```

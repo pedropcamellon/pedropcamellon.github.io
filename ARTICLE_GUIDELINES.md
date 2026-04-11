@@ -48,6 +48,7 @@ excerpt: "One compelling sentence summarizing the key insight or outcome. Focus 
 **Optional fields:**
 
 - `is_new: true` - Add for recent articles (remove after 2-3 weeks)
+- `updated: YYYY-MM-DD` - Add when making significant updates to show "Last updated" date
 
 ### Standard Sections
 

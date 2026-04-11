@@ -84,6 +84,12 @@ article h1 {
   font-style: italic;
 }
 
+.post-updated {
+  color: #8b949e;
+  font-size: 0.9rem;
+  margin-left: 0.5rem;
+}
+
 /* Tags */
 .post-tags {
   display: flex;
