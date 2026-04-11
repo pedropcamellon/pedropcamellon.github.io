@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Migrating My Portfolio to Jekyll: Why and How - Pedro Camellon</title>
+
+    <script type="text/javascript">
+      (function (c, l, a, r, i, t, y) {
+        c[a] =
+          c[a] ||
+          function () {
+            (c[a].q = c[a].q || []).push(arguments);
+          };
+        t = l.createElement(r);
+        t.async = 1;
+        t.src = "https://www.clarity.ms/tag/" + i;
+        y = l.getElementsByTagName(r)[0];
+        y.parentNode.insertBefore(t, y);
+      })(window, document, "clarity", "script", "kykpoeffvx");
+    </script>
+
+    <link rel="stylesheet" href="/css/main.css" />
+    <link rel="stylesheet" href="/css/pages.css" />
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li><a href="/" >Home</a></li>
+        <li><a href="/blog.html" class="active">Blog</a></li>
+        <li><a href="/projects.html" >Projects</a></li>
+        <li><a href="/#contact">Contact</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <article>
+        <h1>Migrating My Portfolio to Jekyll: Why and How</h1>
+        
+        <div class="post-tags">
+          
+          <span class="tag">jekyll</span>
+          
+          <span class="tag">github-pages</span>
+          
+          <span class="tag">web-development</span>
+          
+          <span class="tag">devops</span>
+          
+        </div>
+         <p>When I first launched my portfolio, it was a simple static site built with HTML, Bootstrap, and Tailwind. It looked great and was easy to set up. But as I added more blog posts, projects, and updates, the maintenance became more and more tedious. Every new blog post meant: write it in Notion, spend an hour polishing it, and then… the real work begins. Copy the HTML. Create a new card in <code class="language-plaintext highlighter-rouge">blog.html</code>. Update the navigation. Copy the footer. Test locally. Push to GitHub. Repeat for every single post.</p>
+
+<p>I was managing my portfolio as a static HTML site with Bootstrap and Tailwind doing the heavy lifting. Every new blog post meant manually creating HTML card entries, copying navigation code across pages, and keeping my Notion content in sync with my site. It worked, but it didn’t scale.</p>
+
+<p>The breaking point came when I wanted to add tags to all my posts. The thought of updating 20+ individual HTML files made me realize: there has to be a better way.</p>
+
+<h2 id="why-jekyll">Why Jekyll?</h2>
+
+<p>I’d heard about Jekyll before—GitHub Pages’ built-in static site generator—but dismissed it as overkill. Turns out, I was wrong. Jekyll solved every pain point I had:</p>
+
+<p><strong>Write once, deploy everywhere.</strong> Blog posts became simple markdown files. Drop a <code class="language-plaintext highlighter-rouge">.md</code> file in the <code class="language-plaintext highlighter-rouge">/blog/</code> folder, push to GitHub, and it automatically appears on my site. No more HTML wrangling.</p>
+
+<p><strong>One template to rule them all.</strong> Instead of copying navigation and footer code across dozens of pages, I created a single layout template. Change it once, update everywhere. The DRY principle in action.</p>
+
+<p><strong>Framework independence.</strong> I wanted to keep things simple. Bootstrap and Tailwind meant learning their conventions and fighting their defaults. Custom CSS gave me exactly what I needed, nothing more.</p>
+
+<p><strong>Automated everything.</strong> Posts sort themselves by date. Tags display automatically. Excerpts appear in blog cards but not in articles. The “NEW” badge shows up based on a simple frontmatter flag.</p>
+
+<p>But the real catalyst? My blog was growing. Jekyll is fully supported by GitHub Pages with minimal setup—it felt like the obvious choice for spending more time writing and less time on dev work.</p>
+
+<h2 id="the-migration-journey">The Migration Journey</h2>
+
+<p>The migration happened in phases over a weekend. I started by setting up Jekyll’s basic structure—a <code class="language-plaintext highlighter-rouge">_config.yml</code> file, a simple Gemfile, and the essential <code class="language-plaintext highlighter-rouge">_layouts/default.html</code> template. That template became the heart of the site, handling navigation, analytics, and the footer for every page.</p>
+
+<p>Next came the CSS overhaul. I replaced Bootstrap and Tailwind with two focused files: <code class="language-plaintext highlighter-rouge">main.css</code> for base styles (typography, navigation, code blocks, tables) and <code class="language-plaintext highlighter-rouge">pages.css</code> for components (hero section, blog cards, responsive design). The key insight? Using <code class="language-plaintext highlighter-rouge">min(1200px, 90vw)</code> for responsive max-width instead of fixed breakpoints made the layout adapt automatically to any screen size.</p>
+
+<p>The blog list transformation was where Jekyll really shined. What used to be dozens of manually-coded HTML cards became a simple Liquid template that filters, sorts, and displays posts automatically. Jekyll handles all the heavy lifting—I just write markdown.</p>
+
+<p>Migrating 20+ existing posts from Notion could have been tedious, so I automated it with a PowerShell script. The script extracts the first paragraph as an excerpt, adjusts heading levels, wraps Liquid syntax properly, renames images with descriptive slug prefixes, and generates consistent frontmatter. What would have taken days took an afternoon.</p>
+
+<p>Even the projects page got simpler. Instead of maintaining an HTML table with inline styles, I converted it to markdown with badge-style GitHub and blog links. Jekyll’s built-in table rendering handled the rest.</p>
+
+<p>You can see all the code in the <a href="https://github.com/pedropcamellon/pedropcamellon.github.io">GitHub repository</a>—it’s cleaner than any tutorial could show.</p>
+
+<h2 id="the-frontmatter-philosophy">The Frontmatter Philosophy</h2>
+
+<p>Every blog post now starts with consistent frontmatter that tells Jekyll everything it needs to know:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nn">---</span>
+<span class="na">layout</span><span class="pi">:</span> <span class="s">default</span>
+<span class="na">title</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Article</span><span class="nv"> </span><span class="s">Title"</span>
+<span class="na">date</span><span class="pi">:</span> <span class="s">2026-04-07</span>
+<span class="na">tags</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">web-dev"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">jekyll"</span><span class="pi">]</span>
+<span class="na">image</span><span class="pi">:</span> <span class="s2">"</span><span class="s">thumbnail.webp"</span>
+<span class="na">is_new</span><span class="pi">:</span> <span class="kc">true</span>
+<span class="na">excerpt</span><span class="pi">:</span> <span class="s2">"</span><span class="s">One-sentence</span><span class="nv"> </span><span class="s">summary</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">blog</span><span class="nv"> </span><span class="s">cards"</span>
+<span class="nn">---</span>
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">date</code> field controls sorting. The <code class="language-plaintext highlighter-rouge">is_new</code> flag shows the “NEW” badge (I remove it after a few weeks). The <code class="language-plaintext highlighter-rouge">excerpt</code> appears only in blog cards, never in the article itself. It’s metadata-driven content management at its simplest.</p>
+
+<h2 id="local-development-docker-saves-the-day">Local Development: Docker Saves the Day</h2>
+
+<p>Setting up Ruby environments can be painful. Version conflicts, gem dependencies, platform-specific issues—it’s a rabbit hole. Docker solved all of it.</p>
+
+<p>I created a simple <code class="language-plaintext highlighter-rouge">docker-compose.yml</code> that spins up Jekyll 4.2.2 with live reload. No Ruby installation needed. No version conflicts. Just <code class="language-plaintext highlighter-rouge">docker compose up</code> and start writing. The development server runs at <code class="language-plaintext highlighter-rouge">localhost:4000</code> with instant preview of changes.</p>
+
+<p>The only hiccup? SSL certificate errors when Docker tried to fetch gems from <code class="language-plaintext highlighter-rouge">https://rubygems.org</code>. The fix was simple: change the Gemfile source to <code class="language-plaintext highlighter-rouge">http://rubygems.org</code>. Not ideal for production, but perfectly fine for local development.</p>
+
+<h2 id="deployment-git-push-and-forget">Deployment: Git Push and Forget</h2>
+
+<p>The deployment workflow is delightfully simple. Edit files locally. Commit changes. Push to the <code class="language-plaintext highlighter-rouge">main</code> branch. GitHub Pages automatically builds and deploys the site. I don’t even commit the <code class="language-plaintext highlighter-rouge">_site/</code> build directory—GitHub handles it server-side.</p>
+
+<p>For preview environments, I set up a GitHub Actions workflow that deploys the <code class="language-plaintext highlighter-rouge">dev</code> branch to a separate URL. It’s useful for testing major changes before they go live.</p>
+
+<h2 id="what-i-learned">What I Learned</h2>
+
+<p><strong>Docker is worth the setup.</strong> I avoided days of Ruby environment troubleshooting by starting with Docker. The consistency across machines is invaluable.</p>
+
+<p><strong>Custom CSS beats frameworks for static sites.</strong> Bootstrap and Tailwind are great for applications, but overkill for a portfolio. Custom CSS gave me exactly what I needed with none of the bloat.</p>
+
+<p><strong>Automation compounds.</strong> That PowerShell import script saved hours on the initial migration. But more importantly, it’ll save hours every time I import new posts. Time spent on automation is time invested.</p>
+
+<p><strong>Frontmatter is powerful.</strong> Separating metadata from content keeps everything clean. Tags, excerpts, dates, badges—all controlled through simple YAML fields.</p>
+
+<p><strong>Simple wins.</strong> I could have added search, pagination, RSS feeds, dark mode, and a dozen other features. But I didn’t need them yet. The site does one thing well: display blog posts. Everything else can wait.</p>
+
+<h2 id="the-results">The Results</h2>
+
+<p>Before this migration, adding a blog post took 30 minutes of HTML wrangling. Now it takes 5 minutes—just write markdown and push. The site loads dramatically faster without framework bloat. Making global changes (like updating the footer) is a one-line edit instead of a multi-file search-and-replace.</p>
+
+<p>More importantly, the friction is gone. I’m writing more because writing is easier. The technical debt that accumulated over months of manual updates? Paid off in a weekend.</p>
+
+<h2 id="whats-next">What’s Next?</h2>
+
+<p>I’m keeping a list of potential enhancements—search functionality, pagination, dark mode, WebP image optimization as a part of the GitHub Action, reading time estimates, related posts. But I’m not rushing to implement any of them. The site works beautifully as-is.</p>
+
+<p>The real lesson? Sometimes the best feature is the one you don’t add yet.</p>
+
+<h2 id="try-it-yourself">Try It Yourself</h2>
+
+<p>If you’re maintaining a static portfolio or blog with manual HTML updates, Jekyll is worth considering. The initial setup takes a few hours, but you’ll save that time back on your first few posts.</p>
+
+<p>Check out my <a href="https://github.com/pedropcamellon/pedropcamellon.github.io">GitHub repo</a> for the complete implementation. The code speaks louder than any tutorial.</p>
+
+<h2 id="resources">Resources</h2>
+
+<ul>
+  <li>
+    <p><strong>GitHub Repository:</strong> <a href="https://github.com/pedropcamellon/pedropcamellon.github.io">pedropcamellon.github.io</a></p>
+  </li>
+  <li><a href="https://jekyllrb.com/docs/">Jekyll Documentation</a></li>
+  <li><a href="https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll/about-github-pages-and-jekyll">GitHub Pages + Jekyll Guide</a></li>
+  <li><a href="https://shopify.github.io/liquid/">Liquid Template Language</a></li>
+  <li><a href="https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll/testing-your-github-pages-site-locally-with-jekyll">Testing Your GitHub Pages Site Locally with Jekyll</a></li>
+</ul>
+
+      </article>
+    </main>
+
+    <footer>
+      <p style="font-weight: bold; margin-bottom: 1rem;">Follow me on</p>
+      <a href="https://github.com/pedropcamellon" target="_blank">GitHub</a>
+      <a href="https://www.linkedin.com/in/pedropcamellon/" target="_blank"
+        >LinkedIn</a
+      >
+    </footer>
+  </body>
+</html>
