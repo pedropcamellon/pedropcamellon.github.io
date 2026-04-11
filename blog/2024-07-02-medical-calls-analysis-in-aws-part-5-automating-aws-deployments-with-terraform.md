@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Medical Calls Analysis in AWS (Part 5) - Automating AWS Deployments with Terraform"
-date: 2024-03-02
+date: 2024-07-02
 tags: ["aws", "terraform", "infrastructure-as-code", "serverless", "devops"]
 image: "aws_bedrock.webp"
 is_new: true
