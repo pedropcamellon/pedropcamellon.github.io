@@ -1,0 +1,368 @@
+---
+layout: default
+title: "Dragons vs Unicorns (Part I) - HTML and CSS"
+date: 2018-05-18
+tags: [html, css]
+image: "dragons-vs-unicorns.webp"
+excerpt: "Game making is one of the most popular branches of programming. It is also a fun way to learn any new programming language while creating an interesting project. In this series, we will go step-by-step through implementing a simple Tic-Tac-Toe-like game using HTML, CSS and JavaScript. I will called it “Dragons vs Unicorns”. "
+---
+
+Game making is one of the most popular branches of programming. It is also a fun way to learn any new programming language while creating an interesting project. In this series, we will go step-by-step through implementing a simple Tic-Tac-Toe-like game using HTML, CSS and JavaScript. I will called it “Dragons vs Unicorns”.
+
+This process will allow us to cover key features of these three technologies learning while we put our skills in practice. It is a two-player turn-based game, played on a three-by-three grid with X and O marks. The player who manages to get their marks placed on the grid in a row, column, or diagonal first wins the game. We start with the markup, then we add some colors, and finally, we implement the logic.
+
+This is how the game will look like:
+
+[![Dragons vs Unicorns game app](/assets/img/articles/tic-tac-toe.png)](/assets/articles/tic-tac-toe.png)
+
+You can play the live version here: https://pedropcamellon.github.io/tic-tac-toe/; or you can check the repo here: https://github.com/pedropcamellon/tic-tac-toe.
+
+## What Will We Learn About HTML And CSS?
+
+- Setting a simple HTML5 markup.
+- Linking the HTML with an external stylesheet and a JavaScript file.
+- Use main HTML tags
+- Selecting and modifying HTML elements using its classes and ids properties.
+- How to use CSS variables.
+- Change elements size, margins and paddings.
+- Change font size and family.
+- Use CSS relative units like rem and vh.
+- Use modern CSS Grid and CSS Flexbox modules.
+- Change elements alignment.
+- Change text color.
+- Set an element background.
+- Apply a simple transition effect.
+- Use `:hover` and `:active` CSS pseudo-classes
+
+## Defining the Game App Structure
+
+We divide the code into three separate files to maintain organization and optimize it. We establish our app's overall structure in the index.html file first, then we define how it looks in style.css, and lastly, we implement the game logic in main.js.
+
+The user interface consists in four main parts:
+
+1. Game Name
+2. Active Player Name
+3. Board
+4. Game Over Message
+
+The name of the game can vary. This is "tic tac toe" by default. The Active Player Name's initial value is the player X’s name. The Board consists of a 3x3 grid and is where most of the game happens. Finally, the Game Over message shows who won the game or if it ended in a draw, and a button to restart the entire game.
+
+The `index.html` contains the markup and starts with the following:
+
+```
+<!DOCTYPE html>
+<html>
+```
+
+All HTML documents must start with a `<!DOCTYPE>` declaration. This gives a hint to the browser about what document type to expect. In HTML 5, the declaration is `<!DOCTYPE html>`. This is followed by an `<html>` tag which represents the root of the HTML document and is the container for all other HTML elements (except for the `<!DOCTYPE>` tag). Next, we have the `<head>` element with simple content: the web app title, character encoding, and the connections to the stylesheet and the script files.
+
+```
+<head>
+<title>Tic Tac Toe</title>
+<meta charset="UTF-8" />
+
+<link rel="stylesheet" href="./src/styles.css" />
+<link rel="preconnect" href="<https://fonts.gstatic.com>" />
+<link href="<https://fonts.googleapis.com/css2?family=Itim&display=swap>" rel="stylesheet" />
+
+<script src="src/index.js" defer></script>
+</head>
+
+```
+
+We connect the stylesheet and the script files here in order to they be loaded before the actual HTML. Next, we include the “Itim” font family located in Google Fonts remote server using `rel="preconnect`. This type of relationship tells the browser that your page intends to establish a connection to another origin ("[https://fonts.gstatic.com](https://fonts.gstatic.com/)" in this case), and that you'd like the process to start as soon as possible [ref](https://web.dev/uses-rel-preconnect/). In the script tag, we add the defer attribute, requiring the script to be downloaded in parallel while the browser parses the page and executed after this process finishes.
+
+The `<body>` element contains an app wrapper for positioning convenience, and inside of it, a main header with the name of the game, the active player, the board, and a game-over message that will be hidden until the game finishes. This is the overall structure:
+
+```
+<body>
+<!-- App Wrapper -->
+<div class="app">
+
+<!-- Game Name  -->
+<h1 class="game-name">tic tac toe</h1>
+
+<!-- Active player -->
+<div class="current-status" id="currentStatus">
+<p>'s turn</p>
+</div>
+
+<!-- The Board -->
+<div class="board" id="board">
+
+<!-- ... cells ...-->
+</div>
+
+<!-- … Game Over message ...-->
+<div class="game-over-overlay" id="gameOverOverlay">
+<div id="gameOverMsg">
+<p class="game-over-msg-txt"></p>
+</div>
+
+<button class="reset-button" id="resetButton">play again</button>
+</div>
+</div>
+</body>
+
+```
+
+The board consists in a 3x3 grid of nine clickable `<div>` elements. These can be in one of three states: player X, player O and not taken (default). We assign to each one the “cell” class.
+
+```
+<div class="board" id="board">
+	<div class="cell"></div>
+	<div class="cell"></div>
+	<div class="cell"></div>
+	<div class="cell"></div>
+	<div class="cell"></div>
+	<div class="cell"></div>
+	<div class="cell"></div>
+	<div class="cell"></div>
+	<div class="cell"></div>
+</div>
+
+```
+
+## Setting the Look and Feel
+
+The game app can be easily personalized thanks to the use of global CSS variables. We change the values once and they are applied to the entire app. They can be helpful for powerful runtime effects like theme switching and possibly extending/polyfilling future CSS features, as well as for eliminating redundancy in CSS. These are declared within the ":root" pseudo class. This matches the root element of a tree representing the document (the <html> element in this case) and is identical to the selector html, except that its specificity is higher. It can be useful for declaring global CSS variables like we do at the top of our styles.css file:
+
+```
+:root {
+	--cell-size: 5.5rem;
+	--grid-gap: 0.5rem;
+	--h1-font-size: 3rem;
+	--current-status-font-size: 1.5rem;
+	--current-player-img-height: 2rem;
+	--winning-player-img-width: 7rem;
+	--winning-msg-font-size: 3rem;
+	--reset-btn-font-size: 2rem;
+	--background-image: linear-gradient(to bottom, #191654, #43C6AC);
+	--background-image-x: url("src/x.png");
+	--background-image-o: url("src/o.png");
+	--reset-btn-bg-clr: #9475b5;
+}
+
+```
+
+We include a basic CSS reset for reducing browser inconsistencies in things like default margins, paddings and box-sizing.
+
+```
+*::before,
+*::after {
+	box-sizing: border-box;
+	padding: 0;
+	margin: 0;
+}
+
+```
+
+We first change the default browser interpretation of the box sizing property from content-box to border-box. This sets how the total width and height of an element are calculated [ref](https://developer.mozilla.org/en-US/docs/Web/CSS/box-sizing). Then, we delete spaces between elements, making paddings and margins equal to zero.
+
+We use the "Itim" font family:
+
+```
+* {
+	font-family: "Itim", cursive;
+}
+
+```
+
+The body element will occupy the whole viewport by setting its minimum height to 100vh. This is a relative length unit defined as 1% of the viewport's height for each 1vh. Using relative units has the advantage of allowing you to scale text or other items relative to other elements on the page with some careful design [ref](https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Values_and_units). Another important property being defined here is the way the browser renders text. It makes trade-offs between speed, legibility, and geometric perfection. In this case, we focus on speed [ref](https://developer.mozilla.org/en-US/docs/Web/CSS/text-rendering).
+
+We set the height of each line box to 1.5. This unitless value is multiplied by the element's font size [ref](https://developer.mozilla.org/en-US/docs/Web/CSS/line-height). To center the board on the screen, we first set the display property to flex and then set the justify-content and align-items to center. Then we will center the text, set the background and the font color.
+
+```
+body {
+	min-height: 100vh;
+	text-rendering: optimizeSpeed;
+	line-height: 1.5;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	background-image: var(--background-image);
+	background-size: cover;
+	color: #f5f5f5;
+}
+
+```
+
+Here we center the heading corresponding to the name of the game and set its font size equal to the value in the “--h1-font-size” variable:
+
+```
+.game-name {
+	position: relative;
+	max-width: 100%;
+	margin: 1rem auto;
+	text-align: center;
+	font-size: var(--h1-font-size);
+}
+
+```
+
+Just below, there is a subheading showing the active player’s symbol followed by its name. We also center it, but using a different approach for educational purposes:
+
+```
+.active-player {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-bottom: 1.6rem;
+}
+
+.active-player p {
+	font-size: var(--current-status-font-size);
+}
+
+.active-player img {
+	width: auto;
+	height: var(--current-player-img-height);
+}
+
+```
+
+Now it is time to set the board. This is an arrangement of nine cells in a grid of three by three. We use CSS Grid, the very first module created specifically for making layouts [ref](https://css-tricks.com/snippets/css/complete-guide-grid/). To do so, we set the display property to grid, and then we create three columns and three rows. Using repeat(3, 1fr) is the same as "1fr 1fr 1fr". We add a little space between columns and rows.
+
+```
+.board {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	grid-template-rows: repeat(3, 1fr);
+	grid-gap: var(--grid-gap);
+}
+
+```
+
+Here we specify how we want our cells to look. First, we set the width and height of each one, and then we change the cursor to a pointer (a little hand in Windows). The background color is set to a light gray with reduced opacity, which changes when hovering over the cell with the cursor. The background-size value "contain" keeps the player image visible completely within hovered and played cells. A simple transition applies a fade-in effect when showing the active player image on hovered cells.
+
+```
+.cell {
+	width: var(--cell-size);
+	height: var(--cell-size);
+	cursor: pointer;
+	background-color: #f5f5f5;
+	background-size: contain;
+	opacity: 0.5;
+	transition: opacity 0.2s ease-in-out;
+}
+
+```
+
+All played cells have full opacity and their cursor property is set to "not allowed" to inform players they can’t play the same cell twice. This is only informative; it doesn’t actually prevent the action from being performed [ref](https://developer.mozilla.org/en-US/docs/Web/CSS/cursor).
+
+```
+.cell.o,
+.cell.x {
+   opacity: 1;
+   cursor: not-allowed;
+}
+
+```
+
+When a cell is hovered, we set its background to the active player image.
+
+```
+.board.x .cell:not(.o):hover {
+background-image: var(--background-image-x);
+}
+
+.board.o .cell:not(.x):hover {
+background-image: var(--background-image-o);
+}
+
+```
+
+When a cell is clicked, we assign it a class with the same name as the active player, setting the active player image as the clicked cell background.
+
+```
+.cell.x {
+	background-image: var(--background-image-x);
+}
+
+.cell.o {
+	background-image: var(--background-image-o);
+}
+
+```
+
+The game-over message will remain hidden until the game finishes. We do this by setting `display: none`. We also make it occupy the whole screen by setting "top", "left", "right" and "bottom" equal to zero. These move the element away (for positive values) from the boundaries of its parent. In order for this to work, the game-over message element must be positioned. We set this property to "fixed".
+
+```
+.game-over-overlay {
+   display: none;
+   position: fixed;
+   top: 0;
+   left: 0;
+   right: 0;
+   bottom: 0;
+   background-color: #0d1021;
+}
+
+```
+
+We show the game-over message by changing its initial "display" property value to "flex". We show the elements it contains horizontally and vertically centered in a column.
+
+```
+.game-over-overlay.show {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+```
+
+The font size of the message that displays the result and the winner's image width are set here:
+
+```
+.game-over-msg-txt {
+	font-size: var(--winning-msg-font-size);
+}
+
+.game-over-msg-img {
+	width: var(--winning-beast-img-width);
+}
+
+```
+
+The reset button is at the bottom of the game over message. It has no visible border. We give it a little padding defined with the "em" unit. This unit makes the button paddings length responsive to the changes in its font size. When hovering, we add a small shadow below the button and a smooth transition to 110% of its original size.
+
+```
+.reset-button {
+   border: none;
+   padding: 0.5em 1em;
+   font-size: var(--reset-btn-font-size);
+   cursor: pointer;
+   background-color: #a186be;
+   box-shadow: 0.3rem 0.3rem 0 #55acee;
+   color: #f5f5f5;
+   transition: transform 0.1s ease-in-out;
+}
+
+.reset-button:hover {
+   transform: scale(1.1);
+}
+
+```
+
+When we click it, we delete the shadow below and move it to the place where the shadow was. To move it, we again use the "top" and "left" properties after setting the position.
+
+```
+.reset-button:active {
+	position: relative;
+	top: 0.3rem;
+	left: 0.3rem;
+	box-shadow: none;
+	background-color: var(--reset-btn-bg-clr);
+}
+
+```
+
+## Personalizing the game by changing the CSS
+
+After following instructions on how to make a Tic-Tac-Toe JavaScript game, we can easily change colors and other properties thanks to CSS variables. We will use a unicorn 🦄 instead of the X symbol and a dragon 🐉 instead of the O. Here is what it looks like after the changes:
+
+## Wrapping up
+
+By now we should have an idea of how to set a simple HTML markup and how to link it to an external stylesheet and a JavaScript file. We also should be able to select every HTML element in order to change its properties and know how to use CSS variables to easily make big changes in the appearance of our app. We can now use CSS Grid and CSS Flexbox to create simple layouts, change element sizes, colors, and backgrounds, and finally apply simple transition effects when changing element states. In the next chapter of this series we will implement the game logic making the game playful.
