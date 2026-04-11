@@ -20,8 +20,8 @@
       })(window, document, "clarity", "script", "kykpoeffvx");
     </script>
 
-    <link rel="stylesheet" href="/css/main.css" />
-    <link rel="stylesheet" href="/css/pages.css" />
+    <link rel="stylesheet" href="/assets/css/main.css" />
+    <link rel="stylesheet" href="/assets/css/pages.css" />
   </head>
   <body>
     <nav>
@@ -36,6 +36,12 @@
     <main>
       <article>
         <h1>CandleWise - Part 4: Automating Deployment CI/CD</h1>
+        
+        <p class="post-date">
+          Published: August 14, 2025
+          
+        </p>
+        
         
         <div class="post-tags">
           
@@ -100,7 +106,7 @@
 
 <p>As a solo developer on the CandleWise project, I leveraged Terraform as an invaluable DevOps tool that significantly streamlined my infrastructure management process. Its declarative approach to infrastructure as code proved extremely beneficial, allowing me to define, provision, and version control my cloud resources with confidence. I managed the Terraform state remotely in Azure using a storage account, which provided a secure, centralized location for state files while enabling proper locking mechanisms to prevent concurrent operations.</p>
 
-<p><img src="/img/articles/candlewise-part-4-terraform-storage.png" alt="Terraform Storage Account" /></p>
+<p><img src="/assets/img/articles/candlewise-part-4-terraform-storage.png" alt="Terraform Storage Account" /></p>
 
 <p>For this specific project, Terraform helped me efficiently deploy and manage the backend resources in Azure, including the App Service for hosting the <a href="http://ASP.NET">ASP.NET</a> Core API, Application Insights for monitoring, and the necessary networking components. The ability to define infrastructure through code aligned perfectly with my goal of creating a repeatable, consistent deployment process across different environments.</p>
 
@@ -137,7 +143,7 @@
 
 <p>Environment variables are securely stored using GitHub Secrets, eliminating the need to hardcode sensitive information in the repository.</p>
 
-<p><img src="/img/articles/candlewise-part-4-github-secrets.png" alt="GitHub Repository Secrets" /></p>
+<p><img src="/assets/img/articles/candlewise-part-4-github-secrets.png" alt="GitHub Repository Secrets" /></p>
 
 <p>The backend API is hosted on Azure App Service (F1 free tier for this project), while the frontend application is hosted on Vercel with automated deployments.</p>
 
@@ -145,13 +151,13 @@
 
 <p>I created the service principal using the default settings. After registration, I created a client secret by going to Certificates &amp; secrets, adding a new client secret with a 12-month expiration, and immediately copying the value since it’s only shown once. This secret acts as the password for the service principal.</p>
 
-<p><img src="/img/articles/candlewise-part-4-service-principal.png" alt="Azure Service Principal Creation" /></p>
+<p><img src="/assets/img/articles/candlewise-part-4-service-principal.png" alt="Azure Service Principal Creation" /></p>
 
 <p>With the service principal created, I needed to grant it proper permissions. I assigned it the Contributor role at the subscription level by going to my subscription, selecting Access control (IAM), adding a role assignment, and selecting Contributor. This role gives the service principal permission to manage all resources in the subscription without being able to grant access to others, which is perfect for CI/CD pipelines.</p>
 
-<p><img src="/img/articles/candlewise-part-4-role-assignment.png" alt="Azure Role Assignment" /></p>
+<p><img src="/assets/img/articles/candlewise-part-4-role-assignment.png" alt="Azure Role Assignment" /></p>
 
-<p><img src="/img/articles/candlewise-part-4-role-confirmation.png" alt="Azure Role Confirmation" /></p>
+<p><img src="/assets/img/articles/candlewise-part-4-role-confirmation.png" alt="Azure Role Confirmation" /></p>
 
 <p>After setting up the service principal, I gathered the required values: clientId (Application ID), clientSecret (the value I copied), subscriptionId, and tenantId (Directory ID). I formatted these into a JSON object and added it as the AZURE_CREDENTIALS secret in my GitHub repository. This secret allows GitHub Actions to authenticate with Azure during deployment.</p>
 
@@ -179,7 +185,7 @@
 
 <p>The Vercel deployment leverages environment-specific tokens and project IDs stored as GitHub secrets, ensuring secure deployment without exposing sensitive credentials. The workflow also includes a verification step that checks if the deployed frontend can successfully connect to the backend API.</p>
 
-<p><img src="/img/articles/candlewise-part-4-vercel-workflows.png" alt="Vercel GitHub Actions Workflows" /></p>
+<p><img src="/assets/img/articles/candlewise-part-4-vercel-workflows.png" alt="Vercel GitHub Actions Workflows" /></p>
 
 <h2 id="conclusions">Conclusions</h2>
 

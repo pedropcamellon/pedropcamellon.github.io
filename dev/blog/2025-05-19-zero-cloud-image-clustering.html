@@ -20,8 +20,8 @@
       })(window, document, "clarity", "script", "kykpoeffvx");
     </script>
 
-    <link rel="stylesheet" href="/css/main.css" />
-    <link rel="stylesheet" href="/css/pages.css" />
+    <link rel="stylesheet" href="/assets/css/main.css" />
+    <link rel="stylesheet" href="/assets/css/pages.css" />
   </head>
   <body>
     <nav>
@@ -36,6 +36,12 @@
     <main>
       <article>
         <h1>Zero-Cloud Image Clustering</h1>
+        
+        <p class="post-date">
+          Published: May 19, 2025
+          
+        </p>
+        
          <p>Live version: https://image-similarity-clustering-engine.streamlit.app/</p>
 
 <p>Github Repo: https://github.com/pedropcamellon/image-similarity-clustering-engine</p>
@@ -179,17 +185,17 @@ with vision.ImageEmbedder.create_from_options<span class="o">(</span>options<spa
 
 <p>The dendrogram visualization serves as a powerful tool for understanding hierarchical relationships in our image clusters. By displaying the distance between clusters on the vertical axis and individual images or clusters on the horizontal axis, it reveals the structure of our dataset. The height of each branch visually represents the degree of difference between clusters, while horizontal cuts across the dendrogram reveal different levels of clustering granularity. This hierarchical representation enables us to explore natural groupings within our image dataset at multiple similarity levels, offering deeper insights than what traditional flat clustering methods can provide.</p>
 
-<p><img src="/img/articles/zero-cloud-dendrogram.png" alt="Dendrogram" /></p>
+<p><img src="/assets/img/articles/zero-cloud-dendrogram.png" alt="Dendrogram" /></p>
 
 <h2 id="small-demo-web-app-using-streamlit">Small Demo Web App using Streamlit</h2>
 
 <p>I created a simple demo using Streamlit to test the application features in a web browser. The server component is flexible and can run anywhere you choose - locally, on a remote machine, or in the cloud. The code structure also makes it easy to adapt the functionality into a standalone desktop application if desired:</p>
 
-<p><img src="/img/articles/zero-cloud-slider-interface.png" alt="Slider Interface" /></p>
+<p><img src="/assets/img/articles/zero-cloud-slider-interface.png" alt="Slider Interface" /></p>
 
 <p>A simple slider interface controls HDBSCAN’s clustering threshold, allowing users to fine-tune how aggressively images are grouped. The “Start Clustering” button triggers the analysis process, providing a clear action point for users. This minimalist interface makes sophisticated machine learning accessible while still offering granular control over the clustering behavior.</p>
 
-<p><img src="/img/articles/zero-cloud-clustering-results.png" alt="Clustering Results" /></p>
+<p><img src="/assets/img/articles/zero-cloud-clustering-results.png" alt="Clustering Results" /></p>
 
 <p>A key optimization to ensure smooth performance is using a <strong>Caching Strategy</strong>. Using Streamlit’s @st.cache_data decorator for embedding results allows us to avoid redundant computations when users adjust clustering parameters or revisit previously processed images. This caching mechanism significantly improves the app’s responsiveness by storing computed embeddings in memory, eliminating the need to re-process images that have already been analyzed.</p>
 

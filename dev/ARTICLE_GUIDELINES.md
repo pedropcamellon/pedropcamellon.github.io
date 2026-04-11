@@ -48,6 +48,7 @@ excerpt: "One compelling sentence summarizing the key insight or outcome. Focus 
 **Optional fields:**
 
 - `is_new: true` - Add for recent articles (remove after 2-3 weeks)
+- `updated: YYYY-MM-DD` - Add when making significant updates to show "Last updated" date
 
 ### Standard Sections
 
@@ -149,7 +150,7 @@ At the top or bottom, include:
 
 - [ ] Frontmatter complete and accurate
 - [ ] All code blocks have language specified
-- [ ] Images named descriptively and stored in `/img/articles/`
+- [ ] Images named descriptively and stored in `/assets/img/articles/`
 - [ ] Links work (especially GitHub repos and external resources)
 - [ ] Excerpt is compelling (appears in blog cards)
 - [ ] Proofread for typos, but keep conversational tone

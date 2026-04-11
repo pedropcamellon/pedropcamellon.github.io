@@ -20,8 +20,8 @@
       })(window, document, "clarity", "script", "kykpoeffvx");
     </script>
 
-    <link rel="stylesheet" href="/css/main.css" />
-    <link rel="stylesheet" href="/css/pages.css" />
+    <link rel="stylesheet" href="/assets/css/main.css" />
+    <link rel="stylesheet" href="/assets/css/pages.css" />
   </head>
   <body>
     <nav>
@@ -36,6 +36,12 @@
     <main>
       <article>
         <h1>CandleWise - Part 1: Environment Setup</h1>
+        
+        <p class="post-date">
+          Published: January 15, 2024
+          
+        </p>
+        
         
         <div class="post-tags">
           
@@ -64,21 +70,21 @@
 
 <p>First, I downloaded and installed Visual Studio from the official Microsoft website. I started with the Community Edition that was free to use. I made sure to install the .NET Core 6.0 SDK, which provided me with all the necessary libraries and command-line tools needed for .NET development.</p>
 
-<p><img src="/img/articles/candlewise-p1-vs-installer.png" alt="Visual Studio Installer" /></p>
+<p><img src="/assets/img/articles/candlewise-p1-vs-installer.png" alt="Visual Studio Installer" /></p>
 
 <p>Next, I created a new project in Visual Studio. In the ‘Create a new project’ window, I searched for ‘<a href="http://ASP.NET">ASP.NET</a> Core Web API’. I selected the ‘<a href="http://ASP.NET">ASP.NET</a> Core Web API’ template, then clicked ‘Next’.</p>
 
-<p><img src="/img/articles/candlewise-p1-new-project.png" alt="ASP.NET Core Web API Project Template" /></p>
+<p><img src="/assets/img/articles/candlewise-p1-new-project.png" alt="ASP.NET Core Web API Project Template" /></p>
 
 <p>I provided a name and location for my project, then clicked ‘Next’. This set up a new <a href="http://ASP.NET">ASP.NET</a> Core Web API project, which became the backbone of my stock exchange system.</p>
 
-<p><img src="/img/articles/candlewise-p1-configure-project.png" alt="Configure New Project" /></p>
+<p><img src="/assets/img/articles/candlewise-p1-configure-project.png" alt="Configure New Project" /></p>
 
 <p>In the “Additional Information” dialog box, I chose “.NET 6.0” from the “Framework” dropdown. I checked the options “Configure for HTTPS”, “Enable OpenAPI support” and “Use controllers”. These settings ensured my project was set up with secure communication, API documentation, and a more traditional MVC-style controller structure. Finally I clicked “Create”.</p>
 
-<p><img src="/img/articles/candlewise-p1-additional-info.png" alt="Additional Information Dialog" /></p>
+<p><img src="/assets/img/articles/candlewise-p1-additional-info.png" alt="Additional Information Dialog" /></p>
 
-<p><img src="/img/articles/candlewise-p1-project-created.png" alt="Project Created in Visual Studio" /></p>
+<p><img src="/assets/img/articles/candlewise-p1-project-created.png" alt="Project Created in Visual Studio" /></p>
 
 <h2 id="creating-the-stock-model">Creating the Stock model</h2>
 
@@ -86,7 +92,7 @@
 
 <p>I started by creating a new ‘Models’ folder in my project. Within this folder, I added a ‘Stock’ class. In the ‘Stock’ class, I defined the following properties: Id, Symbol, CompanyName, and Price.</p>
 
-<p><img src="/img/articles/candlewise-p1-stock-model.png" alt="Adding Stock Model Class" /></p>
+<p><img src="/assets/img/articles/candlewise-p1-stock-model.png" alt="Adding Stock Model Class" /></p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">namespace</span> <span class="nn">CandleWise.Models</span>
 <span class="p">{</span>
@@ -135,13 +141,13 @@
 
 <p>This controller exposed a GET method at the endpoint ‘api/stock’. This method returned a few sample stocks, which allowed me to test my API and ensure it was functioning correctly. I ran the app to see some results. I clicked on the “Run” button that contained the project name. This launched the CandleWise Web API. Once the application was running, a new browser tab showed and navigated to the URL specified in the “launchSettings.json” file. In my case <strong><code class="language-plaintext highlighter-rouge">https://localhost:7159/swagger/index.html</code></strong>.</p>
 
-<p><img src="/img/articles/candlewise-p1-run-app.png" alt="Running CandleWise Application" /></p>
+<p><img src="/assets/img/articles/candlewise-p1-run-app.png" alt="Running CandleWise Application" /></p>
 
-<p><img src="/img/articles/candlewise-p1-swagger-ui.png" alt="Swagger UI Dashboard" /></p>
+<p><img src="/assets/img/articles/candlewise-p1-swagger-ui.png" alt="Swagger UI Dashboard" /></p>
 
 <p>I encountered the Swagger dashboard, a powerful tool that provided an interactive interface for testing my API endpoints. The Swagger UI allowed me to explore available endpoints, make requests, and view responses directly from the browser. In my case, I located the “StockController” endpoint and clicked on the “GET” operation to see the sample stocks returned by my API. This interactive documentation not only facilitated testing but also served as a comprehensive guide for developers interacting with my API. It was a valuable resource during development and when collaborating with others on my CandleWise project. I clicked the Try it out button then the Execute button.</p>
 
-<p><img src="/img/articles/candlewise-p1-swagger-execute.png" alt="Swagger Execute GET Operation" /></p>
+<p><img src="/assets/img/articles/candlewise-p1-swagger-execute.png" alt="Swagger Execute GET Operation" /></p>
 
 <p>After clicking the “Execute” button on the Swagger UI for the “GET” operation of the “StockController,” I saw the response appear right below. It displayed the sample stocks that I had defined in my <strong><code class="language-plaintext highlighter-rouge">StockController</code></strong>’s <strong><code class="language-plaintext highlighter-rouge">Get</code></strong> method.</p>
 
@@ -166,7 +172,7 @@
 <span class="p">]</span>
 </code></pre></div></div>
 
-<p><img src="/img/articles/candlewise-p1-swagger-response.png" alt="Swagger API Response" /></p>
+<p><img src="/assets/img/articles/candlewise-p1-swagger-response.png" alt="Swagger API Response" /></p>
 
 <p>I used dummy data to test my API’s functionality and verify its interaction with the ‘Stock’ model. While effective for initial testing, this approach didn’t reflect the dynamic nature of stock prices.</p>
 
