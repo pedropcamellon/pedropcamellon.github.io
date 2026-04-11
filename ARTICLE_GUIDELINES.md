@@ -149,7 +149,7 @@ At the top or bottom, include:
 
 - [ ] Frontmatter complete and accurate
 - [ ] All code blocks have language specified
-- [ ] Images named descriptively and stored in `/img/articles/`
+- [ ] Images named descriptively and stored in `/assets/img/articles/`
 - [ ] Links work (especially GitHub repos and external resources)
 - [ ] Excerpt is compelling (appears in blog cards)
 - [ ] Proofread for typos, but keep conversational tone

@@ -20,8 +20,8 @@
       })(window, document, "clarity", "script", "kykpoeffvx");
     </script>
 
-    <link rel="stylesheet" href="/css/main.css" />
-    <link rel="stylesheet" href="/css/pages.css" />
+    <link rel="stylesheet" href="/assets/css/main.css" />
+    <link rel="stylesheet" href="/assets/css/pages.css" />
   </head>
   <body>
     <nav>
@@ -36,6 +36,9 @@
     <main>
       <article>
         <h1>{{ page.title }}</h1>
+        {% if page.date %}
+        <p class="post-date">{{ page.date | date: "%B %-d, %Y" }}</p>
+        {% endif %}
         {% if page.tags and page.tags.size > 0 %}
         <div class="post-tags">
           {% for tag in page.tags %}

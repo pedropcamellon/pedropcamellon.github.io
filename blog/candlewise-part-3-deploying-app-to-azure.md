@@ -19,7 +19,7 @@ After creating my Docker image, I'll push it to Azure Container Registry, allowi
 
 Docker support is available for [ASP.NET](http://ASP.NET) projects, [ASP.NET](http://ASP.NET) Core projects, and .NET Core and .NET Framework console projects. Visual Studio's Docker support has evolved across several releases to better meet customer needs. You can add two levels of Docker support to your project, with options varying by project type and Visual Studio version. For simpler needs, you can add basic Docker support to containerize a single project without orchestration. The more advanced level is container orchestration support, which adds files specific to your chosen orchestrator. Visual Studio 2022 features the **Containers** window, which allows you to view running containers, browse images, inspect environment variables, logs, port mappings, examine the filesystem, attach a debugger, or open a terminal inside the container environment.
 
-![Docker Support in Visual Studio](/img/articles/candlewise-part-3-docker-support.png)
+![Docker Support in Visual Studio](/assets/img/articles/candlewise-part-3-docker-support.png)
 
 I added Docker support to the existing project by selecting **Add** > **Docker Support** in **Solution Explorer**. The **Add > Docker Support** and **Add > Container Orchestrator Support** commands are located on the right-click menu (or context menu) of the project node for an [ASP.NET](http://ASP.NET) Core project in **Solution Explorer**. I selected Linux as the target OS.
 
@@ -58,15 +58,15 @@ ENTRYPOINT ["dotnet", "CandleWise.dll"]
 
 I'll now run my app using Docker. I should see the same result as before, but this time my app will be running in an isolated environment.
 
-![Running app in Docker](/img/articles/candlewise-part-3-running-docker.png)
+![Running app in Docker](/assets/img/articles/candlewise-part-3-running-docker.png)
 
 ## The Containers Window
 
 I used the **Containers** window to view containers and images on my machine and see what was happening with them. I was able to view the filesystem, volumes mounted, environment variables, ports used, and examine log files. I opened the **Containers** window by using the quick launch (**Ctrl**+**Q**) and typing `containers`. I used the docking controls to position the window appropriately. Because of the width of the window, I found it worked best when docked at the bottom of the screen. I selected a container and used the tabs to view the available information. To explore further, I ran my Docker-enabled app, opened the **Files** tab, and expanded the **app** folder to see my deployed app on the container.
 
-![Containers Window](/img/articles/candlewise-part-3-containers-window.png)
+![Containers Window](/assets/img/articles/candlewise-part-3-containers-window.png)
 
-![Container Files Tab](/img/articles/candlewise-part-3-container-files.png)
+![Container Files Tab](/assets/img/articles/candlewise-part-3-container-files.png)
 
 ## Deployment Using Azure App Service
 
@@ -88,9 +88,9 @@ I followed these steps to create my App Service resources and publish my project
 2. In **Publish**, I selected **Azure** and then **Next**.
 3. I chose **Azure App Service Container** as my **Specific target**. Then, I selected **Next**.
 
-![Publish to Azure](/img/articles/candlewise-part-3-publish-azure.png)
+![Publish to Azure](/assets/img/articles/candlewise-part-3-publish-azure.png)
 
-![Azure App Service Container](/img/articles/candlewise-part-3-app-service-container.png)
+![Azure App Service Container](/assets/img/articles/candlewise-part-3-app-service-container.png)
 
 I needed to have a Visual Studio account linked to an Azure account.
 
@@ -98,41 +98,41 @@ I began by creating an App Service for my web application on Azure. Azure App Se
 
 Since I had no resource groups present in my Azure account, I needed to create at least one. A resource group is a container that holds related resources for an Azure solution. It's a way to organize and collectively manage Azure resources, since Azure resources must be allocated to a resource group. I could create a resource group while creating a resource, such as an App Service, or create it beforehand and then assign resources to it.
 
-![Create Resource Group](/img/articles/candlewise-part-3-create-resource-group.png)
+![Create Resource Group](/assets/img/articles/candlewise-part-3-create-resource-group.png)
 
-![Resource Group Configuration](/img/articles/candlewise-part-3-resource-group-config.png)
+![Resource Group Configuration](/assets/img/articles/candlewise-part-3-resource-group-config.png)
 
 I used Azure Container Registry to publish the Docker image for my application. This managed, private Docker registry service is based on the open-source Docker Registry 2.0. It allowed me to build, store, and manage my container images and artifacts in a secure, private registry. After pushing my Docker image to Azure Container Registry, I could pull and run it on any environment supporting Docker, giving me flexibility in deployment options.
 
-![Azure Container Registry](/img/articles/candlewise-part-3-container-registry.png)
+![Azure Container Registry](/assets/img/articles/candlewise-part-3-container-registry.png)
 
-![Container Registry Setup](/img/articles/candlewise-part-3-registry-setup.png)
+![Container Registry Setup](/assets/img/articles/candlewise-part-3-registry-setup.png)
 
-![Container Registry Configuration](/img/articles/candlewise-part-3-registry-config.png)
+![Container Registry Configuration](/assets/img/articles/candlewise-part-3-registry-config.png)
 
 Lastly, I set up the API for my application. This involved configuring the API endpoints to respond to client requests. I also needed to ensure that the API was secure, scalable, and able to handle high volumes of requests. I implemented authentication mechanisms to secure my endpoints, added caching to improve performance, and configured load balancing to distribute traffic evenly across my servers. Once I completed the API setup, it served as the main interface for clients to interact with my application, providing them with access to the data and services they need.
 
-![API Configuration Step 1](/img/articles/candlewise-part-3-api-config-1.png)
+![API Configuration Step 1](/assets/img/articles/candlewise-part-3-api-config-1.png)
 
-![API Configuration Step 2](/img/articles/candlewise-part-3-api-config-2.png)
+![API Configuration Step 2](/assets/img/articles/candlewise-part-3-api-config-2.png)
 
-![API Configuration Step 3](/img/articles/candlewise-part-3-api-config-3.png)
+![API Configuration Step 3](/assets/img/articles/candlewise-part-3-api-config-3.png)
 
-![API Configuration Step 4](/img/articles/candlewise-part-3-api-config-4.png)
+![API Configuration Step 4](/assets/img/articles/candlewise-part-3-api-config-4.png)
 
-![API Configuration Step 5](/img/articles/candlewise-part-3-api-config-5.png)
+![API Configuration Step 5](/assets/img/articles/candlewise-part-3-api-config-5.png)
 
-![API Configuration Step 6](/img/articles/candlewise-part-3-api-config-6.png)
+![API Configuration Step 6](/assets/img/articles/candlewise-part-3-api-config-6.png)
 
-![API Configuration Step 7](/img/articles/candlewise-part-3-api-config-7.png)
+![API Configuration Step 7](/assets/img/articles/candlewise-part-3-api-config-7.png)
 
 After following the steps outlined above and successfully deploying my application to Azure, I had to wait a few minutes for my app to be up and running. I learned that Azure needs time to initialize the resources, pull the Docker image from the Azure Container Registry, and start the container for my application. During this waiting period, I wasn't able to immediately access my application. However, I knew this was a normal part of the process, and my application would be accessible shortly.
 
-![Deployment in Progress](/img/articles/candlewise-part-3-deployment-progress.png)
+![Deployment in Progress](/assets/img/articles/candlewise-part-3-deployment-progress.png)
 
 During my deployment process, I encountered an error: "Publish has encountered an error. Docker support must be enabled in the project. See [https://aka.ms/vs-add-docker](https://aka.ms/vs-add-docker) for information on adding Docker support to the project." I had to revisit the steps related to the creation and setup of my Docker image. I carefully verified that each step had been completed successfully, as this error indicated there was an issue with the Docker support within my project.
 
-![Docker Error Message](/img/articles/candlewise-part-3-docker-error.png)
+![Docker Error Message](/assets/img/articles/candlewise-part-3-docker-error.png)
 
 After resolving the issue, I navigated to [candlewise.azurewebsites.net/api/Stock](http://candlewise.azurewebsites.net/api/Stock) in my web browser and saw the same response as when I ran the application locally. This confirmed I had successfully deployed my application to Azure, and it was now accessible through the internet. The response was a JSON object representing the current stock data, identical to what I saw when testing the application on my local machine.
 

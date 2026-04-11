@@ -1,3 +1,16 @@
+/**
+ * pages.css - Component Styles
+ * 
+ * Page-specific and component styles including:
+ * - Hero section (home page)
+ * - Blog list cards and grid layout
+ * - Blog content preview styling
+ * - NEW badge for recent posts
+ * - Responsive design breakpoints
+ * 
+ * Complements main.css with specific UI components
+ */
+
 /* Home Page - Hero Section */
 .hero {
   display: flex;
@@ -75,6 +88,13 @@
   font-size: 1.4rem;
   margin-bottom: 0.8rem;
   font-weight: 600;
+}
+
+.blog-content .post-date {
+  font-size: 0.85rem;
+  color: #57606a;
+  margin-bottom: 0.6rem;
+  font-style: italic;
 }
 
 .blog-content p {

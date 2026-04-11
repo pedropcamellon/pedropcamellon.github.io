@@ -36,13 +36,13 @@ Rest of your article content here...
 3. **Handle images:**
    - Extract images from Notion export
    - Rename with article prefix: `article-slug-image-name.png`
-   - Move to `/img/articles/`
-   - Update markdown image paths: `![Alt](/img/articles/article-slug-image-name.webp)`
+   - Move to `/assets/img/articles/`
+   - Update markdown image paths: `![Alt](/assets/img/articles/article-slug-image-name.webp)`
    - Optional: Convert to WebP using image optimizer
 
 4. **Add featured image:**
    - Create/select a featured image for the article card
-   - Save as `/img/articles/article-slug.webp`
+   - Save as `/assets/img/articles/article-slug.webp`
    - Reference in frontmatter `image:` field
 
 5. **Test locally:**

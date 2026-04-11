@@ -10,10 +10,10 @@ Static portfolio/blog site built with Jekyll. Uses custom CSS (main.css, pages.c
 - `blog.html` - Auto-generated article list (Jekyll Liquid)
 - `blog/*.md` - Individual articles (Jekyll converts to HTML)
 - `projects.html` - Project showcase with GitHub links
-- `img/articles/` - Article thumbnails
+- `assets/img/articles/` - Article thumbnails
 - `_layouts/default.html` - Jekyll template for blog posts
-- `css/main.css` - Base styles (navigation, typography, tags, footer)
-- `css/pages.css` - Component styles (blog cards, hero, responsive)
+- `assets/css/main.css` - Base styles (navigation, typography, tags, footer)
+- `assets/css/pages.css` - Component styles (blog cards, hero, responsive)
 
 ## Rules
 
@@ -37,7 +37,7 @@ Static portfolio/blog site built with Jekyll. Uses custom CSS (main.css, pages.c
 
 1. **CSS Styling:**
 
-   - Custom CSS in `/css/main.css` and `/css/pages.css`
+   - Custom CSS in `/assets/css/main.css` and `/assets/css/pages.css`
    - GitHub-style markdown rendering
    - Responsive design with `min(1200px, 90vw)` max-width
    - No Bootstrap or Tailwind (removed for cleaner codebase)
@@ -82,7 +82,7 @@ EW Badge:**
 
 5. **Images:**
 
-   - Store in `/img/articles/` with descriptive names
+   - Store in `/assets/img/articles/` with descriptive names
    - Naming: `{article-slug}-{description}.{ext}`
    - Blog cards: 208px × 150px thumbnails
    - Use gradient placeholder if image missing

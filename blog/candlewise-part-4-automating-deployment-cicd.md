@@ -54,7 +54,7 @@ These backend improvements resulted in a much more responsive application with c
 
 As a solo developer on the CandleWise project, I leveraged Terraform as an invaluable DevOps tool that significantly streamlined my infrastructure management process. Its declarative approach to infrastructure as code proved extremely beneficial, allowing me to define, provision, and version control my cloud resources with confidence. I managed the Terraform state remotely in Azure using a storage account, which provided a secure, centralized location for state files while enabling proper locking mechanisms to prevent concurrent operations.
 
-![Terraform Storage Account](/img/articles/candlewise-part-4-terraform-storage.png)
+![Terraform Storage Account](/assets/img/articles/candlewise-part-4-terraform-storage.png)
 
 For this specific project, Terraform helped me efficiently deploy and manage the backend resources in Azure, including the App Service for hosting the [ASP.NET](http://ASP.NET) Core API, Application Insights for monitoring, and the necessary networking components. The ability to define infrastructure through code aligned perfectly with my goal of creating a repeatable, consistent deployment process across different environments.
 
@@ -92,7 +92,7 @@ The most significant benefit of this implementation has been the elimination of 
 
 Environment variables are securely stored using GitHub Secrets, eliminating the need to hardcode sensitive information in the repository.
 
-![GitHub Repository Secrets](/img/articles/candlewise-part-4-github-secrets.png)
+![GitHub Repository Secrets](/assets/img/articles/candlewise-part-4-github-secrets.png)
 
 The backend API is hosted on Azure App Service (F1 free tier for this project), while the frontend application is hosted on Vercel with automated deployments.
 
@@ -100,13 +100,13 @@ In my journey to set up CI/CD for CandleWise, I learned how to integrate GitHub 
 
 I created the service principal using the default settings. After registration, I created a client secret by going to Certificates & secrets, adding a new client secret with a 12-month expiration, and immediately copying the value since it's only shown once. This secret acts as the password for the service principal.
 
-![Azure Service Principal Creation](/img/articles/candlewise-part-4-service-principal.png)
+![Azure Service Principal Creation](/assets/img/articles/candlewise-part-4-service-principal.png)
 
 With the service principal created, I needed to grant it proper permissions. I assigned it the Contributor role at the subscription level by going to my subscription, selecting Access control (IAM), adding a role assignment, and selecting Contributor. This role gives the service principal permission to manage all resources in the subscription without being able to grant access to others, which is perfect for CI/CD pipelines.
 
-![Azure Role Assignment](/img/articles/candlewise-part-4-role-assignment.png)
+![Azure Role Assignment](/assets/img/articles/candlewise-part-4-role-assignment.png)
 
-![Azure Role Confirmation](/img/articles/candlewise-part-4-role-confirmation.png)
+![Azure Role Confirmation](/assets/img/articles/candlewise-part-4-role-confirmation.png)
 
 After setting up the service principal, I gathered the required values: clientId (Application ID), clientSecret (the value I copied), subscriptionId, and tenantId (Directory ID). I formatted these into a JSON object and added it as the AZURE_CREDENTIALS secret in my GitHub repository. This secret allows GitHub Actions to authenticate with Azure during deployment.
 
@@ -132,7 +132,7 @@ The frontend deployment pipeline includes several key steps:
 
 The Vercel deployment leverages environment-specific tokens and project IDs stored as GitHub secrets, ensuring secure deployment without exposing sensitive credentials. The workflow also includes a verification step that checks if the deployed frontend can successfully connect to the backend API.
 
-![Vercel GitHub Actions Workflows](/img/articles/candlewise-part-4-vercel-workflows.png)
+![Vercel GitHub Actions Workflows](/assets/img/articles/candlewise-part-4-vercel-workflows.png)
 
 ## Conclusions
 

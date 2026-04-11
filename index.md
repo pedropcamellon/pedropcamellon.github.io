@@ -15,7 +15,7 @@ title: Home
     </ul>
   </div>
   <div>
-    <img src="/img/profile.jpg" alt="Pedro P Camellon" />
+    <img src="/assets/img/profile.jpg" alt="Pedro P Camellon" />
   </div>
 </div>
 

@@ -151,17 +151,17 @@ for idx, label in enumerate(cluster_labels):
 
 The dendrogram visualization serves as a powerful tool for understanding hierarchical relationships in our image clusters. By displaying the distance between clusters on the vertical axis and individual images or clusters on the horizontal axis, it reveals the structure of our dataset. The height of each branch visually represents the degree of difference between clusters, while horizontal cuts across the dendrogram reveal different levels of clustering granularity. This hierarchical representation enables us to explore natural groupings within our image dataset at multiple similarity levels, offering deeper insights than what traditional flat clustering methods can provide.
 
-![Dendrogram](/img/articles/zero-cloud-dendrogram.png)
+![Dendrogram](/assets/img/articles/zero-cloud-dendrogram.png)
 
 ## Small Demo Web App using Streamlit
 
 I created a simple demo using Streamlit to test the application features in a web browser. The server component is flexible and can run anywhere you choose - locally, on a remote machine, or in the cloud. The code structure also makes it easy to adapt the functionality into a standalone desktop application if desired:
 
-![Slider Interface](/img/articles/zero-cloud-slider-interface.png)
+![Slider Interface](/assets/img/articles/zero-cloud-slider-interface.png)
 
 A simple slider interface controls HDBSCAN's clustering threshold, allowing users to fine-tune how aggressively images are grouped. The "Start Clustering" button triggers the analysis process, providing a clear action point for users. This minimalist interface makes sophisticated machine learning accessible while still offering granular control over the clustering behavior.
 
-![Clustering Results](/img/articles/zero-cloud-clustering-results.png)
+![Clustering Results](/assets/img/articles/zero-cloud-clustering-results.png)
 
 A key optimization to ensure smooth performance is using a **Caching Strategy**. Using Streamlit's @st.cache_data decorator for embedding results allows us to avoid redundant computations when users adjust clustering parameters or revisit previously processed images. This caching mechanism significantly improves the app's responsiveness by storing computed embeddings in memory, eliminating the need to re-process images that have already been analyzed.
 

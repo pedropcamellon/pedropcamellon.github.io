@@ -12,7 +12,7 @@ title: Blog
   <a href="{{ post.url | relative_url }}" class="blog-card">
     {% if post.image %}
     <img
-      src="/img/articles/{{ post.image }}"
+      src="/assets/img/articles/{{ post.image }}"
       alt="{{ post.title }}"
       class="blog-image"
     />
@@ -25,6 +25,9 @@ title: Blog
         {{ post.title }} {% if post.is_new %}<span class="new-badge">NEW</span
         >{% endif %}
       </h3>
+      {% if post.date %}
+      <p class="post-date">{{ post.date | date: "%B %-d, %Y" }}</p>
+      {% endif %}
       {% if post.excerpt %}
       <p>{{ post.excerpt }}</p>
       {% endif %} {% if post.tags and post.tags.size > 0 %}

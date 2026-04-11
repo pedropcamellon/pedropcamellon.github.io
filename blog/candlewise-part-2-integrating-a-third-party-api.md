@@ -184,7 +184,7 @@ return latestBar.ClosingPrice;
 
 In the Swagger dashboard, which displayed the API response, I can located the "StockController" endpoint and clicked the buttons: "GET" → "Try it out" → "Execute", to view the sample stocks returned by the API.
 
-![Swagger API Response](/img/articles/candlewise-part-2-integrating-a-third-party-api-untitled.png)
+![Swagger API Response](/assets/img/articles/candlewise-part-2-integrating-a-third-party-api-untitled.png)
 
 ## Conclusion
 

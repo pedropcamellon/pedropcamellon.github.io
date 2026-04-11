@@ -1,3 +1,17 @@
+/**
+ * main.css - Base Styles
+ * 
+ * Core styles for the entire site including:
+ * - Reset and base typography
+ * - Navigation and footer
+ * - Article content formatting (headings, paragraphs, lists)
+ * - Code blocks and syntax highlighting
+ * - Tables, blockquotes, and links
+ * - Tag styling for blog posts
+ * 
+ * Used across all pages via _layouts/default.html
+ */
+
 /* Reset and Base Styles */
 * {
   margin: 0;
@@ -60,6 +74,14 @@ article h1 {
   margin-bottom: 1rem;
   font-weight: 700;
   color: #1a1a1a;
+}
+
+/* Post Date */
+.post-date {
+  color: #57606a;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+  font-style: italic;
 }
 
 /* Tags */
