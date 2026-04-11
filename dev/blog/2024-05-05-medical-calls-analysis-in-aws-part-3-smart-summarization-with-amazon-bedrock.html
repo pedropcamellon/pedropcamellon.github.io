@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Medical Calls Analysis in AWS (Part 3) - Smart Summarization with Amazon Bedrock - Pedro Camellon</title>
+
+    <script type="text/javascript">
+      (function (c, l, a, r, i, t, y) {
+        c[a] =
+          c[a] ||
+          function () {
+            (c[a].q = c[a].q || []).push(arguments);
+          };
+        t = l.createElement(r);
+        t.async = 1;
+        t.src = "https://www.clarity.ms/tag/" + i;
+        y = l.getElementsByTagName(r)[0];
+        y.parentNode.insertBefore(t, y);
+      })(window, document, "clarity", "script", "kykpoeffvx");
+    </script>
+
+    <link rel="stylesheet" href="/assets/css/main.css" />
+    <link rel="stylesheet" href="/assets/css/pages.css" />
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li><a href="/" >Home</a></li>
+        <li><a href="/blog.html" class="active">Blog</a></li>
+        <li><a href="/projects.html" >Projects</a></li>
+        <li><a href="/#contact">Contact</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <article>
+        <h1>Medical Calls Analysis in AWS (Part 3) - Smart Summarization with Amazon Bedrock</h1>
+        
+        <p class="post-date">
+          Published: May 5, 2024
+          
+          <span class="post-updated">Updated: May 17, 2025</span>
+          
+        </p>
+        
+        
+        <div class="post-tags">
+          
+          <span class="tag">aws</span>
+          
+          <span class="tag">amazon bedrock</span>
+          
+          <span class="tag">llm</span>
+          
+          <span class="tag">bedrock</span>
+          
+          <span class="tag">api</span>
+          
+          <span class="tag">lambda</span>
+          
+          <span class="tag">python</span>
+          
+          <span class="tag">transcribe</span>
+          
+          <span class="tag">html</span>
+          
+          <span class="tag">s3</span>
+          
+          <span class="tag">ai</span>
+          
+          <span class="tag">cloudwatch</span>
+          
+        </div>
+         <p>Github Repo: <a href="https://github.com/pedropcamellon/medical-calls-analysis-aws">https://github.com/pedropcamellon/medical-calls-analysis-aws</a></p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>In the previous article, we used Amazon Transcribe to obtain transcribed JSON files from audio recordings. Now, we’ll summarize these files using the Titan model, an LLM hosted on Amazon Bedrock. This process shows how to transform lengthy conversations into concise, actionable summaries. Amazon Bedrock provides secure access to leading AI foundation models through a single API. Though we’re focusing on medical applications, this approach works for any industry involving communication and information exchange—providing an efficient way to streamline information processing.</p>
+
+<p>We’ll combine AWS Lambda for serverless computing with Amazon Bedrock’s language models to create an efficient solution that can process and analyze conversations at scale. The system uses S3 triggers to automatically initiate processing when new audio files are uploaded, demonstrating how to create a fully automated workflow for handling communication data. We’ll cover everything from initial setup to implementation details.</p>
+
+<h2 id="create-an-amazon-s3-bucket">Create an Amazon S3 Bucket</h2>
+
+<p>We first need to create a storage bucket. Begin by logging into the AWS Management Console and navigate to the S3 service, either by searching for “S3” in the service search bar or selecting it from the “Storage” section. Once there, click on the “Create bucket” button. This will prompt you to provide details for the new bucket. Start by entering a unique name for your bucket in the “Bucket name” field and then select the Region in which you want your bucket to be located. The other settings can be left at their default values for now. After that, scroll down and click on the “Create bucket” button. Now your bucket is ready for use, and you can proceed to upload your files.</p>
+
+<h2 id="amazon-transcribe-permissions">Amazon Transcribe Permissions</h2>
+
+<p>To allow automatic transcription when new audio files are uploaded to our S3 bucket, we need to create an IAM role that gives Amazon Transcribe access to our audio files. This role requires the following permissions:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"Version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2012-10-17"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"Statement"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"Effect"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Allow"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"Action"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"s3:GetObject"</span><span class="p">,</span><span class="w"> </span><span class="s2">"s3:PutObject"</span><span class="p">],</span><span class="w">
+      </span><span class="nl">"Resource"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"arn:aws:s3:::medical-calls-audio-bucket/*"</span><span class="p">]</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="summarize-lambda-function-code">Summarize Lambda Function Code</h2>
+
+<p>Now that we have our audio files and transcripts in S3, let’s create a Lambda function to summarize the transcribed content using Amazon Bedrock. This function will process the JSON transcripts and generate concise summaries using a Large Language Model.</p>
+
+<p>Here’s how the summarization workflow operates:</p>
+
+<ol>
+  <li>A new transcript JSON file appears in the S3 ‘transcripts’ folder</li>
+  <li>This triggers our summarization Lambda function</li>
+  <li>The function retrieves and processes the transcript</li>
+  <li>It sends the processed text to Amazon Bedrock</li>
+  <li>Bedrock analyzes the content and generates a summary</li>
+  <li>The summary is saved back to S3 in a ‘summaries’ folder</li>
+</ol>
+
+<p>This automated approach ensures efficient processing of our transcripts. The Lambda function handles the entire workflow: reading the JSON transcript, formatting the content for the LLM, making the API call to Bedrock, and storing the results. The function includes error handling and logging to track any issues that may arise during processing.</p>
+
+<p>Let’s examine how this Lambda function works in detail. When triggered by a new transcript file, it reads the JSON content from S3 and extracts the relevant conversation data. It then formats this data into a prompt suitable for the Bedrock model. After receiving the model’s response, it processes the summary and saves it back to S3. The function includes comprehensive error handling and returns appropriate status messages to confirm successful execution or alert of any issues.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">boto3</span>
+<span class="kn">import</span> <span class="n">json</span>
+
+<span class="k">def</span> <span class="nf">lambda_handler</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+    <span class="n">bucket</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="sh">"</span><span class="s">Records</span><span class="sh">"</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="sh">"</span><span class="s">s3</span><span class="sh">"</span><span class="p">][</span><span class="sh">"</span><span class="s">bucket</span><span class="sh">"</span><span class="p">][</span><span class="sh">"</span><span class="s">name</span><span class="sh">"</span><span class="p">]</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="sh">"</span><span class="s">Records</span><span class="sh">"</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="sh">"</span><span class="s">s3</span><span class="sh">"</span><span class="p">][</span><span class="sh">"</span><span class="s">object</span><span class="sh">"</span><span class="p">][</span><span class="sh">"</span><span class="s">key</span><span class="sh">"</span><span class="p">]</span>
+
+    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Processing file </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s"> from bucket </span><span class="si">{</span><span class="n">bucket</span><span class="si">}</span><span class="s">.</span><span class="sh">"</span><span class="p">)</span>
+
+    <span class="c1"># One of a few different checks to ensure we don't end up in a recursive loop.
+</span>    <span class="k">if</span> <span class="sh">"</span><span class="s">.json</span><span class="sh">"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+        <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">This demo only works with transcription JSON files.</span><span class="sh">"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="sh">"</span><span class="s">statusCode</span><span class="sh">"</span><span class="p">:</span> <span class="mi">400</span><span class="p">,</span>
+            <span class="sh">"</span><span class="s">body</span><span class="sh">"</span><span class="p">:</span> <span class="n">json</span><span class="p">.</span><span class="nf">dumps</span><span class="p">(</span><span class="sh">"</span><span class="s">This demo only works with transcription JSON files.</span><span class="sh">"</span><span class="p">),</span>
+        <span class="p">}</span>
+
+    <span class="c1"># Create a Boto3 client for the S3 service
+</span>    <span class="n">s3_client</span> <span class="o">=</span> <span class="n">boto3</span><span class="p">.</span><span class="nf">client</span><span class="p">(</span><span class="sh">"</span><span class="s">s3</span><span class="sh">"</span><span class="p">,</span> <span class="n">region_name</span><span class="o">=</span><span class="sh">"</span><span class="s">us-east-1</span><span class="sh">"</span><span class="p">)</span>
+    <span class="n">bedrock_client</span> <span class="o">=</span> <span class="n">boto3</span><span class="p">.</span><span class="nf">client</span><span class="p">(</span><span class="sh">"</span><span class="s">bedrock-runtime</span><span class="sh">"</span><span class="p">,</span> <span class="n">region_name</span><span class="o">=</span><span class="sh">"</span><span class="s">us-east-1</span><span class="sh">"</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">s3_client</span><span class="p">.</span><span class="nf">get_object</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="n">bucket</span><span class="p">,</span> <span class="n">Key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="n">file_content</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="sh">"</span><span class="s">Body</span><span class="sh">"</span><span class="p">].</span><span class="nf">read</span><span class="p">().</span><span class="nf">decode</span><span class="p">(</span><span class="sh">"</span><span class="s">utf-8</span><span class="sh">"</span><span class="p">)</span>
+
+        <span class="n">transcript</span> <span class="o">=</span> <span class="nf">extract_transcript_from_textract</span><span class="p">(</span><span class="n">file_content</span><span class="p">)</span>
+
+        <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Successfully read file </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s"> from bucket </span><span class="si">{</span><span class="n">bucket</span><span class="si">}</span><span class="s">.</span><span class="sh">"</span><span class="p">)</span>
+
+        <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Transcript: </span><span class="si">{</span><span class="n">transcript</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+
+        <span class="n">summary</span> <span class="o">=</span> <span class="nf">bedrock_summarisation</span><span class="p">(</span><span class="n">transcript</span><span class="p">,</span> <span class="n">bedrock_client</span><span class="p">)</span>
+
+        <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Summary: </span><span class="si">{</span><span class="n">summary</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+
+        <span class="n">filename</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">key</span><span class="p">.</span><span class="nf">split</span><span class="p">(</span><span class="sh">"</span><span class="s">/</span><span class="sh">"</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="sh">"</span><span class="s">transcription-job</span><span class="sh">"</span><span class="p">,</span> <span class="sh">"</span><span class="s">summarization-job</span><span class="sh">"</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="sh">"</span><span class="s">.json</span><span class="sh">"</span><span class="p">,</span> <span class="sh">"</span><span class="s">.txt</span><span class="sh">"</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Create the summary key with proper path
+</span>        <span class="n">summary_key</span> <span class="o">=</span> <span class="sa">f</span><span class="sh">"</span><span class="s">summaries/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="sh">"</span>
+
+        <span class="n">s3_client</span><span class="p">.</span><span class="nf">put_object</span><span class="p">(</span>
+            <span class="n">Bucket</span><span class="o">=</span><span class="n">bucket</span><span class="p">,</span> <span class="n">Key</span><span class="o">=</span><span class="n">summary_key</span><span class="p">,</span> <span class="n">Body</span><span class="o">=</span><span class="n">summary</span><span class="p">,</span> <span class="n">ContentType</span><span class="o">=</span><span class="sh">"</span><span class="s">text/plain</span><span class="sh">"</span>
+        <span class="p">)</span>
+
+        <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Summary file </span><span class="si">{</span><span class="n">summary_key</span><span class="si">}</span><span class="s"> created in bucket </span><span class="si">{</span><span class="n">bucket</span><span class="si">}</span><span class="s">.</span><span class="sh">"</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="nb">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Error occurred: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="sh">"</span><span class="s">statusCode</span><span class="sh">"</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span> <span class="sh">"</span><span class="s">body</span><span class="sh">"</span><span class="p">:</span> <span class="n">json</span><span class="p">.</span><span class="nf">dumps</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Error occurred: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="sh">"</span><span class="p">)}</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="sh">"</span><span class="s">statusCode</span><span class="sh">"</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="sh">"</span><span class="s">body</span><span class="sh">"</span><span class="p">:</span> <span class="n">json</span><span class="p">.</span><span class="nf">dumps</span><span class="p">(</span>
+            <span class="sa">f</span><span class="sh">"</span><span class="s">Successfully summarized </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s"> from bucket </span><span class="si">{</span><span class="n">bucket</span><span class="si">}</span><span class="s">. Summary: </span><span class="si">{</span><span class="n">summary</span><span class="si">}</span><span class="sh">"</span>
+        <span class="p">),</span>
+    <span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="parsing-the-transcript">Parsing the Transcript</h2>
+
+<p>The transcript service generates JSON output that details each spoken word and punctuation mark. The extraction function streamlines this data by parsing the main text, matching speaker segments, formatting with speaker labels, and incorporating timestamps and punctuation marks. Let’s break down its structure:</p>
+
+<ul>
+  <li><strong>jobName</strong>: A unique identifier for the transcription job (e.g., “transcription-job-abc78294-bfb4-4f22-ad8a-d3b26d5329cd”)</li>
+  <li><strong>status</strong>: The current state of the transcription job (e.g., “COMPLETED”)</li>
+  <li><strong>results.transcripts</strong>: Contains the full text transcript as a single string</li>
+  <li><strong>speaker_labels.segments</strong>: Information about who is speaking and when</li>
+  <li><strong>start_time/end_time</strong>: Timestamps showing when each segment was spoken</li>
+</ul>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"jobName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"transcription-job-abc78294-bfb4-4f22-ad8a-d3b26d5329cd"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"accountId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"400513684195"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"COMPLETED"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"results"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"transcripts"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"transcript"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Good morning, Dr Hayes's office. Tarn speaking. Hi, good morning. This is Ernesto Sanchez. The doctor told me I need to come in today for my heart, but I forgot to make an appointment and I don't have it right. Anyway. Ok, Mr Sanchez, what is your date of birth? 03 2576. And when were you last seen last week in the hospital? Can you hold for?"</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">],</span><span class="w">
+    </span><span class="nl">"speaker_labels"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"segments"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+          </span><span class="nl">"start_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.689"</span><span class="p">,</span><span class="w">
+          </span><span class="nl">"end_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">"3.74"</span><span class="p">,</span><span class="w">
+          </span><span class="nl">"speaker_label"</span><span class="p">:</span><span class="w"> </span><span class="s2">"spk_0"</span><span class="p">,</span><span class="w">
+          </span><span class="nl">"items"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+            </span><span class="p">{</span><span class="w">
+              </span><span class="nl">"speaker_label"</span><span class="p">:</span><span class="w"> </span><span class="s2">"spk_0"</span><span class="p">,</span><span class="w">
+              </span><span class="nl">"start_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.699"</span><span class="p">,</span><span class="w">
+              </span><span class="nl">"end_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.97"</span><span class="w">
+            </span><span class="p">},</span><span class="w">
+            </span><span class="p">{</span><span class="w">
+              </span><span class="nl">"speaker_label"</span><span class="p">:</span><span class="w"> </span><span class="s2">"spk_0"</span><span class="p">,</span><span class="w">
+              </span><span class="nl">"start_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.98"</span><span class="p">,</span><span class="w">
+              </span><span class="nl">"end_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1.379"</span><span class="w">
+            </span><span class="p">},</span><span class="w">
+            </span><span class="err">...</span><span class="w">
+</span></code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">extract_transcript_from_textract</code> function transforms the raw JSON output from Amazon Textract into a human-readable conversation format. It processes the transcript word by word, organizing the content by speaker and maintaining proper formatting. The function adds speaker labels at the beginning of each new speaker’s dialogue, handles punctuation by removing trailing spaces, and combines all elements into a clean, formatted transcript with clear speaker transitions. This transformation makes the conversation much easier to read and analyze compared to the raw JSON format.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">extract_transcript_from_textract</span><span class="p">(</span><span class="n">file_content</span><span class="p">):</span>
+    <span class="n">transcript_json</span> <span class="o">=</span> <span class="n">json</span><span class="p">.</span><span class="nf">loads</span><span class="p">(</span><span class="n">file_content</span><span class="p">)</span>
+
+    <span class="n">output_text</span> <span class="o">=</span> <span class="sh">""</span>
+    <span class="n">current_speaker</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">items</span> <span class="o">=</span> <span class="n">transcript_json</span><span class="p">[</span><span class="sh">"</span><span class="s">results</span><span class="sh">"</span><span class="p">][</span><span class="sh">"</span><span class="s">items</span><span class="sh">"</span><span class="p">]</span>
+
+    <span class="c1"># Iterate through the content word by word:
+</span>    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+        <span class="n">speaker_label</span> <span class="o">=</span> <span class="n">item</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">speaker_label</span><span class="sh">"</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="sh">"</span><span class="s">alternatives</span><span class="sh">"</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="sh">"</span><span class="s">content</span><span class="sh">"</span><span class="p">]</span>
+
+        <span class="c1"># Start the line with the speaker label:
+</span>        <span class="k">if</span> <span class="n">speaker_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">speaker_label</span> <span class="o">!=</span> <span class="n">current_speaker</span><span class="p">:</span>
+            <span class="n">current_speaker</span> <span class="o">=</span> <span class="n">speaker_label</span>
+            <span class="n">output_text</span> <span class="o">+=</span> <span class="sa">f</span><span class="sh">"</span><span class="se">\n</span><span class="si">{</span><span class="n">current_speaker</span><span class="si">}</span><span class="s">: </span><span class="sh">"</span>
+
+        <span class="c1"># Add the speech content:
+</span>        <span class="k">if</span> <span class="n">item</span><span class="p">[</span><span class="sh">"</span><span class="s">type</span><span class="sh">"</span><span class="p">]</span> <span class="o">==</span> <span class="sh">"</span><span class="s">punctuation</span><span class="sh">"</span><span class="p">:</span>
+            <span class="n">output_text</span> <span class="o">=</span> <span class="n">output_text</span><span class="p">.</span><span class="nf">rstrip</span><span class="p">()</span>  <span class="c1"># Remove the last space
+</span>
+        <span class="n">output_text</span> <span class="o">+=</span> <span class="sa">f</span><span class="sh">"</span><span class="si">{</span><span class="n">content</span><span class="si">}</span><span class="s"> </span><span class="sh">"</span>
+
+    <span class="k">return</span> <span class="n">output_text</span>
+
+</code></pre></div></div>
+
+<p>This is the resulting file after the transcription and formatting process. It has been transformed into a more concise and readable format, making it easier to understand. Each speaker’s dialogue is clearly labeled and separated, allowing for easy identification of the conversation flow between the different speakers.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>spk_0: Good morning, Dr Hayes's office. Tarn speaking. Hi,
+spk_1: good morning. This is Ernesto Sanchez. The doctor told...
+spk_0: Ok, Mr Sanchez, what is your date of birth?
+spk_1: 03 2576. And when were you
+spk_0: last seen last
+spk_1: week in the hospital?
+spk_0: Can you hold for?
+</code></pre></div></div>
+
+<h2 id="transcript-summarization"><strong>Transcript Summarization</strong></h2>
+
+<p>To interact with the Bedrock service, we need to set up a Bedrock runtime client. This is accomplished by creating an instance of the Bedrock service in a specific AWS region. In this case, we’re using the ‘us-east-1’ region.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">bedrock_runtime</span> <span class="o">=</span> <span class="n">boto3</span><span class="p">.</span><span class="nf">client</span><span class="p">(</span><span class="sh">'</span><span class="s">bedrock-runtime</span><span class="sh">'</span><span class="p">,</span> <span class="n">region_name</span><span class="o">=</span><span class="sh">'</span><span class="s">us-east-1</span><span class="sh">'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>We pass the transcript to the <code class="language-plaintext highlighter-rouge">bedrock_summarisation</code> function for processing. The function wraps the transcript in XML-like tags and creates a custom prompt that requests specific output formatting, including sentiment analysis and issue identification. It then sets up the API call with key parameters such as the model selection (amazon.titan-text-express-v1), token limits, and temperature settings to control the AI’s response. Finally, it sends the request through the Bedrock client, extracts the summary text from the JSON response, and returns the summarized content.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">bedrock_summarisation</span><span class="p">(</span><span class="n">transcript</span><span class="p">,</span> <span class="n">bedrock_client</span><span class="p">):</span>
+    <span class="sh">"""</span><span class="s">
+    Summarizes a conversation transcript using Amazon Bedrock.
+
+    This function reads a prompt template from a file, fills it with the provided
+    transcript and predefined topics, and sends it to the Amazon Bedrock model for
+    text generation. The function then retrieves and returns the generated summary
+    text.
+
+    :param transcript: The conversation transcript to be summarized.
+    :param bedrock_client: A client for invoking the Amazon Bedrock text generation model.
+    :return: A summary of the conversation generated by the Bedrock model.
+    </span><span class="sh">"""</span>
+
+    <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">Starting Bedrock summarization...</span><span class="sh">"</span><span class="p">)</span>
+
+    <span class="n">prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="sh">"""</span><span class="s">I need to summarize a conversation. The transcript of the
+</span><span class="gp">        ...</span>
+        <span class="sh">"""</span>
+
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="sh">"</span><span class="s">modelId</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">amazon.titan-text-express-v1</span><span class="sh">"</span><span class="p">,</span>
+        <span class="sh">"</span><span class="s">contentType</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">application/json</span><span class="sh">"</span><span class="p">,</span>
+        <span class="sh">"</span><span class="s">accept</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">*/*</span><span class="sh">"</span><span class="p">,</span>
+        <span class="sh">"</span><span class="s">body</span><span class="sh">"</span><span class="p">:</span> <span class="n">json</span><span class="p">.</span><span class="nf">dumps</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="sh">"</span><span class="s">inputText</span><span class="sh">"</span><span class="p">:</span> <span class="n">prompt</span><span class="p">,</span>
+                <span class="sh">"</span><span class="s">textGenerationConfig</span><span class="sh">"</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="sh">"</span><span class="s">maxTokenCount</span><span class="sh">"</span><span class="p">:</span> <span class="mi">2048</span><span class="p">,</span>
+                    <span class="sh">"</span><span class="s">stopSequences</span><span class="sh">"</span><span class="p">:</span> <span class="p">[],</span>
+                    <span class="sh">"</span><span class="s">temperature</span><span class="sh">"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                    <span class="sh">"</span><span class="s">topP</span><span class="sh">"</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">}</span>
+        <span class="p">),</span>
+    <span class="p">}</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">bedrock_client</span><span class="p">.</span><span class="nf">invoke_model</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="n">summary</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">json</span><span class="p">.</span><span class="nf">loads</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">body</span><span class="sh">"</span><span class="p">).</span><span class="nf">read</span><span class="p">()).</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">results</span><span class="sh">"</span><span class="p">)[</span><span class="mi">0</span><span class="p">].</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">outputText</span><span class="sh">"</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">summary</span>
+</code></pre></div></div>
+
+<p>This prompt utilizes several key prompt engineering techniques to ensure clear and structured output from the language model. First, it employs XML-like tags (<data>) to clearly delineate the input transcript, helping the model distinguish between instructions and content. Second, it provides explicit output formatting requirements through a JSON schema, which constrains the model's response to a specific structure. Third, it uses categorical constraints for the "topic" field by providing predefined options (["charges"|"location"|"availability"]), limiting potential responses to these specific categories. Finally, it breaks down the analysis requirements into distinct components (sentiment and issues), making the task more manageable and ensuring all required elements are addressed in the response.</data></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="sh">"""</span><span class="s">I need to summarize a conversation. The transcript of the
+        conversation is between the &lt;data&gt; XML like tags.
+
+        &lt;data&gt;
+        </span><span class="si">{</span><span class="n">transcript</span><span class="si">}</span><span class="s">
+        &lt;/data&gt;
+
+        The summary must contain a one word sentiment analysis, and
+        a list of issues, problems or causes of friction
+        during the conversation.
+
+        The output must be provided in JSON format using the following fields:
+
+        - </span><span class="sh">"</span><span class="s">sentiment</span><span class="sh">"</span><span class="s">: &lt;sentiment&gt;,
+        - </span><span class="sh">"</span><span class="s">issues</span><span class="sh">"</span><span class="s">: [
+                - </span><span class="sh">"</span><span class="s">topic</span><span class="sh">"</span><span class="s">: [</span><span class="sh">"</span><span class="s">charges</span><span class="sh">"</span><span class="s">|</span><span class="sh">"</span><span class="s">location</span><span class="sh">"</span><span class="s">|</span><span class="sh">"</span><span class="s">availability</span><span class="sh">"</span><span class="s">]
+                - </span><span class="sh">"</span><span class="s">summary</span><span class="sh">"</span><span class="s">: [issue_summary]
+            ]
+        </span><span class="sh">"""</span>
+</code></pre></div></div>
+
+<h2 id="creating-the-lambda-function">Creating the Lambda Function</h2>
+
+<p>Following the same steps explained in the previous article for creating Lambda functions through the AWS Console, we’ll create a new function called <code class="language-plaintext highlighter-rouge">summarize_lambda</code>. This function will be responsible for handling the summarization process of our transcribed conversations using Amazon Bedrock.</p>
+
+<p><img src="" alt="" /></p>
+
+<p>Before testing the function, we need to update the IAM role permissions to allow the Lambda function to interact with Amazon Bedrock services. Specifically, we need to grant two key permissions:</p>
+
+<ol>
+  <li>“bedrock:InvokeModel” - This allows the Lambda function to make API calls to run inference using Bedrock’s AI models</li>
+  <li>“bedrock:ListModels” - This enables the function to retrieve information about available Bedrock models</li>
+</ol>
+
+<p>Add these permissions to your IAM role policy:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"Effect"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Allow"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"Action"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="s2">"bedrock:InvokeModel"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"bedrock:ListModels"</span><span class="w">
+  </span><span class="p">],</span><span class="w">
+  </span><span class="nl">"Resource"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*"</span><span class="w">
+</span><span class="p">}</span><span class="err">,</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="increasing-lambda-timeout">Increasing Lambda Timeout</h3>
+
+<p>When working with Amazon Bedrock for text generation, it’s important to note that the model can take several seconds to process and return a response. By default, AWS Lambda functions have a timeout of 3 seconds, which is insufficient for this use case. The Lambda function needs to be configured with appropriate timeout and memory settings to accommodate the Bedrock API response time. To update the Lambda configuration in the AWS Console:</p>
+
+<ol>
+  <li>Go to the AWS Lambda console</li>
+  <li>Select your function</li>
+  <li>Go to the “Configuration” tab</li>
+  <li>Click on “General configuration”</li>
+  <li>Click “Edit”</li>
+  <li>Increase the timeout to at least 30 seconds</li>
+  <li>Increase the memory to at least 256 MB</li>
+  <li>Click “Save”</li>
+</ol>
+
+<p>After making these changes, the function should complete successfully. Monitor the CloudWatch logs to see the detailed execution progress.</p>
+
+<p><img src="" alt="" /></p>
+
+<h2 id="setting-up-s3-event-notifications">Setting Up S3 Event Notifications</h2>
+
+<p>To automate the process, we’ll set up S3 to trigger our Lambda function when new transcript is available. To set up S3 event notifications through the AWS Management Console:</p>
+
+<ol>
+  <li>Navigate to your S3 bucket and select the “Properties” tab</li>
+  <li>Scroll down to find the “Event Notifications” section and click “Create event notification”</li>
+  <li>Configure the event settings:
+    <ul>
+      <li>Event name: Enter a descriptive name (e.g., “TranscriptFileTrigger”)</li>
+      <li>Prefix: Enter “transcripts/” to limit the trigger to files in this folder</li>
+      <li>Suffix: Enter “.json” to only trigger on JSON files</li>
+      <li>Event types: Select “All object create events”</li>
+    </ul>
+  </li>
+  <li>Under “Destination”, select “Lambda function” and choose your transcription function from the dropdown</li>
+  <li>Click “Save changes” to create the event notification</li>
+</ol>
+
+<p><img src="" alt="" /></p>
+
+<p>Once you configure the S3 event notification to trigger your Lambda function, you’ll see the trigger listed in your Lambda function’s configuration. There’s no need to add it again in the Lambda console-this single step establishes the connection, and your workflow is ready to go.</p>
+
+<p><img src="" alt="" /></p>
+
+<h2 id="upload-an-audio-file-to-the-bucket">Upload an Audio File to the Bucket</h2>
+
+<p>To upload an audio file to your S3 bucket through the AWS Management Console, follow these steps:</p>
+
+<ol>
+  <li>Open the AWS Management Console and navigate to the S3 service</li>
+  <li>Click on your bucket name from the list of buckets</li>
+  <li>Click the “Upload” button at the top of the bucket contents list</li>
+  <li>Click “Add files” or drag and drop your audio file (in this case, phone_call.mp3) into the upload area</li>
+  <li>Review the default settings for the upload. For basic uploads, the default settings are usually sufficient</li>
+  <li>Click “Upload” to start the file transfer</li>
+</ol>
+
+<p>Once the upload is complete, you’ll see your audio file listed in the bucket contents. The S3 event notification we configured earlier will automatically trigger the Lambda function to start the transcription process.</p>
+
+<p><img src="" alt="" /></p>
+
+<p><img src="" alt="" /></p>
+
+<h2 id="conclusions"><strong>Conclusions</strong></h2>
+
+<p>In this article, we demonstrated how to build a serverless system for conversation summarization using AWS Lambda and Amazon Bedrock. We explored effective prompt engineering techniques using XML-like tags and structured outputs, while creating a simple yet extensible event-driven architecture using S3 triggers. This foundation serves as a starting point for more sophisticated data processing workflows, with detailed coverage of the necessary configurations for IAM permissions, Lambda settings, and event notifications.</p>
+
+<p>In the next article of this series, we’ll explore how to monitor our system’s performance, track usage patterns, detect anomalies, and implement safeguards for LLM responses. We’ll focus on creating a robust monitoring framework to ensure our application operates reliably and securely.</p>
+
+<h2 id="sources">Sources</h2>
+
+<ul>
+  <li><a href="https://docs.aws.amazon.com/lambda/latest/dg/concepts-event-driven-architectures.html">https://docs.aws.amazon.com/lambda/latest/dg/concepts-event-driven-architectures.html</a></li>
+  <li><a href="https://programming.am/setting-up-aws-lambda-timeouts-and-memory-limits-fa19f4164a07">https://programming.am/setting-up-aws-lambda-timeouts-and-memory-limits-fa19f4164a07</a></li>
+</ul>
+
+      </article>
+    </main>
+
+    <footer>
+      <p style="font-weight: bold; margin-bottom: 1rem;">Follow me on</p>
+      <a href="https://github.com/pedropcamellon" target="_blank">GitHub</a>
+      <a href="https://www.linkedin.com/in/pedropcamellon/" target="_blank"
+        >LinkedIn</a
+      >
+    </footer>
+  </body>
+</html>

@@ -54,35 +54,43 @@
           <span class="tag">devops</span>
           
         </div>
-         <p>When I first launched my portfolio, it was a simple static site built with HTML, Bootstrap, and Tailwind. It looked great and was easy to set up. But as I added more blog posts, projects, and updates, the maintenance became more and more tedious. Every new blog post meant: write it in Notion, spend an hour polishing it, and then… the real work begins. Copy the HTML. Create a new card in <code class="language-plaintext highlighter-rouge">blog.html</code>. Update the navigation. Copy the footer. Test locally. Push to GitHub. Repeat for every single post.</p>
+         <h2 id="the-problem-too-dependent-on-notion">The Problem: Too Dependent on Notion</h2>
 
-<p>I was managing my portfolio as a static HTML site with Bootstrap and Tailwind doing the heavy lifting. Every new blog post meant manually creating HTML card entries, copying navigation code across pages, and keeping my Notion content in sync with my site. It worked, but it didn’t scale.</p>
+<p>My original workflow was simple by design. I’d write in Notion, leverage Notion AI for faster edits, publish the page, and embed a link to it from my site. The blog itself was just HTML, CSS, and JavaScript—intentionally minimal. This kept the code clean and gave me more time to write.</p>
 
-<p>The breaking point came when I wanted to add tags to all my posts. The thought of updating 20+ individual HTML files made me realize: there has to be a better way.</p>
+<p>But over time, I realized I was too dependent on Notion. My content lived in their database. Every post was a published Notion page that I linked to. If Notion went down, my blog was broken links. I had no version control over my content. No history of edits. No way to track how my writing evolved.</p>
+
+<p>I wanted my content in Git, tracked natively alongside my code. Markdown felt like the obvious choice—simple, portable, perfect for technical writing.</p>
 
 <h2 id="why-jekyll">Why Jekyll?</h2>
 
-<p>I’d heard about Jekyll before—GitHub Pages’ built-in static site generator—but dismissed it as overkill. Turns out, I was wrong. Jekyll solved every pain point I had:</p>
+<p>I was already using GitHub Pages for hosting. Jekyll has native, out-of-the-box support there. No configuration. No build pipelines. Just push markdown files and it works. That alone was compelling.</p>
 
-<p><strong>Write once, deploy everywhere.</strong> Blog posts became simple markdown files. Drop a <code class="language-plaintext highlighter-rouge">.md</code> file in the <code class="language-plaintext highlighter-rouge">/blog/</code> folder, push to GitHub, and it automatically appears on my site. No more HTML wrangling.</p>
+<p>But the real reason? Jekyll is mature. It’s been around since 2008. The ecosystem is stable. The documentation is thorough. I didn’t want to spend time fighting a new framework or debugging alpha-stage tooling. I wanted to write.</p>
 
-<p><strong>One template to rule them all.</strong> Instead of copying navigation and footer code across dozens of pages, I created a single layout template. Change it once, update everywhere. The DRY principle in action.</p>
+<p><strong>Markdown as source of truth.</strong> My content lives in Git now. Every post is a markdown file. Every edit is a commit. I can track how my writing evolved, roll back mistakes, and branch for experiments.</p>
 
-<p><strong>Framework independence.</strong> I wanted to keep things simple. Bootstrap and Tailwind meant learning their conventions and fighting their defaults. Custom CSS gave me exactly what I needed, nothing more.</p>
+<p><strong>Native GitHub Pages integration.</strong> Push to <code class="language-plaintext highlighter-rouge">main</code> and it’s live. GitHub handles the build. No CI/CD config needed. No deployment scripts. It just works.</p>
+
+<p><strong>Static site generators made sense.</strong> My blog was already static HTML. Static site generators are perfect for this—fast, simple, and well-suited for content-focused sites.</p>
 
 <p><strong>Automated everything.</strong> Posts sort themselves by date. Tags display automatically. Excerpts appear in blog cards but not in articles. The “NEW” badge shows up based on a simple frontmatter flag.</p>
 
-<p>But the real catalyst? My blog was growing. Jekyll is fully supported by GitHub Pages with minimal setup—it felt like the obvious choice for spending more time writing and less time on dev work.</p>
+<p><strong>Keep it minimal.</strong> I didn’t want framework hacks. No endless plugin dependencies. No complex build setups. Jekyll lets me focus on writing, not on tooling. The site does one thing well: display markdown content.</p>
 
 <h2 id="the-migration-journey">The Migration Journey</h2>
 
-<p>The migration happened in phases over a weekend. I started by setting up Jekyll’s basic structure—a <code class="language-plaintext highlighter-rouge">_config.yml</code> file, a simple Gemfile, and the essential <code class="language-plaintext highlighter-rouge">_layouts/default.html</code> template. That template became the heart of the site, handling navigation, analytics, and the footer for every page.</p>
+<p>The migration happened in phases over a weekend. My old site was intentionally simple—HTML, CSS, JavaScript. Blog posts were just links to published Notion pages. Clean, but not sustainable.</p>
 
-<p>Next came the CSS overhaul. I replaced Bootstrap and Tailwind with two focused files: <code class="language-plaintext highlighter-rouge">main.css</code> for base styles (typography, navigation, code blocks, tables) and <code class="language-plaintext highlighter-rouge">pages.css</code> for components (hero section, blog cards, responsive design). The key insight? Using <code class="language-plaintext highlighter-rouge">min(1200px, 90vw)</code> for responsive max-width instead of fixed breakpoints made the layout adapt automatically to any screen size.</p>
+<p>I started by setting up Jekyll’s basic structure—a <code class="language-plaintext highlighter-rouge">_config.yml</code> file, a simple Gemfile, and the essential <code class="language-plaintext highlighter-rouge">_layouts/default.html</code> template. That template became the heart of the site, handling navigation, analytics, and the footer for every page.</p>
 
-<p>The blog list transformation was where Jekyll really shined. What used to be dozens of manually-coded HTML cards became a simple Liquid template that filters, sorts, and displays posts automatically. Jekyll handles all the heavy lifting—I just write markdown.</p>
+<p>Next came the CSS. I kept it minimal. Two focused files: <code class="language-plaintext highlighter-rouge">main.css</code> for base styles (typography, navigation, code blocks, tables) and <code class="language-plaintext highlighter-rouge">pages.css</code> for components (hero section, blog cards, responsive design). No frameworks. No bloat. Just what I needed.</p>
 
-<p>Migrating 20+ existing posts from Notion could have been tedious, so I automated it with a PowerShell script. The script extracts the first paragraph as an excerpt, adjusts heading levels, wraps Liquid syntax properly, renames images with descriptive slug prefixes, and generates consistent frontmatter. What would have taken days took an afternoon.</p>
+<p>The blog list transformation was where Jekyll really shined. What used to be manual HTML became a simple Liquid template that filters, sorts, and displays posts automatically. Jekyll handles the heavy lifting—I just write markdown.</p>
+
+<p>Migrating 20+ existing posts from Notion could have been tedious, so I automated it with a PowerShell script. The script extracts excerpts, adjusts heading levels, renames images with descriptive prefixes, and generates consistent frontmatter. What would have taken days took an afternoon. That was the last time I pulled content from Notion.</p>
+
+<p>Now, I still brainstorm in Notion—it’s great for messy thinking. But when it’s time to write, I open VS Code, create a markdown file, and the content lives in Git from day one.</p>
 
 <p>Even the projects page got simpler. Instead of maintaining an HTML table with inline styles, I converted it to markdown with badge-style GitHub and blog links. Jekyll’s built-in table rendering handled the rest.</p>
 
@@ -121,33 +129,36 @@
 
 <h2 id="what-i-learned">What I Learned</h2>
 
-<p><strong>Docker is worth the setup.</strong> I avoided days of Ruby environment troubleshooting by starting with Docker. The consistency across machines is invaluable.</p>
+<p><strong>Convenience can become dependency.</strong> Embedding Notion links was easy. Too easy. I traded control for convenience and didn’t realize it until I wanted my content in Git.</p>
 
-<p><strong>Custom CSS beats frameworks for static sites.</strong> Bootstrap and Tailwind are great for applications, but overkill for a portfolio. Custom CSS gave me exactly what I needed with none of the bloat.</p>
+<p><strong>Maturity matters.</strong> Jekyll isn’t the newest or flashiest static site generator. But it’s battle-tested. The documentation is solid. The ecosystem is stable. That’s worth more than cutting-edge features.</p>
+
+<p><strong>Keep it minimal to focus on writing.</strong> I could have added a dozen frameworks and plugins. But every dependency is a potential distraction. Minimal tooling means more time writing, less time debugging.</p>
+
+<p><strong>Notion for brainstorming, Git for publishing.</strong> Notion is still valuable for messy thinking. But polished content belongs in version control. Separate the tools, keep both useful.</p>
+
+<p><strong>Docker is worth the setup.</strong> I avoided days of Ruby environment troubleshooting by starting with Docker. The consistency across machines is invaluable.</p>
 
 <p><strong>Automation compounds.</strong> That PowerShell import script saved hours on the initial migration. But more importantly, it’ll save hours every time I import new posts. Time spent on automation is time invested.</p>
 
 <p><strong>Frontmatter is powerful.</strong> Separating metadata from content keeps everything clean. Tags, excerpts, dates, badges—all controlled through simple YAML fields.</p>
 
-<p><strong>Simple wins.</strong> I could have added search, pagination, RSS feeds, dark mode, and a dozen other features. But I didn’t need them yet. The site does one thing well: display blog posts. Everything else can wait.</p>
+<p><strong>Static site generators are perfect for blogs.</strong> My site was already static HTML. Jekyll just formalized it. Fast, simple, and perfectly suited for content-focused sites.</p>
 
 <h2 id="the-results">The Results</h2>
 
-<p>Before this migration, adding a blog post took 30 minutes of HTML wrangling. Now it takes 5 minutes—just write markdown and push. The site loads dramatically faster without framework bloat. Making global changes (like updating the footer) is a one-line edit instead of a multi-file search-and-replace.</p>
+<p>Before: Write in Notion → Publish Notion page → Embed link in site → Hope Notion stays up.<br />
+Now: Write markdown → Commit to Git → Push. Done.</p>
 
-<p>More importantly, the friction is gone. I’m writing more because writing is easier. The technical debt that accumulated over months of manual updates? Paid off in a weekend.</p>
+<p>My content is version controlled. Every post has edit history. The site is faster (no external dependencies on Notion). And I’m not locked into one platform anymore.</p>
+
+<p>More importantly, I’m writing more. The friction of “where does this content live?” is gone. Markdown files in Git feel right. The mental overhead vanished.</p>
 
 <h2 id="whats-next">What’s Next?</h2>
 
-<p>I’m keeping a list of potential enhancements—search functionality, pagination, dark mode, WebP image optimization as a part of the GitHub Action, reading time estimates, related posts. But I’m not rushing to implement any of them. The site works beautifully as-is.</p>
+<p>I’m keeping a list of potential enhancements—search functionality, pagination, dark mode, WebP image optimization as a part of the GitHub Action, reading time estimates. But I’m not rushing. The site works. It’s minimal by design. Every feature I don’t add is one less thing to maintain.</p>
 
-<p>The real lesson? Sometimes the best feature is the one you don’t add yet.</p>
-
-<h2 id="try-it-yourself">Try It Yourself</h2>
-
-<p>If you’re maintaining a static portfolio or blog with manual HTML updates, Jekyll is worth considering. The initial setup takes a few hours, but you’ll save that time back on your first few posts.</p>
-
-<p>Check out my <a href="https://github.com/pedropcamellon/pedropcamellon.github.io">GitHub repo</a> for the complete implementation. The code speaks louder than any tutorial.</p>
+<p>So far, keeping it minimal has been the right choice. I’m focused on writing, not on framework hacks. That was the whole point.</p>
 
 <h2 id="resources">Resources</h2>
 

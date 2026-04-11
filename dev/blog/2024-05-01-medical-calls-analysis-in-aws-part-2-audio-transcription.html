@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Medical Calls Analysis in AWS (Part 2) - Audio Transcription - Pedro Camellon</title>
+
+    <script type="text/javascript">
+      (function (c, l, a, r, i, t, y) {
+        c[a] =
+          c[a] ||
+          function () {
+            (c[a].q = c[a].q || []).push(arguments);
+          };
+        t = l.createElement(r);
+        t.async = 1;
+        t.src = "https://www.clarity.ms/tag/" + i;
+        y = l.getElementsByTagName(r)[0];
+        y.parentNode.insertBefore(t, y);
+      })(window, document, "clarity", "script", "kykpoeffvx");
+    </script>
+
+    <link rel="stylesheet" href="/assets/css/main.css" />
+    <link rel="stylesheet" href="/assets/css/pages.css" />
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li><a href="/" >Home</a></li>
+        <li><a href="/blog.html" class="active">Blog</a></li>
+        <li><a href="/projects.html" >Projects</a></li>
+        <li><a href="/#contact">Contact</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <article>
+        <h1>Medical Calls Analysis in AWS (Part 2) - Audio Transcription</h1>
+        
+        <p class="post-date">
+          Published: May 1, 2024
+          
+          <span class="post-updated">Updated: May 17, 2025</span>
+          
+        </p>
+        
+        
+        <div class="post-tags">
+          
+          <span class="tag">aws</span>
+          
+          <span class="tag">amazon bedrock</span>
+          
+          <span class="tag">amazon transcribe</span>
+          
+          <span class="tag">llm</span>
+          
+          <span class="tag">bedrock</span>
+          
+          <span class="tag">api</span>
+          
+          <span class="tag">lambda</span>
+          
+          <span class="tag">python</span>
+          
+          <span class="tag">transcribe</span>
+          
+          <span class="tag">html</span>
+          
+          <span class="tag">s3</span>
+          
+          <span class="tag">cloudwatch</span>
+          
+        </div>
+         <h2 id="introduction">Introduction</h2>
+
+<p>In part 1 of this series, we explored Amazon Bedrock and its capabilities for working with Large Language Models (LLMs). We covered how to set up an AWS account, create and configure IAM users with appropriate security policies, and request access to specific models in Amazon Bedrock. We concluded by demonstrating how to use the Boto3 SDK to make API calls to these models and successfully generate responses from them. This foundational knowledge will now help us as we move forward with our medical call analysis system.</p>
+
+<p>Patient calls contain vital information that requires transcription and summarization. We’ll start by uploading a call segment to Amazon S3 storage. Amazon Transcribe will then automatically convert the speech to text, creating a readable transcript of the conversation. In this article, we’ll set up a transcription service that monitors an S3 bucket for new audio files and creates JSON transcripts.</p>
+
+<p>We will create an automated workflow using AWS Lambda to monitor S3 events. When someone uploads a new audio file to our S3 bucket, it triggers our Lambda function, which then initiates a transcription job using Amazon Transcribe. This serverless architecture makes our transcription process fully automated and scalable, while remaining cost-effective since we only pay for the processing time we use.</p>
+
+<h2 id="create-an-amazon-s3-bucket">Create an Amazon S3 Bucket</h2>
+
+<p>We first need to create a storage bucket. Begin by logging into the AWS Management Console and navigate to the S3 service, either by searching for “S3” in the service search bar or selecting it from the “Storage” section. Once there, click on the “Create bucket” button. This will prompt you to provide details for the new bucket. Start by entering a unique name for your bucket in the “Bucket name” field and then select the Region in which you want your bucket to be located. The other settings can be left at their default values for now. After that, scroll down and click on the “Create bucket” button. Now your bucket is ready for use, and you can proceed to upload your files.</p>
+
+<p><img src="" alt="" /></p>
+
+<p><img src="" alt="" /></p>
+
+<h2 id="amazon-transcribe-permissions">Amazon Transcribe Permissions</h2>
+
+<p>To allow automatic transcription when new audio files are uploaded to our S3 bucket, we need to create an IAM role that gives Amazon Transcribe access to our audio files. This role requires the following permissions:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"Version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2012-10-17"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"Statement"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"Effect"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Allow"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"Action"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"s3:GetObject"</span><span class="p">,</span><span class="w"> </span><span class="s2">"s3:PutObject"</span><span class="p">],</span><span class="w">
+      </span><span class="nl">"Resource"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"arn:aws:s3:::medical-calls-audio-bucket/*"</span><span class="p">]</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="transcribe-lambda-function-code">Transcribe Lambda Function Code</h2>
+
+<p>We will implement an automated workflow using AWS Lambda that listens for S3 events. When a new audio file is uploaded to our S3 bucket, it triggers an event that activates our Lambda function. This function will then automatically initiate a transcription job using Amazon Transcribe.</p>
+
+<p>The workflow will follow these steps:</p>
+
+<ol>
+  <li>A new audio file is uploaded to our designated S3 bucket</li>
+  <li>The upload triggers an S3 event notification</li>
+  <li>This event activates our Lambda function</li>
+  <li>The Lambda function calls Amazon Transcribe to start a new transcription job</li>
+  <li>Amazon Transcribe processes the audio and generates a JSON transcript</li>
+  <li>The transcript is saved back to our S3 bucket in a ‘transcripts’ folder</li>
+</ol>
+
+<p>This serverless architecture ensures that our transcription process is fully automated, scalable, and cost-effective, as we only pay for the actual processing time used.</p>
+
+<p>Let’s create a Lambda function that triggers when a new audio file is uploaded to our S3 bucket. This function automatically starts an Amazon Transcribe job. Here’s how it works: When S3 receives a new file, it sends an event to our function. The function extracts the bucket name and file name (key) from this event. After validating that the file is an MP3, it generates a unique job name using UUID and initiates the transcription. To do this, we first set up an Amazon Transcribe client by creating an instance of the service in the desired region. The transcription job includes specific parameters such as language code (en-US), media format (mp3), and speaker identification settings. The resulting transcript saves back to the same S3 bucket in a ‘transcripts’ folder. The function handles any errors by catching them and returning appropriate error messages. Upon successful execution, it provides a confirmation message that the transcription job was submitted.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">boto3</span>
+<span class="kn">import</span> <span class="n">json</span>
+<span class="kn">import</span> <span class="n">uuid</span>
+
+<span class="k">def</span> <span class="nf">lambda_handler</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+    <span class="n">bucket</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="sh">"</span><span class="s">Records</span><span class="sh">"</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="sh">"</span><span class="s">s3</span><span class="sh">"</span><span class="p">][</span><span class="sh">"</span><span class="s">bucket</span><span class="sh">"</span><span class="p">][</span><span class="sh">"</span><span class="s">name</span><span class="sh">"</span><span class="p">]</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="sh">"</span><span class="s">Records</span><span class="sh">"</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="sh">"</span><span class="s">s3</span><span class="sh">"</span><span class="p">][</span><span class="sh">"</span><span class="s">object</span><span class="sh">"</span><span class="p">][</span><span class="sh">"</span><span class="s">key</span><span class="sh">"</span><span class="p">]</span>
+
+    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Processing file </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s"> from bucket </span><span class="si">{</span><span class="n">bucket</span><span class="si">}</span><span class="s">.</span><span class="sh">"</span><span class="p">)</span>
+
+    <span class="c1"># One of a few different checks to ensure we don't end up in a recursive loop.
+</span>    <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="p">.</span><span class="nf">endswith</span><span class="p">(</span><span class="sh">"</span><span class="s">.mp3</span><span class="sh">"</span><span class="p">):</span>
+        <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">This demo only works with mp3 files.</span><span class="sh">"</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="c1"># Create a Boto3 client for the Transcribe service
+</span>    <span class="n">transcribe_client</span> <span class="o">=</span> <span class="n">boto3</span><span class="p">.</span><span class="nf">client</span><span class="p">(</span><span class="sh">"</span><span class="s">transcribe</span><span class="sh">"</span><span class="p">,</span> <span class="n">region_name</span><span class="o">=</span><span class="sh">"</span><span class="s">us-east-1</span><span class="sh">"</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Needs to be a unique name
+</span>        <span class="n">job_name</span> <span class="o">=</span> <span class="sh">"</span><span class="s">transcription-job-</span><span class="sh">"</span> <span class="o">+</span> <span class="nf">str</span><span class="p">(</span><span class="n">uuid</span><span class="p">.</span><span class="nf">uuid4</span><span class="p">())</span>
+
+        <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Starting transcription job </span><span class="si">{</span><span class="n">job_name</span><span class="si">}</span><span class="s">.</span><span class="sh">"</span><span class="p">)</span>
+
+        <span class="n">transcribe_client</span><span class="p">.</span><span class="nf">start_transcription_job</span><span class="p">(</span>
+            <span class="n">TranscriptionJobName</span><span class="o">=</span><span class="n">job_name</span><span class="p">,</span>
+            <span class="n">Media</span><span class="o">=</span><span class="p">{</span><span class="sh">"</span><span class="s">MediaFileUri</span><span class="sh">"</span><span class="p">:</span> <span class="sa">f</span><span class="sh">"</span><span class="s">s3://</span><span class="si">{</span><span class="n">bucket</span><span class="si">}</span><span class="s">/</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="sh">"</span><span class="p">},</span>
+            <span class="n">MediaFormat</span><span class="o">=</span><span class="sh">"</span><span class="s">mp3</span><span class="sh">"</span><span class="p">,</span>
+            <span class="n">LanguageCode</span><span class="o">=</span><span class="sh">"</span><span class="s">en-US</span><span class="sh">"</span><span class="p">,</span>
+            <span class="n">OutputBucketName</span><span class="o">=</span><span class="n">bucket</span><span class="p">,</span>
+            <span class="n">OutputKey</span><span class="o">=</span><span class="sa">f</span><span class="sh">"</span><span class="s">transcripts/</span><span class="si">{</span><span class="n">job_name</span><span class="si">}</span><span class="s">.json</span><span class="sh">"</span><span class="p">,</span>
+            <span class="n">Settings</span><span class="o">=</span><span class="p">{</span><span class="sh">"</span><span class="s">ShowSpeakerLabels</span><span class="sh">"</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span> <span class="sh">"</span><span class="s">MaxSpeakerLabels</span><span class="sh">"</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+        <span class="p">)</span>
+
+        <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Transcription job </span><span class="si">{</span><span class="n">job_name</span><span class="si">}</span><span class="s"> started successfully.</span><span class="sh">"</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="nb">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Error occurred: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="sh">"</span><span class="s">statusCode</span><span class="sh">"</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span> <span class="sh">"</span><span class="s">body</span><span class="sh">"</span><span class="p">:</span> <span class="n">json</span><span class="p">.</span><span class="nf">dumps</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Error occurred: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="sh">"</span><span class="p">)}</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="sh">"</span><span class="s">statusCode</span><span class="sh">"</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="sh">"</span><span class="s">body</span><span class="sh">"</span><span class="p">:</span> <span class="n">json</span><span class="p">.</span><span class="nf">dumps</span><span class="p">(</span>
+            <span class="sa">f</span><span class="sh">"</span><span class="s">Submitted transcription job for </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s"> from bucket </span><span class="si">{</span><span class="n">bucket</span><span class="si">}</span><span class="s">.</span><span class="sh">"</span>
+        <span class="p">),</span>
+    <span class="p">}</span>
+</code></pre></div></div>
+
+<p>Let’s examine each transcription job parameter and its purpose:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">TranscriptionJobName</code>: The unique name of the transcription job.</li>
+  <li><code class="language-plaintext highlighter-rouge">Media</code>: A dictionary that specifies the location of the audio file to transcribe. It’s formatted as an S3 URI, which is just the bucket name and file name combined.</li>
+  <li><code class="language-plaintext highlighter-rouge">MediaFormat</code>: The format of the audio file. In this case, it’s an mp3 file.</li>
+  <li><code class="language-plaintext highlighter-rouge">LanguageCode</code>: The language of the audio file. Here, it’s set to ‘en-US’ for US English.</li>
+  <li><code class="language-plaintext highlighter-rouge">OutputBucketName</code>: The name of the S3 bucket where the transcription results should be stored.</li>
+  <li><code class="language-plaintext highlighter-rouge">Settings</code>: A dictionary of settings for the transcription job. Here, it’s set to show speaker labels with a maximum of 2 speakers.</li>
+</ul>
+
+<h2 id="creating-a-lambda-function-in-the-aws-console">Creating a Lambda Function in the AWS Console</h2>
+
+<p>To create a Lambda function through the AWS Management Console, follow these steps:</p>
+
+<ol>
+  <li>Navigate to the AWS Lambda console by searching for “Lambda” in the AWS services search bar</li>
+  <li>Click the “Create function” button in the top right corner</li>
+  <li>Choose “Author from scratch” to start with a blank function</li>
+  <li>Provide these basic settings:
+    <ul>
+      <li>Function name - Choose a descriptive name</li>
+      <li>Runtime - Python 3.11</li>
+      <li>Architecture - Choose x86_64</li>
+      <li>Execution role - Create a new role or select an existing one</li>
+    </ul>
+  </li>
+  <li>Click “Create function” to generate your Lambda function</li>
+</ol>
+
+<p>In the code tab of your Lambda function, you’ll find lambda_function.py. Delete any existing code and paste the transcription function code provided above. Save the changes by clicking “Deploy”</p>
+
+<p><img src="" alt="" /></p>
+
+<p><img src="" alt="" /></p>
+
+<p>Before testing the function, we need to update the IAM role permissions to allow the Lambda function to use Amazon Transcribe services. Add the following permissions to your IAM role policy:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"Effect"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Allow"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"Action"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="s2">"transcribe:StartTranscriptionJob"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"transcribe:GetTranscriptionJob"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"transcribe:ListTranscriptionJobs"</span><span class="w">
+  </span><span class="p">],</span><span class="w">
+  </span><span class="nl">"Resource"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>This allows the Lambda function to start transcription jobs, retrieve their status, and list existing jobs. Without these permissions, the function will fail when attempting to interact with Amazon Transcribe.</p>
+
+<p>Test your function by clicking the “Test” button and creating a new test event with the sample S3 event JSON provided earlier</p>
+
+<p>After deployment, ensure that:</p>
+
+<ul>
+  <li>The function has the correct IAM role with permissions for S3 and Transcribe</li>
+  <li>The function timeout is set appropriately (default is 3 seconds, which might not be enough)</li>
+  <li>The function has enough memory allocated</li>
+  <li>The S3 trigger is properly configured to invoke the function</li>
+</ul>
+
+<h2 id="aws-vscode-extension">AWS VSCode Extension</h2>
+
+<p>AWS offers a powerful VSCode extension called AWS Toolkit that streamlines the development and testing of Lambda functions. With this extension, you can invoke Lambda functions locally, debug your code, and simulate various AWS service events right from your VSCode environment.</p>
+
+<p>The AWS Toolkit for VSCode provides several key features for Lambda development:</p>
+
+<ul>
+  <li>Local Lambda function invocation using sample events</li>
+  <li>Step-through debugging of Lambda functions</li>
+  <li>Direct deployment to AWS from VSCode</li>
+  <li>AWS Explorer for managing Lambda functions and other AWS resources</li>
+  <li>SAM (Serverless Application Model) template support</li>
+</ul>
+
+<p>To test your Lambda function using the AWS Toolkit:</p>
+
+<ol>
+  <li>Install the AWS Toolkit extension from the VSCode marketplace</li>
+  <li>Configure your AWS credentials in VSCode</li>
+  <li>Open your Lambda function code</li>
+  <li>Right-click in the editor and select “AWS: Invoke Lambda Function Locally”</li>
+  <li>Choose or create a test event JSON file (like the example shown above)</li>
+</ol>
+
+<p><img src="" alt="" /></p>
+
+<p>This local testing capability significantly speeds up the development process by allowing you to iterate and debug your Lambda functions without deploying them to AWS each time.</p>
+
+<p>The example JSON event provided above can be utilized in multiple ways during development and testing. You can use it for local testing with the AWS SAM CLI, creating test events in the Lambda console, or writing unit tests for your Lambda function. The event contains essential information like the S3 bucket name and the object key (path to the transcript file), and includes a JSON transcript file that your function needs to validate.</p>
+
+<p>Here’s an example JSON event that simulates an S3 trigger event for the Lambda function:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="sh">"</span><span class="s">Records</span><span class="sh">"</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="sh">"</span><span class="s">eventVersion</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">2.1</span><span class="sh">"</span><span class="p">,</span>
+      <span class="sh">"</span><span class="s">eventSource</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">aws:s3</span><span class="sh">"</span><span class="p">,</span>
+      <span class="sh">"</span><span class="s">awsRegion</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">us-east-1</span><span class="sh">"</span><span class="p">,</span>
+      <span class="sh">"</span><span class="s">eventTime</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">2024-04-26T12:00:00.000Z</span><span class="sh">"</span><span class="p">,</span>
+      <span class="sh">"</span><span class="s">eventName</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">ObjectCreated:Put</span><span class="sh">"</span><span class="p">,</span>
+      <span class="sh">"</span><span class="s">s3</span><span class="sh">"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="sh">"</span><span class="s">s3SchemaVersion</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">1.0</span><span class="sh">"</span><span class="p">,</span>
+        <span class="sh">"</span><span class="s">bucket</span><span class="sh">"</span><span class="p">:</span> <span class="p">{</span>
+          <span class="sh">"</span><span class="s">name</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">medical-calls-audio-bucket</span><span class="sh">"</span><span class="p">,</span>
+          <span class="sh">"</span><span class="s">arn</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">arn:aws:s3:::medical-calls-audio-bucket</span><span class="sh">"</span>
+        <span class="p">},</span>
+        <span class="sh">"</span><span class="s">object</span><span class="sh">"</span><span class="p">:</span> <span class="p">{</span>
+          <span class="sh">"</span><span class="s">key</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">audios/phone_call.mp3</span><span class="sh">"</span><span class="p">,</span>
+          <span class="sh">"</span><span class="s">size</span><span class="sh">"</span><span class="p">:</span> <span class="mi">1024</span><span class="p">,</span>
+          <span class="sh">"</span><span class="s">eTag</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">d41d8cd98f00b204e9800998ecf8427e</span><span class="sh">"</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>To test the Lambda function directly from VSCode using the AWS Toolkit extension:</p>
+
+<ol>
+  <li>Open the AWS extension sidebar in VSCode (AWS icon)</li>
+  <li>Navigate to the “Lambda” section under your configured AWS region</li>
+  <li>Find and right-click on your transcription Lambda function</li>
+  <li>Select “Invoke in the cloud” from the context menu</li>
+  <li>A new editor will open where you can paste the sample S3 event JSON shown above</li>
+  <li>Click “Remote Invoke” to run the function in the cloud</li>
+</ol>
+
+<p><img src="" alt="" /></p>
+
+<p><img src="" alt="" /></p>
+
+<p>After invocation, you can check the execution results in the “AWS Toolkit” output panel. To verify the transcription job was created, you can:</p>
+
+<ul>
+  <li>Check the CloudWatch logs for your function</li>
+  <li>Go to the Amazon Transcribe console to see the running job</li>
+  <li>Monitor your S3 bucket’s “transcripts” folder for the output file</li>
+</ul>
+
+<h2 id="setting-up-s3-event-notifications">Setting Up S3 Event Notifications</h2>
+
+<p>To automate the process, we’ll set up S3 to trigger our Lambda function when new audio files are uploaded. The function will automatically start the transcription job.</p>
+
+<p>To set up S3 event notifications through the AWS Management Console:</p>
+
+<ol>
+  <li>Navigate to your S3 bucket and select the “Properties” tab</li>
+  <li>
+    <p>Scroll down to find the “Event Notifications” section and click “Create event notification”</p>
+
+    <p><img src="" alt="" /></p>
+  </li>
+  <li>Configure the event settings:
+    <ul>
+      <li>Event name: Enter a descriptive name (e.g., “AudioFileUploadTrigger”)</li>
+      <li>Prefix: Enter “audio/” to limit the trigger to files in the audio folder</li>
+      <li>Suffix: Enter “.mp3” to only trigger on MP3 files</li>
+      <li>Event types: Select “All object create events”</li>
+    </ul>
+  </li>
+  <li>Under “Destination”, select “Lambda function” and choose your transcription function from the dropdown</li>
+  <li>Click “Save changes” to create the event notification</li>
+</ol>
+
+<p><img src="" alt="" /></p>
+
+<p><img src="" alt="" /></p>
+
+<p>With these settings, the Lambda function will only trigger when MP3 files are uploaded to the audios/ directory in your S3 bucket. This helps prevent unwanted function invocations and ensures proper resource organization.</p>
+
+<p>Once you configure the S3 event notification to trigger your Lambda function, you’ll see the trigger listed in your Lambda function’s configuration. There’s no need to add it again in the Lambda console. This single step establishes the connection, and your workflow is ready to go.</p>
+
+<p><img src="" alt="" /></p>
+
+<h2 id="upload-an-audio-file-to-the-bucket">Upload an Audio File to the Bucket</h2>
+
+<p>To upload an audio file to your S3 bucket through the AWS Management Console, follow these steps:</p>
+
+<ol>
+  <li>Open the AWS Management Console and navigate to the S3 service</li>
+  <li>Click on your bucket name from the list of buckets</li>
+  <li>Click the “Upload” button at the top of the bucket contents list</li>
+  <li>Click “Add files” or drag and drop your audio file (in this case, phone_call.mp3) into the upload area</li>
+  <li>Review the default settings for the upload. For basic uploads, the default settings are usually sufficient</li>
+  <li>Click “Upload” to start the file transfer</li>
+</ol>
+
+<p>Once the upload is complete, you’ll see your audio file listed in the bucket contents. The S3 event notification we configured earlier will automatically trigger the Lambda function to start the transcription process.</p>
+
+<p><img src="" alt="" /></p>
+
+<p><img src="" alt="" /></p>
+
+<p><img src="" alt="" /></p>
+
+<h2 id="function-output">Function Output</h2>
+
+<p>This is a portion of the output resulting from the transcription job. It includes the job name, account ID, status, and the transcribed text from the audio. It also contains information about the speaker labels, which can be used to distinguish between different speakers in the conversation.</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"jobName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"transcription-job-abc78294-bfb4-4f22-ad8a-d3b26d5329cd"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"accountId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"400513684195"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"COMPLETED"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"results"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"transcripts"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"transcript"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Good morning, Dr Hayes's office. Tarn speaking..."</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">],</span><span class="w">
+    </span><span class="nl">"speaker_labels"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"segments"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+          </span><span class="nl">"start_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.689"</span><span class="p">,</span><span class="w">
+          </span><span class="nl">"end_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">"3.74"</span><span class="p">,</span><span class="w">
+          </span><span class="nl">"speaker_label"</span><span class="p">:</span><span class="w"> </span><span class="s2">"spk_0"</span><span class="p">,</span><span class="w">
+          </span><span class="nl">"items"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+            </span><span class="p">{</span><span class="w">
+              </span><span class="nl">"speaker_label"</span><span class="p">:</span><span class="w"> </span><span class="s2">"spk_0"</span><span class="p">,</span><span class="w">
+              </span><span class="nl">"start_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.699"</span><span class="p">,</span><span class="w">
+              </span><span class="nl">"end_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.97"</span><span class="w">
+            </span><span class="p">},</span><span class="w">
+</span><span class="err">...</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="conclusions">Conclusions</h2>
+
+<p>In this article, we explored the setup of an AWS Lambda function for transcribing audio files using Amazon Transcribe. We learned how to configure the necessary AWS resources, including creating an S3 bucket for audio storage, setting up a Lambda function with the appropriate Python code, and configuring IAM permissions for Transcribe services. We also covered the AWS VSCode extension, which provides powerful development tools for Lambda functions, enabling local testing and debugging. Furthermore, we detailed the process of setting up S3 event notifications to automatically trigger the Lambda function when new audio files are uploaded, creating an automated transcription pipeline.</p>
+
+<p>In the next article of this series, we’ll explore how to leverage Amazon Bedrock to analyze and summarize the transcripts generated by our Lambda function. This will help us extract meaningful insights from the transcribed medical calls, demonstrating the power of combining multiple AWS services for advanced text analysis.</p>
+
+<h2 id="resources">Resources</h2>
+
+<ul>
+  <li>Github Repo: <a href="https://github.com/pedropcamellon/medical-calls-analysis-aws">https://github.com/pedropcamellon/medical-calls-analysis-aws</a></li>
+</ul>
+
+      </article>
+    </main>
+
+    <footer>
+      <p style="font-weight: bold; margin-bottom: 1rem;">Follow me on</p>
+      <a href="https://github.com/pedropcamellon" target="_blank">GitHub</a>
+      <a href="https://www.linkedin.com/in/pedropcamellon/" target="_blank"
+        >LinkedIn</a
+      >
+    </footer>
+  </body>
+</html>
