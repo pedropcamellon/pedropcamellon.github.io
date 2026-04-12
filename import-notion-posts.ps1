@@ -332,40 +332,20 @@ $(if ($updated -and $updated -ne $date) { "updated: $updated" })
         $images = Get-ChildItem -Path $imageDir -File -Include *.png, *.jpg, *.jpeg, *.gif, *.webp
         if ($images.Count -gt 0) {
             Write-Host "  Found $($images.Count) image(s)" -ForegroundColor DarkGray
-                # Copy all images directly to article folder
-                foreach ($imgFile in $images) {
-                    $destPath = Join-Path $articleFolder $imgFile.Name
-                    Copy-Item $imgFile.FullName -Destination $destPath -Force
-                    Write-Host "    Copied: $($imgFile.Name)" -ForegroundColor DarkGray
-                }
-                Write-Host "  ✓ Copied $($images.Count) image(s)" -ForegroundColor Green
+            # Copy all images directly to article folder
+            foreach ($imgFile in $images) {
+                $destPath = Join-Path $articleFolder $imgFile.Name
+                Copy-Item $imgFile.FullName -Destination $destPath -Force
+                Write-Host "    Copied: $($imgFile.Name)" -ForegroundColor DarkGray
             }
-        } else {
-            Write-Host "  No images
+            Write-Host "  ✓ Copied $($images.Count) image(s)" -ForegroundColor Green
+        }
+    }
+    else {
+        Write-Host "  No images found" -ForegroundColor DarkGray
         
     }
     else {
         Write-Host "  [ERROR] Skipping: No title found" -ForegroundColor Yellow
     }
 }
-
-# ============================================================================
-# COMPLETION SUMMARY
-# ============================================================================
-Write-Host "`n========================================" -ForegroundColor Green
-Write-Host "Processing complete!" -ForegroundColor Green
-Write-Host "`nNext steps:"
-Write-Host "  1. Review imported posts in /$blogPath/"
-Write-Host "  2. Verify tags and add more if needed"
-Write-Host "  3. Add featured images if needed (set 'image:' in frontmatter)"
-Write-Host "  4. Clean up temp folder: Remove-Item '$notionExportPath' -Recurse"
-Write-Host ""
-
-# ============================================================================
-# NOTES & POTENTIAL ENHANCEMENTS
-# ============================================================================
-# - Add support for featured image detection (first image in post)
-# - Support for series/collection metadata
-# - Automatic slug collision resolution
-# - Dry-run mode to preview changes
-# ============================================================================
