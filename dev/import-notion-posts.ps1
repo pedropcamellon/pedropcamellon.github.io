@@ -7,12 +7,11 @@
 #   Jekyll blog with proper formatting, metadata, and image handling.
 #
 # MAIN FEATURES:
-#   ✓ Auto-extracts ZIP files (including nested archives)
+#   ✓ Auto-extracts ZIP files to separate folders (avoids conflicts)
 #   ✓ Parses Notion YAML frontmatter (Publish Date, Last Edited, Tags)
 #   ✓ Generates Jekyll-compatible frontmatter with date, tags, excerpt, updated
-#   ✓ Creates date-prefixed filenames (YYYY-MM-DD-slug.md)
-#   ✓ Copies and renames images with date-slug prefix
-#   ✓ Updates image references in markdown
+#   ✓ Creates blog/YYYY-MM-DD-slug/ folder structure
+#   ✓ Copies images to blog post folder (preserves original filenames)
 #   ✓ Auto-detects common tags from content (Python, AWS, React, etc.)
 #   ✓ Adjusts heading levels (demotes H1→H2, etc.)
 #   ✓ Wraps Liquid syntax in {% raw %} tags
@@ -32,7 +31,12 @@ Add-Type -AssemblyName System.Web
 # Configuration
 $notionExportPath = "temp-notion-export"
 $blogPath = "blog"
-$imagesPath = "assets/img/articles"
+
+# Ensure blog directory exists
+if (-not (Test-Path $blogPath)) {
+    New-Item -ItemType Directory -Path $blogPath -Force | Out-Null
+    Write-Host "Created blog directory: $blogPath" -ForegroundColor Green
+}
 
 # ============================================================================
 # FUNCTION: Detect Common Tags from Content
@@ -106,15 +110,19 @@ Write-Host "Found $($zipFiles.Count) ZIP file(s) in /$notionExportPath/" -Foregr
 # ----------------------------------------------------------------------------
 foreach ($zip in $zipFiles) {
     Write-Host "Extracting: $($zip.Name)" -ForegroundColor Yellow
-    Expand-Archive -Path $zip.FullName -DestinationPath $notionExportPath -Force
+    # Create a unique folder for each ZIP based on its name
+    $zipFolderName = [System.IO.Path]::GetFileNameWithoutExtension($zip.Name)
+    $zipExtractPath = Join-Path $notionExportPath $zipFolderName
+    Expand-Archive -Path $zip.FullName -DestinationPath $zipExtractPath -Force
 }
 
-# Extract nested ZIPs if any
-$nestedZips = Get-ChildItem -Path $notionExportPath -Filter "*.zip" -Recurse
+# Extract nested ZIPs if any (but keep original ZIPs in root)
+$nestedZips = Get-ChildItem -Path $notionExportPath -Filter "*.zip" -Recurse | Where-Object { $_.DirectoryName -ne (Resolve-Path $notionExportPath).Path }
 foreach ($nestedZip in $nestedZips) {
     Write-Host "Extracting nested: $($nestedZip.Name)" -ForegroundColor Yellow
     Expand-Archive -Path $nestedZip.FullName -DestinationPath $nestedZip.DirectoryName -Force
     Remove-Item $nestedZip.FullName -Force
+    Write-Host "  Removed nested ZIP: $($nestedZip.Name)" -ForegroundColor DarkGray
 }
 
 # ----------------------------------------------------------------------------
@@ -190,7 +198,7 @@ foreach ($file in $mdFiles) {
         
         # Fail if no valid date was extracted
         if ([string]::IsNullOrWhiteSpace($date)) {
-            Write-Host "  ✗ SKIPPING: Publish Date is required but not found or invalid" -ForegroundColor Red
+            Write-Host "  [ERROR] SKIPPING: Publish Date is required but not found or invalid" -ForegroundColor Red
             continue
         }
         
@@ -225,12 +233,19 @@ foreach ($file in $mdFiles) {
         Write-Host "  Final Tags: $($tags -join ', ')" -ForegroundColor Green
         
         # -----------------------------------------------------------------------
-        # Check for duplicates (skip if already imported)
+        # Create article folder and output path
         # -----------------------------------------------------------------------
-        $outputPath = Join-Path $blogPath "$date-$slug.md"
+        $articleFolder = Join-Path $blogPath "$date-$slug"
+        $outputPath = Join-Path $articleFolder "$date-$slug.md"
+        
         if (Test-Path $outputPath) {
             Write-Host "  WARNING: Already exists - SKIPPING" -ForegroundColor Yellow
             continue
+        }
+        
+        # Create article folder
+        if (-not (Test-Path $articleFolder)) {
+            New-Item -ItemType Directory -Path $articleFolder -Force | Out-Null
         }
         
         # -----------------------------------------------------------------------
@@ -266,27 +281,6 @@ foreach ($file in $mdFiles) {
         # Protect Liquid syntax in code blocks
         # -----------------------------------------------------------------------
         $contentCleaned = $contentCleaned -replace '(```[^`]*\{\{[^`]*```)', '{% raw %}$1{% endraw %}'
-        
-        # -----------------------------------------------------------------------
-        # Fix image paths: Extract filename and update to Jekyll asset path
-        # -----------------------------------------------------------------------
-        # Notion exports images with full paths or encoded names, we just want the filename
-        $contentCleaned = $contentCleaned -replace '!\[([^\]]*)\]\(([^)]*)\)', {
-            param($match)
-            $alt = $match.Groups[1].Value
-            $path = $match.Groups[2].Value.Trim()
-            
-            # Skip empty or whitespace-only paths
-            if ([string]::IsNullOrWhiteSpace($path)) {
-                return "![$alt]()"
-            }
-            
-            # Extract just the filename (after last / or \)
-            $filename = Split-Path $path -Leaf
-            # URL decode the filename if needed
-            $filename = [System.Web.HttpUtility]::UrlDecode($filename)
-            "![$alt](/assets/img/articles/$date-$slug-$filename)"
-        }
         
         # -----------------------------------------------------------------------
         # Extract excerpt (first meaningful paragraph, 50+ chars)
@@ -329,50 +323,29 @@ $(if ($updated -and $updated -ne $date) { "updated: $updated" })
         Write-Host "  ✓ Saved: $outputPath" -ForegroundColor Green
         
         # -----------------------------------------------------------------------
-        # Copy images to assets folder
+        # Copy images to blog post folder (preserve original filenames)
         # -----------------------------------------------------------------------
-        $imageDir = Join-Path $file.DirectoryName ([System.IO.Path]::GetFileNameWithoutExtension($file.Name))
-        if (Test-Path $imageDir) {
-            $images = Get-ChildItem -Path $imageDir -File -Include *.png, *.jpg, *.jpeg, *.gif, *.webp
-            if ($images.Count -gt 0) {
-                Write-Host "  ✓ Found $($images.Count) image(s)" -ForegroundColor Magenta
-                foreach ($img in $images) {
-                    $newImgName = "$date-$slug-$($img.Name)"
-                    $destPath = Join-Path $imagesPath $newImgName
-                    Copy-Item $img.FullName -Destination $destPath -Force
-                    Write-Host "    - Copied: $newImgName"
-                }
+        # Notion exports images to the same folder as the markdown file
+        $imageDir = $file.DirectoryName
+        Write-Host "  Looking for images in: $imageDir" -ForegroundColor DarkGray
+        
+        $images = Get-ChildItem -Path $imageDir -File -Include *.png, *.jpg, *.jpeg, *.gif, *.webp
+        if ($images.Count -gt 0) {
+            Write-Host "  Found $($images.Count) image(s)" -ForegroundColor DarkGray
+            # Copy all images directly to article folder
+            foreach ($imgFile in $images) {
+                $destPath = Join-Path $articleFolder $imgFile.Name
+                Copy-Item $imgFile.FullName -Destination $destPath -Force
+                Write-Host "    Copied: $($imgFile.Name)" -ForegroundColor DarkGray
             }
+            Write-Host "  ✓ Copied $($images.Count) image(s)" -ForegroundColor Green
         }
-        else {
-            Write-Host "  ℹ No images folder found" -ForegroundColor DarkGray
-        }
+    }
+    else {
+        Write-Host "  No images found" -ForegroundColor DarkGray
         
     }
     else {
-        Write-Host "  ✗ Skipping: No title found" -ForegroundColor Yellow
+        Write-Host "  [ERROR] Skipping: No title found" -ForegroundColor Yellow
     }
 }
-
-# ============================================================================
-# COMPLETION SUMMARY
-# ============================================================================
-Write-Host "`n========================================" -ForegroundColor Green
-Write-Host "Processing complete!" -ForegroundColor Green
-Write-Host "`nNext steps:"
-Write-Host "  1. Review imported posts in /$blogPath/"
-Write-Host "  2. Verify tags and add more if needed"
-Write-Host "  3. Add featured images if needed (set 'image:' in frontmatter)"
-Write-Host "  4. Clean up temp folder: Remove-Item $notionExportPath -Recurse"
-Write-Host "`n" -NoNewline
-
-# ============================================================================
-# NOTES & POTENTIAL ENHANCEMENTS
-# ============================================================================
-# - Add support for featured image detection (first image in post)
-# - Support for series/collection metadata
-# - Automatic slug collision resolution
-# - Dry-run mode to preview changes
-# - Interactive tag editing
-# - Custom tag pattern configuration file
-# ============================================================================
