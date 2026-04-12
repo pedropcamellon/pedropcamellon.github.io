@@ -36,9 +36,9 @@ In this article, we'll set up monitoring for our Lambda function that summarizes
 
 To configure logging, navigate to the [Settings page](https://us-east-1.console.aws.amazon.com/bedrock/home?region=us-east-1#/settings) in the Bedrock console, from the left navigation bar. Then toggle the **Model invocation logging** button which will present you with several fields that will need to be filled out before logging can be enabled. First, select the data types to include with logs. You can choose text, image and embedding.
 
-![]()
+![image.png](image.png)
 
-![]()
+![](https://d2908q01vomqb2.cloudfront.net/972a67c48192728a34979d9a35164c1295401b71/2023/10/10/CloudWatchBedrock-DataTypes.jpg)
 
 Now you'll need to choose where to send your logs. You have three options:
 
@@ -48,25 +48,25 @@ Now you'll need to choose where to send your logs. You have three options:
 
 No matter which option you pick, you stay in control of your data. You can encrypt it using KMS and decide how long to keep the logs. I decided to use **CloudWatch Logs only** for my setup. If you don't have a log group already, you'll need to create one in CloudWatch and specify its name here.
 
-![]()
+![image.png](image%201.png)
 
-![]()
+![image.png](image%202.png)
 
 Next, select the **Create and use a new role** option and provide a name for your role. I chose **BedrockCloudWatchLogs**. Then, in the S3 bucket for large data delivery field, select the same bucket we created earlier for storing medical call audio files. Click Save Settings to complete the configuration.
 
-![]()
+![image.png](image%203.png)
 
-![]()
+![image.png](image%204.png)
 
 ## Inspecting Log Data
 
 Now that we have setup logging in Bedrock, triggering the summarize Lambda function will create log streams where you can observe both the model invocation details and Lambda function output. This combination of logs provides valuable debugging information about how your application is processing requests and interacting with the model.
 
-![]()
+![image.png](image%205.png)
 
 In near real-time you should start to see logs in the newly created Log Group when you query the log group from Logs Insights. As shown in the image above, each log entry contains detailed information about the model invocation.
 
-![]()
+![](https://d2908q01vomqb2.cloudfront.net/972a67c48192728a34979d9a35164c1295401b71/2023/10/10/LogInsightsNewGroup.jpg)
 
 ## Machine Learning Data Protection for CloudWatch Logs
 
@@ -74,7 +74,7 @@ CloudWatch provides built-in data protection capabilities that use pattern match
 
 We'll also send the audit findings to a dedicated audit log group, which allows us to track and analyze the data protection results separately from our source logs. This separation is required by CloudWatch and helps maintain clear boundaries between source data and audit findings.
 
-![]()
+![image.png](image%206.png)
 
 ## CloudWatch Alarms
 
@@ -114,21 +114,21 @@ To receive notifications when the alarm triggers, you'll need to set up an Amazo
    - Give your topic a name
    - Click "Create topic"
 
-![]()
+![image.png](image%207.png)
 
 ### Alarm Setup
 
 To set up an alarm for Bedrock invocations, navigate to "Alarms" > "All Alarms" in the CloudWatch console and click "Create alarm". When selecting the metric, choose "AWS/Bedrock" namespace, then "Model Metrics", and finally select the "Invocations" metric to monitor.
 
-![]()
+![image.png](image%208.png)
 
-![]()
+![image.png](image%209.png)
 
 In the CloudWatch alarm configuration, set the metric statistic to "Sum" with a 1-minute period. For conditions, configure a static threshold that triggers when the value is greater than 10.
 
-![]()
+![image.png](image%2010.png)
 
-![]()
+![image.png](image%2011.png)
 
 1. Create a subscription for the topic:
    - Select "Create subscription"
@@ -142,7 +142,7 @@ In the CloudWatch alarm configuration, set the metric statistic to "Sum" with a 
 
 Once created, the alarm will monitor Bedrock invocations and send notifications through SNS when the threshold is exceeded.
 
-![]()
+![image.png](image%2012.png)
 
 ## **Conclusions**
 

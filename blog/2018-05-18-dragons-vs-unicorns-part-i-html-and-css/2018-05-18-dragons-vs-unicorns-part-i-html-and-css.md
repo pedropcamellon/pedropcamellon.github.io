@@ -13,7 +13,7 @@ This process will allow us to cover key features of these three technologies lea
 
 This is how the game will look like:
 
-[![Dragons vs Unicorns game app](/assets/img/articles/tic-tac-toe.png)](/assets/articles/tic-tac-toe.png)
+[![Dragons vs Unicorns game app](tic-tac-toe.png)](images/dragons-vs-unicorns.webp)
 
 You can play the live version here: https://pedropcamellon.github.io/tic-tac-toe/; or you can check the repo here: https://github.com/pedropcamellon/tic-tac-toe.
 

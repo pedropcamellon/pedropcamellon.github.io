@@ -10,7 +10,7 @@ excerpt: "Learn how to automate AWS resource provisioning and management using T
 
 Github Repo: https://github.com/pedropcamellon/medical-calls-analysis-aws
 
-# Summary
+## Summary
 
 - **Terraform as Infrastructure as Code:** Automates AWS resource deployment with declarative code, eliminating manual configuration and ensuring consistency.
 - **Improved Deployment Process:** Makes infrastructure deployments consistent, efficient, and scalable while reducing human error.
@@ -20,7 +20,7 @@ Github Repo: https://github.com/pedropcamellon/medical-calls-analysis-aws
 - **Environment Management:** Supports multiple environments (development, staging, production) through workspaces with environment-specific variables.
 - **Resource Lifecycle Control:** Provides complete infrastructure lifecycle management from creation to destruction with simple commands.
 
-# Introduction
+## Introduction
 
 In the previous post of our series, we explored the importance of monitoring and logging in AI applications using CloudWatch. Now, we'll take a step further by introducing Terraform, an Infrastructure as Code (IaC) tool, to automate the deployment of our serverless architecture.
 
@@ -45,13 +45,13 @@ For our medical call analysis system, Terraform will automate the deployment of 
 
 Let's dive into how we can use this incredible tool to automate the deployment of all the AWS resources needed for our medical call analysis system!
 
-# Project Structure and Prerequisites
+## Project Structure and Prerequisites
 
 Before getting started with this tutorial, you'll need to set up your development environment. This includes having the AWS CLI configured with appropriate credentials and Python 3.11 installed for Lambda development. You'll also need an AWS account with the necessary permissions to create resources. To authenticate the Terraform AWS provider, you'll need to set up your IAM credentials by exporting your AWS access key ID and secret key as environment variables:
 `$ export AWS_ACCESS_KEY_ID=`
 `$ export AWS_SECRET_ACCESS_KEY=`
 
-# **Install Terraform**
+## Install Terraform
 
 To install Terraform, you can download it as a binary package from HashiCorp's website or use popular package managers. The installation process involves downloading the appropriate package for your system as a zip archive, extracting it to get the single `terraform` binary, and adding it to your system's PATH.
 
@@ -64,7 +64,7 @@ $ terraform -help
 Usage: terraform [-version] [-help] <command> [args]
 
 The available commands for execution are listed below.The most common, useful commands are shown first, followed byless common or more advanced commands. If you're just gettingstarted with Terraform, stick with the common commands. For theother commands, please read the help and docs before usage.
-##...
+...
 ```
 
 Add any subcommand to `terraform -help` to learn more about what it does and available options.
@@ -73,7 +73,7 @@ Add any subcommand to `terraform -help` to learn more about what it does and a
 $ terraform -help plan
 ```
 
-# **Write configuration**
+## Write configuration
 
 With Terraform installed, you are ready to create your first infrastructure.
 
@@ -81,7 +81,7 @@ The set of files used to describe infrastructure in Terraform is known as a Terr
 
 A Terraform configuration requires its own dedicated working directory with a specific file structure. The main configuration consists of three key files: `main.tf` for the primary infrastructure configuration, `variables.tf` for defining input variables, and `outputs.tf` for specifying output values. This organized structure helps maintain clean, modular, and reusable infrastructure code that can be easily deployed with Terraform.
 
-# **Terraform Block**
+## Terraform Block
 
 The `terraform {}` block contains Terraform settings, including the required providers Terraform will use to provision your infrastructure. For each provider, the `source` attribute defines an optional hostname, a namespace, and the provider type. Terraform installs providers from the [Terraform Registry](https://registry.terraform.io/) by default. In this example configuration, the `aws` provider's source is defined as `hashicorp/aws`, which is shorthand for `registry.terraform.io/hashicorp/aws`.
 
@@ -89,7 +89,7 @@ You can also set a version constraint for each provider defined in the `require
 
 ```hcl
 terraform {
-	# ...
+	...
 
   required_version = ">= 1.11.4"
 }
@@ -97,7 +97,7 @@ terraform {
 
 To learn more, reference the [provider source documentation](https://developer.hashicorp.com/terraform/language/providers/requirements).
 
-# **Providers**
+## Providers
 
 The `provider` block configures the AWS provider, which is a plugin that Terraform uses to create and manage AWS resources. For our medical call analysis system, we'll use the AWS provider to manage resources like Lambda functions, S3 buckets, and IAM roles. The provider block specifies configuration details like region and authentication settings.
 
@@ -114,7 +114,7 @@ terraform {
 }
 ```
 
-# Variables
+## Variables
 
 Separating variables into their own file is a Terraform best practice that enhances code organization and reusability. The `variables.tf` file serves as a central location for all variable definitions, making it easier to:
 
@@ -174,7 +174,7 @@ You can override these default values in several ways:
 - Setting environment variables (TF_VAR_variable_name)
 - Using command-line flags (-var or -var-file)
 
-# **Resources**
+## Resources
 
 Use `resource` blocks to define components of your infrastructure. A resource might be a physical or virtual component such as an EC2 instance, or it can be a logical resource such as a Heroku application.
 
@@ -182,7 +182,7 @@ Resource blocks have two strings before the block: the resource type and the res
 
 Resource blocks contain arguments which you use to configure the resource. Arguments can include things like machine sizes, disk image names, or VPC IDs. Our [providers reference](https://developer.hashicorp.com/terraform/language/providers) lists the required and optional arguments for each resource. For your EC2 instance, the example configuration sets the AMI ID to an Ubuntu image, and the instance type to `t2.micro`, which qualifies for AWS' free tier. It also sets a tag to give the instance a name.
 
-## S3 Bucket Configuration
+### S3 Bucket Configuration
 
 We create an S3 bucket to store our audio files and transcripts:
 
@@ -197,7 +197,7 @@ resource "aws_s3_bucket" "audio_bucket" {
 }
 ```
 
-## IAM Roles and Policies
+### IAM Roles and Policies
 
 Our IAM configuration follows security best practices for handling medical data by implementing strict access controls. We follow the principle of least privilege by granting Lambda functions only the essential permissions needed for their operations: S3 object access, Transcribe job execution, and Bedrock model invocation. The policies are carefully crafted to restrict actions to specific resources, such as limiting `s3:GetObject` operations to the `medical-calls-audio-bucket`, and we avoid using broad permissions like `"Resource": "*"`.
 
@@ -297,7 +297,7 @@ resource "aws_iam_role_policy_attachment" "lambda_policy_attachment" {
 }
 ```
 
-## Lambda Functions
+### Lambda Functions
 
 Our Lambda functions are optimized for AI workloads through careful runtime and configuration choices. We use Python 3.11 as it provides an optimal balance between machine learning library support and cold-start performance, with Lambda Layers handling dependencies like Boto3. The timeout settings are tailored to each function's needs: the Transcription Lambda has a 10-second timeout for efficient audio upload processing, while the Summarization Lambda is allocated 30 seconds to accommodate Bedrock's AI processing requirements. The system is built around two core functions: a Transcribe Lambda that handles audio file transcription, and a Summarize Lambda that processes transcripts using Bedrock.
 
@@ -332,7 +332,7 @@ resource "aws_lambda_function" "summarize_lambda" {
 }
 ```
 
-## **Event-Driven Pipeline**
+### Event-Driven Pipeline
 
 Our system leverages S3 event notifications to create an efficient serverless pipeline. When files are uploaded to specific paths (audios/ and transcripts/), they automatically trigger corresponding Lambda functions for transcription and summarization. This architecture employs a decoupled approach, where transcription and summarization processes run as independent Lambda functions. This separation not only prevents cascading failures but also enables parallel scaling, making the system more resilient and performant. The workflow is straightforward: uploading new audio files triggers the transcription function, while the resulting transcripts automatically trigger the summarization function.
 
@@ -389,7 +389,7 @@ resource "aws_lambda_permission" "allow_s3_to_invoke_summarize" {
 }
 ```
 
-# Outputs
+## Outputs
 
 To maintain a clean and organized Terraform configuration, it's recommended to define outputs in a separate file called `outputs.tf`. This separation helps in:
 
@@ -420,7 +420,7 @@ output "summarize_lambda_arn" {
 }
 ```
 
-# **Initialize the directory**
+## Initialize the directory
 
 Before working with a new Terraform configuration or checking out an existing one from version control, you must first run `terraform init` to initialize the directory. This command downloads and installs the necessary providers (in this case, the AWS provider) and stores them in a hidden `.terraform` subdirectory. Additionally, it creates a `.terraform.lock.hcl` lock file that specifies the exact provider versions being used, allowing you to maintain control over provider updates for your project.
 
@@ -431,13 +431,13 @@ Initializing provider plugins...
 - Finding hashicorp/aws versions matching...
 ```
 
-# **Format and validate the configuration**
+## Format and validate the configuration
 
 Before deploying your Terraform configuration, it's important to ensure proper formatting and validation. The `terraform fmt` command helps maintain consistent formatting across all configuration files, automatically updating them for readability.
 
 After formatting, use `terraform validate` to verify that your configuration is syntactically valid and internally consistent. If both commands run successfully, with `terraform fmt` showing no modifications needed and `terraform validate` returning a success message, your configuration is ready for deployment.
 
-# **Create infrastructure**
+## Create infrastructure
 
 Apply the configuration now with the `terraform apply` command. Terraform will print output similar to what is shown below. We have truncated some of the output to save space.
 
@@ -463,7 +463,7 @@ We have now created our infrastructure using Terraform! After deployment, verify
 - Checking CloudWatch logs for Lambda execution
 - Verifying the generated transcript and summary in the respective S3 folders
 
-# **Inspect state**
+## Inspect state
 
 After applying your configuration, Terraform maintains a state file called `terraform.tfstate` that tracks resource IDs, properties, and management details. Since this file contains sensitive information and is crucial for resource management, it requires secure storage and restricted access. For production environments, we recommend using remote state storage solutions like HCP Terraform, Terraform Enterprise, or other supported remote backends. You can examine your current state configuration using the `terraform show` command.
 
@@ -487,7 +487,7 @@ resource "aws_iam_policy" "lambda_policy" {
 
 When Terraform created this EC2 instance, it also gathered the resource's metadata from the AWS provider and wrote the metadata to the state file. In later tutorials, you will modify your configuration to reference these values to configure other resources and output values.
 
-# Clean Up
+## Clean Up
 
 To clean up after testing, you can easily remove all deployed resources by running the `terraform destroy` command. This makes it cost-effective to experiment with different configurations since you can quickly tear down resources when they're no longer needed.
 
@@ -497,13 +497,13 @@ After running the destroy command, it's recommended to verify in the AWS Console
 terraform destroy
 ```
 
-# **Operational Excellence with Terraform**
+## Operational Excellence with Terraform
 
-## **Environment Management**
+### Environment Management
 
 Terraform workspaces provide a powerful way to manage multiple environments (development, staging, production) using the same configuration files. Each workspace maintains its own state file, allowing you to keep infrastructure separate while reusing code. Environment-specific variables are managed through `terraform.tfvars` files, making it easy to customize settings like instance sizes or backup frequencies for each environment.
 
-## **Resource Organization and Cost Control**
+### Resource Organization and Cost Control
 
 Implementing a consistent tagging strategy is crucial for resource management and cost optimization. By adding tags such as `Environment = "Production"`, `Team = "DevOps"`, or `Project = "MedicalCalls"`, you can:
 
@@ -512,11 +512,11 @@ Implementing a consistent tagging strategy is crucial for resource management an
 - Automate resource cleanup and maintenance tasks
 - Track resource ownership and purpose across your organization
 
-# **Conclusions**
+## Conclusions
 
 In this post, we demonstrated how Terraform solves key infrastructure management challenges through Infrastructure as Code (IaC). By automating AWS resource provisioning and management, Terraform eliminates manual configuration errors, ensures consistent deployments, and enables version control of infrastructure. Its declarative approach not only simplifies resource creation and updates but also provides a reliable way to track, modify, and destroy infrastructure across multiple environments.
 
-# Sources
+## Sources
 
 - https://developer.hashicorp.com/terraform/tutorials/aws-get-started/infrastructure-as-code
 - https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli

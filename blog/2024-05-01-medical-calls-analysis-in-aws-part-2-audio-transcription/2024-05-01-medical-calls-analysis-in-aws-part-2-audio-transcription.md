@@ -33,9 +33,9 @@ We will create an automated workflow using AWS Lambda to monitor S3 events. When
 
 We first need to create a storage bucket. Begin by logging into the AWS Management Console and navigate to the S3 service, either by searching for "S3" in the service search bar or selecting it from the "Storage" section. Once there, click on the "Create bucket" button. This will prompt you to provide details for the new bucket. Start by entering a unique name for your bucket in the "Bucket name" field and then select the Region in which you want your bucket to be located. The other settings can be left at their default values for now. After that, scroll down and click on the "Create bucket" button. Now your bucket is ready for use, and you can proceed to upload your files.
 
-![]()
+![image.png](image.png)
 
-![]()
+![image.png](image%201.png)
 
 ## Amazon Transcribe Permissions
 
@@ -145,9 +145,9 @@ To create a Lambda function through the AWS Management Console, follow these ste
 
 In the code tab of your Lambda function, you'll find lambda_function.py. Delete any existing code and paste the transcription function code provided above. Save the changes by clicking "Deploy"
 
-![]()
+![image.png](image%202.png)
 
-![]()
+![image.png](image%203.png)
 
 Before testing the function, we need to update the IAM role permissions to allow the Lambda function to use Amazon Transcribe services. Add the following permissions to your IAM role policy:
 
@@ -194,7 +194,7 @@ To test your Lambda function using the AWS Toolkit:
 4. Right-click in the editor and select "AWS: Invoke Lambda Function Locally"
 5. Choose or create a test event JSON file (like the example shown above)
 
-![]()
+![image.png](image%204.png)
 
 This local testing capability significantly speeds up the development process by allowing you to iterate and debug your Lambda functions without deploying them to AWS each time.
 
@@ -237,9 +237,9 @@ To test the Lambda function directly from VSCode using the AWS Toolkit extension
 5. A new editor will open where you can paste the sample S3 event JSON shown above
 6. Click "Remote Invoke" to run the function in the cloud
 
-![]()
+![image.png](image%205.png)
 
-![]()
+![image.png](image%206.png)
 
 After invocation, you can check the execution results in the "AWS Toolkit" output panel. To verify the transcription job was created, you can:
 
@@ -255,9 +255,9 @@ To set up S3 event notifications through the AWS Management Console:
 
 1. Navigate to your S3 bucket and select the "Properties" tab
 2. Scroll down to find the "Event Notifications" section and click "Create event notification"
-
-   ![]()
-
+    
+    ![image.png](image%207.png)
+    
 3. Configure the event settings:
    - Event name: Enter a descriptive name (e.g., "AudioFileUploadTrigger")
    - Prefix: Enter "audio/" to limit the trigger to files in the audio folder
@@ -266,15 +266,15 @@ To set up S3 event notifications through the AWS Management Console:
 4. Under "Destination", select "Lambda function" and choose your transcription function from the dropdown
 5. Click "Save changes" to create the event notification
 
-![]()
+![image.png](image%208.png)
 
-![]()
+![image.png](image%209.png)
 
 With these settings, the Lambda function will only trigger when MP3 files are uploaded to the audios/ directory in your S3 bucket. This helps prevent unwanted function invocations and ensures proper resource organization.
 
 Once you configure the S3 event notification to trigger your Lambda function, you’ll see the trigger listed in your Lambda function’s configuration. There’s no need to add it again in the Lambda console. This single step establishes the connection, and your workflow is ready to go.
 
-![]()
+![image.png](image%2010.png)
 
 ## Upload an Audio File to the Bucket
 
@@ -289,11 +289,11 @@ To upload an audio file to your S3 bucket through the AWS Management Console, fo
 
 Once the upload is complete, you'll see your audio file listed in the bucket contents. The S3 event notification we configured earlier will automatically trigger the Lambda function to start the transcription process.
 
-![]()
+![image.png](image%2011.png)
 
-![]()
+![image.png](image%2012.png)
 
-![]()
+![image.png](image%2013.png)
 
 ## Function Output
 

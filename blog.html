@@ -11,8 +11,9 @@ title: Blog
   {% for post in blog_posts %}
   <a href="{{ post.url | relative_url }}" class="blog-card">
     {% if post.image %}
+    {% assign post_dir = post.path | remove: '.md' | split: '/' | slice: 0, 2 | join: '/' %}
     <img
-      src="/assets/img/articles/{{ post.image }}"
+      src="/{{ post_dir }}/{{ post.image }}"
       alt="{{ post.title }}"
       class="blog-image"
     />
