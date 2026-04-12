@@ -35,37 +35,37 @@ Before we dive into medical call analysis with AWS services, we need to create a
 
 To create an AWS account, visit [aws.amazon.com](images/http://aws.amazon.com) and click 'Create an AWS account'. Follow the setup steps to create your root user account, which has full access to all AWS services. While the root user has unlimited privileges, it's recommended to use it only for essential administrative tasks and protect its credentials carefully.
 
-![](images/)
+![image.png](image.png)
 
-![](images/)
+![image.png](image%201.png)
 
 For security, AWS recommends creating individual IAM users instead of using the root account for daily operations, even for users with administrative permissions. IAM users are identities within your AWS account with specific permissions. Each IAM user has unique security credentials - either access keys for programmatic access or passwords for console access. Unlike the root user with unlimited access, IAM users can only perform tasks they're explicitly granted permission to do.
 
 To create an IAM user, sign in to the AWS Management Console, go to IAM, click “Users” then “Create User”. Enter a username and click “Next”.
 
-![](images/)
+![image.png](image%202.png)
 
-![](images/)
+![image.png](image%203.png)
 
 After the user is created, you need to set permissions. Click on 'Attach existing policies directly', and in the search bar, type "Bedrock" to find the `AmazonBedrockFullAccess` policy. Select this policy to grant full access to the Amazon Bedrock service. Click “Next”.
 
-![](images/)
+![image.png](image%204.png)
 
 Review the details and click Create.
 
-![](images/)
+![image.png](image%205.png)
 
-![](images/)
+![image.png](image%206.png)
 
 Lastly, you need to create new access keys for your IAM user. In the IAM console, select your user and click on the 'Security credentials' tab. Under 'Access keys', click on 'Create access key'. This will generate a new set of keys. Make sure to download and securely store these keys; you'll need them to configure your AWS CLI.
 
-![](images/)
+![image.png](image%207.png)
 
-![](images/)
+![image.png](image%208.png)
 
 ## Install and Configure the AWS CLI
 
-To install and configure the AWS CLI on a Windows system, ensure you're operating on a Microsoft-supported version of 64-bit Windows and have the necessary administrative rights. Download and run the AWS CLI MSI installer for Windows (64-bit) from [here](images/https://awscli.amazonaws.com/AWSCLIV2.msi), or alternatively, use the `msiexec` command. For silent installations, use the `/qn` flag. After installation, open the command prompt by searching for `cmd` in the Start menu and confirm the installation by running the `aws --version` command. If the program isn't found, refresh the path by reopening the command prompt. Once the installation is successful, run `aws configure` using your access keys and set the default region. More detailed information can be found [here](images/https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html#cli-configure-files-methods).
+To install and configure the AWS CLI on a Windows system, ensure you're operating on a Microsoft-supported version of 64-bit Windows and have the necessary administrative rights. Download and run the AWS CLI MSI installer for Windows (64-bit) from [here](https://awscli.amazonaws.com/AWSCLIV2.msi), or alternatively, use the `msiexec` command. For silent installations, use the `/qn` flag. After installation, open the command prompt by searching for `cmd` in the Start menu and confirm the installation by running the `aws --version` command. If the program isn't found, refresh the path by reopening the command prompt. Once the installation is successful, run `aws configure` using your access keys and set the default region. More detailed information can be found [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html#cli-configure-files-methods).
 
 After you've successfully created your AWS account and set up an Identity and Access Management (IAM) user, the next step involves logging into the AWS console. However, instead of using your root account, you should log in using the credentials of the newly created IAM user. This is a best practice recommended by AWS, as it provides added security for your account.
 
@@ -73,17 +73,17 @@ After you've successfully created your AWS account and set up an Identity and Ac
 
 Amazon Bedrock is a fully managed service provided by AWS that offers access to high-performing foundation models from leading AI companies. Developers can customize these models privately with their own data through techniques like fine-tuning and Retrieval Augmented Generation (RAG). They can also build agents that execute tasks using enterprise systems and data sources. Being serverless, Amazon Bedrock eliminates infrastructure management needs, making it simple to securely integrate and deploy generative AI capabilities into applications using familiar AWS services.
 
-![](images/)
+![image.png](image%209.png)
 
-![](images/)
+![image.png](image%2010.png)
 
 ### **Request Model Access**
 
-To use Bedrock serverless models, account users with the correct [IAM Permissions](images/https://docs.aws.amazon.com/bedrock/latest/userguide/security_iam_id-based-policy-examples.html)  must enable access to available Bedrock foundation models (FMs). I requested access to Amazon Titan Lite, but this same process can be followed to request access to any of the foundation models available in Amazon Bedrock. Each model has its own strengths and specialized use cases.
+To use Bedrock serverless models, account users with the correct [IAM Permissions](https://docs.aws.amazon.com/bedrock/latest/userguide/security_iam_id-based-policy-examples.html)  must enable access to available Bedrock foundation models (FMs). I requested access to Amazon Titan Lite, but this same process can be followed to request access to any of the foundation models available in Amazon Bedrock. Each model has its own strengths and specialized use cases.
 
-![](images/)
+![image.png](29acf753-7676-43ec-a662-8b6381c38983.png)
 
-![](images/)
+![image.png](464a9a06-801b-49be-83b7-e2bb83a7108e.png)
 
 ## Boto3 - AWS Python SDK
 
