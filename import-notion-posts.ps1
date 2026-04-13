@@ -340,10 +340,10 @@ $(if ($updated -and $updated -ne $date) { "updated: $updated" })
             }
             Write-Host "  ✓ Copied $($images.Count) image(s)" -ForegroundColor Green
         }
-    }
-    else {
-        Write-Host "  No images found" -ForegroundColor DarkGray
+        else {
+            Write-Host "  No images found" -ForegroundColor DarkGray
         
+        }
     }
     else {
         Write-Host "  [ERROR] Skipping: No title found" -ForegroundColor Yellow
