@@ -17,7 +17,7 @@ tags:
     "ai",
     "cloudwatch",
   ]
-excerpt: "We'll summarize these files using the Titan model, an LLM hosted on Amazon Bedrock. This process shows how to transform lengthy conversations into concise, actionable summaries. Amazon Bedrock provides secure access to leading AI foundation models through a single API."
+excerpt: "I built an automated system to summarize medical call transcripts using Amazon Bedrock's Titan LLM. This POC taught me event-driven architecture, IAM security, serverless computing, and prompt engineering—key AWS skills for building scalable AI applications."
 updated: 2025-05-17
 ---
 
@@ -25,17 +25,19 @@ Github Repo: [https://github.com/pedropcamellon/medical-calls-analysis-aws](http
 
 ## Introduction
 
-In the previous article, we used Amazon Transcribe to obtain transcribed JSON files from audio recordings. Now, we'll summarize these files using the Titan model, an LLM hosted on Amazon Bedrock. This process shows how to transform lengthy conversations into concise, actionable summaries. Amazon Bedrock provides secure access to leading AI foundation models through a single API. Though we're focusing on medical applications, this approach works for any industry involving communication and information exchange—providing an efficient way to streamline information processing.
+In the previous article, I showed how I used Amazon Transcribe to obtain transcribed JSON files from audio recordings. In this part, I wanted to take those transcripts and automatically summarize them using the Titan model on Amazon Bedrock. This was my first deep dive into using large language models through AWS, and I learned a lot about how to transform lengthy conversations into concise, actionable summaries.
 
-We'll combine AWS Lambda for serverless computing with Amazon Bedrock's language models to create an efficient solution that can process and analyze conversations at scale. The system uses S3 triggers to automatically initiate processing when new audio files are uploaded, demonstrating how to create a fully automated workflow for handling communication data. We'll cover everything from initial setup to implementation details.
+One of the key skills I developed was understanding how Amazon Bedrock provides secure access to leading AI foundation models through a single API—making it much easier than I expected to integrate LLMs into my application. While I focused on medical applications for this POC, I realized this approach could work for any industry dealing with communication and information exchange.
 
-## Create an Amazon S3 Bucket
+I decided to combine AWS Lambda for serverless computing with Amazon Bedrock's language models. This taught me how to build event-driven architectures that can process and analyze conversations at scale. The most interesting part was setting up S3 triggers to automatically initiate processing when new audio files are uploaded—creating a fully automated workflow that runs without any manual intervention.
 
-We first need to create a storage bucket. Begin by logging into the AWS Management Console and navigate to the S3 service, either by searching for "S3" in the service search bar or selecting it from the "Storage" section. Once there, click on the "Create bucket" button. This will prompt you to provide details for the new bucket. Start by entering a unique name for your bucket in the "Bucket name" field and then select the Region in which you want your bucket to be located. The other settings can be left at their default values for now. After that, scroll down and click on the "Create bucket" button. Now your bucket is ready for use, and you can proceed to upload your files.
+## Creating My S3 Bucket
 
-## Amazon Transcribe Permissions
+The first thing I needed was a storage bucket for my audio files and generated outputs. I logged into the AWS Management Console and navigated to S3. Creating the bucket was straightforward—I clicked "Create bucket," entered a unique name, and selected my preferred region (us-east-1). I left most settings at their defaults for this POC, though in a production environment I'd definitely revisit security and versioning settings. This was good practice in understanding S3 bucket configuration and regional considerations for data storage.
 
-To allow automatic transcription when new audio files are uploaded to our S3 bucket, we need to create an IAM role that gives Amazon Transcribe access to our audio files. This role requires the following permissions:
+## Setting Up IAM Permissions for Transcribe
+
+One of the most important lessons I learned was about AWS IAM (Identity and Access Management) and the principle of least privilege. To allow Amazon Transcribe to access my audio files automatically, I had to create an IAM role with specific permissions. This taught me how to scope permissions correctly—giving just enough access to do the job without over-permissioning:
 
 ```json
 {
@@ -50,11 +52,11 @@ To allow automatic transcription when new audio files are uploaded to our S3 buc
 }
 ```
 
-## Summarize Lambda Function Code
+## Building the Summarization Lambda Function
 
-Now that we have our audio files and transcripts in S3, let's create a Lambda function to summarize the transcribed content using Amazon Bedrock. This function will process the JSON transcripts and generate concise summaries using a Large Language Model.
+With my audio files and transcripts in S3, the next challenge was creating a Lambda function to summarize the content using Amazon Bedrock. This was where I really started to understand serverless architecture and event-driven design patterns. The function I built processes JSON transcripts and generates summaries using a Large Language Model.
 
-Here's how the summarization workflow operates:
+Here's the workflow I designed:
 
 1. A new transcript JSON file appears in the S3 'transcripts' folder
 2. This triggers our summarization Lambda function
@@ -63,9 +65,9 @@ Here's how the summarization workflow operates:
 5. Bedrock analyzes the content and generates a summary
 6. The summary is saved back to S3 in a 'summaries' folder
 
-This automated approach ensures efficient processing of our transcripts. The Lambda function handles the entire workflow: reading the JSON transcript, formatting the content for the LLM, making the API call to Bedrock, and storing the results. The function includes error handling and logging to track any issues that may arise during processing.
+This automated approach was a major learning point for me—understanding how to chain AWS services together in an event-driven architecture. I had to think through error handling, logging, and making sure the function was idempotent (so it wouldn't break if triggered multiple times).
 
-Let's examine how this Lambda function works in detail. When triggered by a new transcript file, it reads the JSON content from S3 and extracts the relevant conversation data. It then formats this data into a prompt suitable for the Bedrock model. After receiving the model's response, it processes the summary and saves it back to S3. The function includes comprehensive error handling and returns appropriate status messages to confirm successful execution or alert of any issues.
+The Lambda function I wrote handles the entire workflow: reading the JSON transcript, formatting the content for the LLM, making the API call to Bedrock, and storing the results. I made sure to include comprehensive error handling and logging—skills that proved crucial when debugging issues during development.
 
 ```python
 import boto3
@@ -131,9 +133,9 @@ def lambda_handler(event, context):
     }
 ```
 
-## Parsing the Transcript
+## Parsing the Transcript: Understanding AWS Service Outputs
 
-The transcript service generates JSON output that details each spoken word and punctuation mark. The extraction function streamlines this data by parsing the main text, matching speaker segments, formatting with speaker labels, and incorporating timestamps and punctuation marks. Let's break down its structure:
+One skill I developed was learning to work with AWS service outputs. The transcript service generates detailed JSON with every spoken word and punctuation mark. I had to write an extraction function that streamlines this data—parsing the text, matching speaker segments, and formatting everything properly. Here's what I learned about the JSON structure:
 
 - **jobName**: A unique identifier for the transcription job (e.g., "transcription-job-abc78294-bfb4-4f22-ad8a-d3b26d5329cd")
 - **status**: The current state of the transcription job (e.g., "COMPLETED")
@@ -172,7 +174,7 @@ The transcript service generates JSON output that details each spoken word and p
             ...
 ```
 
-The `extract_transcript_from_textract` function transforms the raw JSON output from Amazon Textract into a human-readable conversation format. It processes the transcript word by word, organizing the content by speaker and maintaining proper formatting. The function adds speaker labels at the beginning of each new speaker's dialogue, handles punctuation by removing trailing spaces, and combines all elements into a clean, formatted transcript with clear speaker transitions. This transformation makes the conversation much easier to read and analyze compared to the raw JSON format.
+I wrote the `extract_transcript_from_textract` function to transform this raw JSON into something human-readable. The challenge was processing the transcript word by word while organizing everything by speaker and maintaining proper formatting. I had to handle edge cases like punctuation (removing trailing spaces) and speaker transitions. This taught me a lot about data transformation and the importance of clean, structured output when feeding data to AI models.
 
 ```python
 def extract_transcript_from_textract(file_content):
@@ -203,7 +205,7 @@ def extract_transcript_from_textract(file_content):
 
 ```
 
-This is the resulting file after the transcription and formatting process. It has been transformed into a more concise and readable format, making it easier to understand. Each speaker's dialogue is clearly labeled and separated, allowing for easy identification of the conversation flow between the different speakers.
+After running my parsing function, I got much cleaner output. Each speaker's dialogue was clearly labeled and separated, making it easy to see the conversation flow:
 
 ```
 spk_0: Good morning, Dr Hayes's office. Tarn speaking. Hi,
@@ -215,15 +217,15 @@ spk_1: week in the hospital?
 spk_0: Can you hold for?
 ```
 
-## **Transcript Summarization**
+## **Integrating Amazon Bedrock for Summarization**
 
-To interact with the Bedrock service, we need to set up a Bedrock runtime client. This is accomplished by creating an instance of the Bedrock service in a specific AWS region. In this case, we're using the 'us-east-1' region.
+This was the exciting part—actually working with a large language model through AWS! To interact with Bedrock, I needed to set up a Bedrock runtime client. I created an instance pointing to us-east-1:
 
 ```python
 bedrock_runtime = boto3.client('bedrock-runtime', region_name='us-east-1')
 ```
 
-We pass the transcript to the `bedrock_summarisation` function for processing. The function wraps the transcript in XML-like tags and creates a custom prompt that requests specific output formatting, including sentiment analysis and issue identification. It then sets up the API call with key parameters such as the model selection (amazon.titan-text-express-v1), token limits, and temperature settings to control the AI's response. Finally, it sends the request through the Bedrock client, extracts the summary text from the JSON response, and returns the summarized content.
+I created the `bedrock_summarisation` function to handle the actual AI interaction. This is where I learned about prompt engineering—wrapping the transcript in XML-like tags and crafting prompts that request specific output formatting (including sentiment analysis and issue identification). I also had to understand model parameters like token limits (maxTokenCount: 2048) and temperature settings (I set it to 0 for more deterministic output). The function sends the request through the Bedrock client, extracts the summary from the JSON response, and returns the content.
 
 ```python
 def bedrock_summarisation(transcript, bedrock_client):
@@ -272,7 +274,7 @@ def bedrock_summarisation(transcript, bedrock_client):
     return summary
 ```
 
-This prompt utilizes several key prompt engineering techniques to ensure clear and structured output from the language model. First, it employs XML-like tags (<data>) to clearly delineate the input transcript, helping the model distinguish between instructions and content. Second, it provides explicit output formatting requirements through a JSON schema, which constrains the model's response to a specific structure. Third, it uses categorical constraints for the "topic" field by providing predefined options (["charges"|"location"|"availability"]), limiting potential responses to these specific categories. Finally, it breaks down the analysis requirements into distinct components (sentiment and issues), making the task more manageable and ensuring all required elements are addressed in the response.
+Through trial and error, I learned several prompt engineering techniques that made a huge difference. First, I used XML-like tags (<data>) to clearly separate instructions from content—this helped the model understand what to process. Second, I provided explicit output formatting through a JSON schema, which constrained responses to the structure I needed. Third, I used categorical constraints (like ["charges"|"location"|"availability"]) to limit the topic field. Finally, I broke down the analysis into components (sentiment and issues), making the task manageable. These were valuable lessons in how to effectively communicate with LLMs.
 
 ```python
 prompt = f"""I need to summarize a conversation. The transcript of the
@@ -296,18 +298,18 @@ prompt = f"""I need to summarize a conversation. The transcript of the
         """
 ```
 
-## Creating the Lambda Function
+## Deploying the Lambda Function
 
-Following the same steps explained in the previous article for creating Lambda functions through the AWS Console, we'll create a new function called `summarize_lambda`. This function will be responsible for handling the summarization process of our transcribed conversations using Amazon Bedrock.
+With my code ready, I created a new Lambda function called `summarize_lambda` through the AWS Console. At this point, I was getting more comfortable with the Lambda deployment process and understanding how to structure serverless functions.
 
 ![]()
 
-Before testing the function, we need to update the IAM role permissions to allow the Lambda function to interact with Amazon Bedrock services. Specifically, we need to grant two key permissions:
+Before testing, I learned another important IAM lesson—Lambda functions need explicit permissions to access other AWS services. I had to update the IAM role to allow interaction with Bedrock. Specifically, I needed:
 
-1. "bedrock:InvokeModel" - This allows the Lambda function to make API calls to run inference using Bedrock's AI models
-2. "bedrock:ListModels" - This enables the function to retrieve information about available Bedrock models
+1. "bedrock:InvokeModel" - To actually run inference using Bedrock's AI models
+2. "bedrock:ListModels" - To retrieve information about available models
 
-Add these permissions to your IAM role policy:
+I added these permissions to the IAM role policy:
 
 ```json
 {
@@ -320,65 +322,72 @@ Add these permissions to your IAM role policy:
 },
 ```
 
-### Increasing Lambda Timeout
+### Learning About Lambda Timeouts
 
-When working with Amazon Bedrock for text generation, it's important to note that the model can take several seconds to process and return a response. By default, AWS Lambda functions have a timeout of 3 seconds, which is insufficient for this use case. The Lambda function needs to be configured with appropriate timeout and memory settings to accommodate the Bedrock API response time. To update the Lambda configuration in the AWS Console:
+Here's where I hit my first real debugging challenge. The default Lambda timeout is 3 seconds, but Bedrock's LLM can take much longer to process and return a response. My function kept timing out! This taught me an important lesson about Lambda configuration—I needed to adjust both timeout and memory settings. Here's what I did:
 
-1. Go to the AWS Lambda console
-2. Select your function
-3. Go to the "Configuration" tab
-4. Click on "General configuration"
-5. Click "Edit"
-6. Increase the timeout to at least 30 seconds
-7. Increase the memory to at least 256 MB
-8. Click "Save"
+1. Went to the AWS Lambda console
+2. Selected my function
+3. Navigated to "Configuration" → "General configuration"
+4. Clicked "Edit"
+5. Increased timeout to 30 seconds
+6. Increased memory to 256 MB
+7. Saved the changes
 
-After making these changes, the function should complete successfully. Monitor the CloudWatch logs to see the detailed execution progress.
-
-![]()
-
-## Setting Up S3 Event Notifications
-
-To automate the process, we'll set up S3 to trigger our Lambda function when new transcript is available. To set up S3 event notifications through the AWS Management Console:
-
-1. Navigate to your S3 bucket and select the "Properties" tab
-2. Scroll down to find the "Event Notifications" section and click "Create event notification"
-3. Configure the event settings:
-   - Event name: Enter a descriptive name (e.g., "TranscriptFileTrigger")
-   - Prefix: Enter "transcripts/" to limit the trigger to files in this folder
-   - Suffix: Enter ".json" to only trigger on JSON files
-   - Event types: Select "All object create events"
-4. Under "Destination", select "Lambda function" and choose your transcription function from the dropdown
-5. Click "Save changes" to create the event notification
+After adjusting these settings, my function ran successfully! This also taught me the importance of monitoring CloudWatch logs to understand execution behavior and troubleshoot issues.
 
 ![]()
 
-Once you configure the S3 event notification to trigger your Lambda function, you’ll see the trigger listed in your Lambda function’s configuration. There’s no need to add it again in the Lambda console-this single step establishes the connection, and your workflow is ready to go.
+## Configuring Event-Driven Architecture with S3
+
+This was one of the coolest parts—setting up truly automated, event-driven processing. I configured S3 to trigger my Lambda function whenever a new transcript appeared. This taught me how to build systems that respond to events without any manual intervention. Here's how I set it up:
+
+1. Navigated to my S3 bucket's "Properties" tab
+2. Found "Event Notifications" and clicked "Create event notification"
+3. Configured the event:
+   - Event name: "TranscriptFileTrigger"
+   - Prefix: "transcripts/" (to only trigger on files in this folder)
+   - Suffix: ".json" (to avoid triggering on non-JSON files)
+   - Event types: "All object create events"
+4. Set destination to my Lambda function
+5. Saved the changes
+
+This taught me how to use prefixes and suffixes to control exactly when functions trigger—preventing recursive loops and unnecessary invocations.
 
 ![]()
 
-## Upload an Audio File to the Bucket
+Once configured, I could see the trigger listed in my Lambda function's configuration. The connection was established, and my automated workflow was ready to run.
 
-To upload an audio file to your S3 bucket through the AWS Management Console, follow these steps:
+![]()
 
-1. Open the AWS Management Console and navigate to the S3 service
-2. Click on your bucket name from the list of buckets
-3. Click the "Upload" button at the top of the bucket contents list
-4. Click "Add files" or drag and drop your audio file (in this case, phone_call.mp3) into the upload area
-5. Review the default settings for the upload. For basic uploads, the default settings are usually sufficient
-6. Click "Upload" to start the file transfer
+## Testing the Complete Workflow
 
-Once the upload is complete, you'll see your audio file listed in the bucket contents. The S3 event notification we configured earlier will automatically trigger the Lambda function to start the transcription process.
+Time to test everything end-to-end! I uploaded an audio file to my S3 bucket:
+
+1. Opened the S3 console
+2. Navigated to my bucket
+3. Clicked "Upload"
+4. Dropped in phone_call.mp3
+5. Clicked "Upload"
+
+The moment the file appeared in my bucket, the event notification triggered my Lambda function automatically. Watching the entire workflow execute on its own—transcription generating a JSON file, which then triggered the summarization Lambda, which created a summary file—was incredibly satisfying. This is when the power of event-driven architecture really clicked for me.
 
 ![]()
 
 ![]()
 
-## **Conclusions**
+## **Key Skills I Learned**
 
-In this article, we demonstrated how to build a serverless system for conversation summarization using AWS Lambda and Amazon Bedrock. We explored effective prompt engineering techniques using XML-like tags and structured outputs, while creating a simple yet extensible event-driven architecture using S3 triggers. This foundation serves as a starting point for more sophisticated data processing workflows, with detailed coverage of the necessary configurations for IAM permissions, Lambda settings, and event notifications.
+Building this POC taught me several crucial AWS skills:
 
-In the next article of this series, we'll explore how to monitor our system's performance, track usage patterns, detect anomalies, and implement safeguards for LLM responses. We'll focus on creating a robust monitoring framework to ensure our application operates reliably and securely.
+1. **Event-Driven Architecture**: How to chain AWS services together using S3 triggers and Lambda functions to create fully automated workflows
+2. **IAM and Security**: Understanding least-privilege access, creating proper IAM roles, and scoping permissions correctly
+3. **Serverless Computing**: Lambda configuration, timeout management, memory allocation, and CloudWatch logging for debugging
+4. **Working with AI Services**: Integrating Amazon Bedrock, understanding model parameters, and learning prompt engineering techniques
+5. **Data Transformation**: Parsing AWS service outputs and preparing data for AI model consumption
+6. **AWS Service Integration**: Connecting S3, Lambda, Transcribe, and Bedrock into a cohesive system
+
+This foundation has been invaluable for understanding how to build scalable, event-driven data processing workflows in AWS. In the next article, I'll share what I learned about monitoring system performance with CloudWatch, tracking usage patterns, and implementing safeguards for LLM responses.
 
 ## Sources
 
