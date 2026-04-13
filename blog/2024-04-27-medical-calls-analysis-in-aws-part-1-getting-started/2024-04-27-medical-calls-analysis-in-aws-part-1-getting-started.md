@@ -2,6 +2,7 @@
 layout: default
 title: "Medical Calls Analysis in AWS (Part 1) - Getting Started"
 date: 2024-04-27
+image: "aws_bedrock.webp"
 tags:
   [
     "ai",

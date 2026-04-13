@@ -2,6 +2,7 @@
 layout: default
 title: "Medical Calls Analysis in AWS (Part 4) - Monitoring with AWS CloudWatch"
 date: 2024-05-08
+image: "aws_bedrock.webp"
 tags:
   [
     "aws",

@@ -2,6 +2,7 @@
 layout: default
 title: "Medical Calls Analysis in AWS (Part 2) - Audio Transcription"
 date: 2024-05-01
+image: "aws_bedrock.webp"
 tags:
   [
     "aws",

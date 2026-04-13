@@ -2,6 +2,7 @@
 layout: default
 title: "Medical Calls Analysis in AWS (Part 3) - Smart Summarization with Amazon Bedrock"
 date: 2024-05-05
+image: "aws_bedrock.webp"
 tags:
   [
     "aws",
