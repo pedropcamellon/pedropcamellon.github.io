@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "CandleWise - Part 3: Deploying App to Azure"
-date: 2024-01-19
+date: 2024-01-21
 tags: ["azure", "docker", "dotnet", "devops"]
 image: "candlewise.webp"
 excerpt: "The blog post details the process of deploying the app to Microsoft Azure. The process involves encapsulating the application within a Docker container, creating a Docker image of the application, and using Visual Studio tools for developing with Docker containers."

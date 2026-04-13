@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "CandleWise - Part 2: Integrating a third party API"
-date: 2024-01-21
+date: 2024-01-19
 tags: ["dotnet", "csharp", "api", "aspnet-core"]
 image: "candlewise.webp"
 excerpt: "This article discusses the integration of real-time stock data into an application using IHttpClientFactory, a tool that manages HttpClient instances..."
