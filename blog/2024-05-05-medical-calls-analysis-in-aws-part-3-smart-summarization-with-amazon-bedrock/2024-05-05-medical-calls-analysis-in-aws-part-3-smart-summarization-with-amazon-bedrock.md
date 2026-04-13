@@ -18,7 +18,7 @@ tags:
     "ai",
     "cloudwatch",
   ]
-excerpt: "I built an automated system to summarize medical call transcripts using Amazon Bedrock's Titan LLM. This POC taught me event-driven architecture, IAM security, serverless computing, and prompt engineering—key AWS skills for building scalable AI applications."
+excerpt: "In Part 3 of my medical calls analysis project, I learned to build an automated summarization system using Amazon Bedrock's Titan LLM. I gained hands-on experience with event-driven architecture, IAM security, serverless computing, and prompt engineering."
 updated: 2025-05-17
 ---
 
@@ -28,13 +28,13 @@ Github Repo: [https://github.com/pedropcamellon/medical-calls-analysis-aws](http
 
 In the previous article, I showed how I used Amazon Transcribe to obtain transcribed JSON files from audio recordings. In this part, I wanted to take those transcripts and automatically summarize them using the Titan model on Amazon Bedrock. This was my first deep dive into using large language models through AWS, and I learned a lot about how to transform lengthy conversations into concise, actionable summaries.
 
-One of the key skills I developed was understanding how Amazon Bedrock provides secure access to leading AI foundation models through a single API—making it much easier than I expected to integrate LLMs into my application. While I focused on medical applications for this POC, I realized this approach could work for any industry dealing with communication and information exchange.
+One of the key skills I developed was understanding how Amazon Bedrock provides secure access to leading AI foundation models through a single API—making it much easier than I expected to integrate LLMs into my application. While I focused on medical applications for this project, I realized this approach could work for any industry dealing with communication and information exchange.
 
 I decided to combine AWS Lambda for serverless computing with Amazon Bedrock's language models. This taught me how to build event-driven architectures that can process and analyze conversations at scale. The most interesting part was setting up S3 triggers to automatically initiate processing when new audio files are uploaded—creating a fully automated workflow that runs without any manual intervention.
 
 ## Creating My S3 Bucket
 
-The first thing I needed was a storage bucket for my audio files and generated outputs. I logged into the AWS Management Console and navigated to S3. Creating the bucket was straightforward—I clicked "Create bucket," entered a unique name, and selected my preferred region (us-east-1). I left most settings at their defaults for this POC, though in a production environment I'd definitely revisit security and versioning settings. This was good practice in understanding S3 bucket configuration and regional considerations for data storage.
+The first thing I needed was a storage bucket for my audio files and generated outputs. I logged into the AWS Management Console and navigated to S3. Creating the bucket was straightforward—I clicked "Create bucket," entered a unique name, and selected my preferred region (us-east-1). I left most settings at their defaults for this project, though in a production environment I'd definitely revisit security and versioning settings. This was good practice in understanding S3 bucket configuration and regional considerations for data storage.
 
 ## Setting Up IAM Permissions for Transcribe
 
@@ -303,7 +303,7 @@ prompt = f"""I need to summarize a conversation. The transcript of the
 
 With my code ready, I created a new Lambda function called `summarize_lambda` through the AWS Console. At this point, I was getting more comfortable with the Lambda deployment process and understanding how to structure serverless functions.
 
-![]()
+![image.png](image.png)
 
 Before testing, I learned another important IAM lesson—Lambda functions need explicit permissions to access other AWS services. I had to update the IAM role to allow interaction with Bedrock. Specifically, I needed:
 
@@ -337,7 +337,7 @@ Here's where I hit my first real debugging challenge. The default Lambda timeout
 
 After adjusting these settings, my function ran successfully! This also taught me the importance of monitoring CloudWatch logs to understand execution behavior and troubleshoot issues.
 
-![]()
+![image.png](image%201.png)
 
 ## Configuring Event-Driven Architecture with S3
 
@@ -355,11 +355,11 @@ This was one of the coolest parts—setting up truly automated, event-driven pro
 
 This taught me how to use prefixes and suffixes to control exactly when functions trigger—preventing recursive loops and unnecessary invocations.
 
-![]()
+![image.png](image%202.png)
 
 Once configured, I could see the trigger listed in my Lambda function's configuration. The connection was established, and my automated workflow was ready to run.
 
-![]()
+![image.png](image%203.png)
 
 ## Testing the Complete Workflow
 
@@ -373,13 +373,13 @@ Time to test everything end-to-end! I uploaded an audio file to my S3 bucket:
 
 The moment the file appeared in my bucket, the event notification triggered my Lambda function automatically. Watching the entire workflow execute on its own—transcription generating a JSON file, which then triggered the summarization Lambda, which created a summary file—was incredibly satisfying. This is when the power of event-driven architecture really clicked for me.
 
-![]()
+![image.png](image%204.png)
 
-![]()
+![image.png](image%205.png)
 
-## **Key Skills I Learned**
+## **What I Learned in This Part**
 
-Building this POC taught me several crucial AWS skills:
+In this part of the series, I developed several new AWS skills that built on what I learned in the previous articles:
 
 1. **Event-Driven Architecture**: How to chain AWS services together using S3 triggers and Lambda functions to create fully automated workflows
 2. **IAM and Security**: Understanding least-privilege access, creating proper IAM roles, and scoping permissions correctly
@@ -388,7 +388,7 @@ Building this POC taught me several crucial AWS skills:
 5. **Data Transformation**: Parsing AWS service outputs and preparing data for AI model consumption
 6. **AWS Service Integration**: Connecting S3, Lambda, Transcribe, and Bedrock into a cohesive system
 
-This foundation has been invaluable for understanding how to build scalable, event-driven data processing workflows in AWS. In the next article, I'll share what I learned about monitoring system performance with CloudWatch, tracking usage patterns, and implementing safeguards for LLM responses.
+These skills complemented what I learned about audio transcription in the earlier parts of this series. In the next article, I'll share what I learned about monitoring system performance with CloudWatch, tracking usage patterns, and implementing safeguards for LLM responses.
 
 ## Sources
 
