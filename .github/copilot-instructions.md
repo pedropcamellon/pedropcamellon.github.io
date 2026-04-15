@@ -10,10 +10,10 @@ Static portfolio/blog site built with Jekyll. Uses custom CSS (main.css, pages.c
 - `blog.html` - Auto-generated article list (Jekyll Liquid)
 - `blog/*.md` - Individual articles (Jekyll converts to HTML)
 - `projects.html` - Project showcase with GitHub links
-- `img/articles/` - Article thumbnails
+- `assets/img/articles/` - Article thumbnails
 - `_layouts/default.html` - Jekyll template for blog posts
-- `css/main.css` - Base styles (navigation, typography, tags, footer)
-- `css/pages.css` - Component styles (blog cards, hero, responsive)
+- `assets/css/main.css` - Base styles (navigation, typography, tags, footer)
+- `assets/css/pages.css` - Component styles (blog cards, hero, responsive)
 
 ## Rules
 
@@ -28,6 +28,7 @@ Static portfolio/blog site built with Jekyll. Uses custom CSS (main.css, pages.c
      tags: ["tag1", "tag2"]
      image: "article-slug.webp" # optional
      is_new: true # optional, for NEW badge
+     updated: YYYY-MM-DD # optional, shows "Last updated" date
      excerpt: "Short description for blog list card" # optional
      ---
      ```
@@ -37,7 +38,7 @@ Static portfolio/blog site built with Jekyll. Uses custom CSS (main.css, pages.c
 
 1. **CSS Styling:**
 
-   - Custom CSS in `/css/main.css` and `/css/pages.css`
+   - Custom CSS in `/assets/css/main.css` and `/assets/css/pages.css`
    - GitHub-style markdown rendering
    - Responsive design with `min(1200px, 90vw)` max-width
    - No Bootstrap or Tailwind (removed for cleaner codebase)
@@ -68,35 +69,34 @@ Static portfolio/blog site built with Jekyll. Uses custom CSS (main.css, pages.c
    - Microsoft Clarity (`kykpoeffvx`) in all `<head>` sections
 
 7. **Deployment:**
-EW Badge:**
+   EW Badge:\*\*
 
    - Set `is_new: true` in frontmatter for recent articles
    - Template automatically displays badge
    - Remove field after 2-3 weeks
 
-4. **Tags:**
+8. **Tags:**
 
    - Define in frontmatter: `tags: ["python", "ai", "aws"]`
    - Displayed below title in articles and in blog cards
    - Styled as pill badges (`.tag` class)
 
-5. **Images:**
+9. **Images:**
 
-   - Store in `/img/articles/` with descriptive names
-   - Naming: `{article-slug}-{description}.{ext}`
+   - Store in each article's folder (e.g. `/blog/article-slug/`)
    - Blog cards: 208px × 150px thumbnails
    - Use gradient placeholder if image missing
 
-6. **Analytics:**
+10. **Analytics:**
 
-   - Microsoft Clarity (`kykpoeffvx`) in all `<head>` sections
+    - Microsoft Clarity (`kykpoeffvx`) in all `<head>` sections
 
-7. **Deployment:**
+11. **Deployment:**
 
-   - Edit files → commit → push to `main` → GitHub Pages auto-builds
-   - Test locally: `bundle exec jekyll serve` or Docker
-   - Jekyll builds to `_site/` (git ignored)
+    - Edit files → commit → push to `main` → GitHub Pages auto-builds
+    - Test locally: `bundle exec jekyll serve` or Docker
+    - Jekyll builds to `_site/` (git ignored)
 
-8. **Post Ordering:**
-   - Controlled by `date: YYYY-MM-DD` in frontmatter
-   - Blog list sorts by date, newest first
+12. **Post Ordering:**
+    - Controlled by `date: YYYY-MM-DD` in frontmatter
+    - Blog list sorts by date, newest first
