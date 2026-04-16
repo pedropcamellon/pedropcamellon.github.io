@@ -3,36 +3,48 @@ layout: default
 title: Home
 ---
 
-<div class="hero">
-  <div class="hero-text">
-    <h2>Hi 👋, I am Pedro!</h2>
-    <ul>
-      <li>- Passionate Collaborator</li>
-      <li>- Cloud Solution Architect</li>
-      <li>- Results-Driven Approach</li>
-      <li>- Open Source Contributor</li>
-      <li>- Dedicated Learner</li>
-    </ul>
-  </div>
-  <div>
-    <img src="/assets/img/profile.jpg" alt="Pedro P Camellon" />
-  </div>
-</div>
+<h2>Latest Articles</h2>
 
-<div class="section" id="about-me">
-  <h2>About Me</h2>
-  <p>I am a results-driven AI/ML Engineer with proven expertise in ML, data analysis, and full-stack development.</p>
-  <p>I've successfully led AI-powered healthcare systems development and implemented RAG-based supplier intelligence solutions using agile methodologies and containerization with Docker.</p>
-  <p>Developed and deployed data pipelines for suppliers information enrichement using public information. Built a web search engine based on an event driven architecture using FastAPI and Google's Gemini cutting-edge models.</p>
-  <p>Consistently delivered production-ready machine learning solutions following agile best practices.</p>
-</div>
+<div class="blog-list">
+  {% assign blog_posts = site.pages | where_exp: "page", "page.path contains 'blog/'" | where_exp: "page", "page.title != nil" | sort: 'date' | reverse %}
+  {% for post in blog_posts %}
+  <a href="{{ post.url | relative_url }}" class="blog-card">
+    {% if post.image %}
+    {% assign post_dir = post.path | remove: '.md' | split: '/' | slice: 0, 2 | join: '/' %}
+    <img
+      src="/{{ post_dir }}/{{ post.image }}"
+      alt="{{ post.title }}"
+      class="blog-image"
+    />
+    {% else %}
+    <div class="blog-placeholder"></div>
+    {% endif %}
 
-<div class="section">
-  <h3>Academic Background</h3>
-  <p>One of my notable academic achievements includes a project where I applied PyTorch, a Python framework, to detect lung nodules in X-rays. This experience reflects my dedication to leveraging cutting-edge technologies to solve real-world challenges. 🎓🌍</p>
-</div>
+    <div class="blog-content">
+      <h3>
+        {{ post.title }} {% if post.is_new %}<span class="new-badge">NEW</span
+        >{% endif %}
+      </h3>
+      {% if post.date %}
+      <p class="post-date">
+        Published: {{ post.date | date: "%B %-d, %Y" }} {% if post.updated and
+        post.updated != post.date %}
+        <span class="post-updated"
+          >Updated: {{ post.updated | date: "%B %-d, %Y" }}</span
+        >
+        {% endif %}
+      </p>
+      {% endif %} {% if post.excerpt %}
+      <p>{{ post.excerpt }}</p>
+      {% endif %} {% if post.tags and post.tags.size > 0 %}
+      <div class="blog-tags">
+        {% for tag in post.tags %}
+        <span class="tag">{{ tag }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
 
-<div class="section" id="contact">
-  <h2>Let's Connect</h2>
-  <p>I am passionate about collaborating on innovative projects. Let's connect to explore how my expertise can add value to your endeavors. Whether you're seeking top-notch UI design, cloud application development, or a blend of both, I am eager to contribute to the success of your projects! 🤝🎉</p>
+  </a>
+  {% endfor %}
 </div>
