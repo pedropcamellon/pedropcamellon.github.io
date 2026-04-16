@@ -4,7 +4,6 @@ title: "Medical Calls Analysis in AWS (Part 5) - Automating AWS Deployments with
 date: 2024-07-02
 tags: ["aws", "terraform", "infrastructure-as-code", "serverless", "devops"]
 image: "aws_bedrock.webp"
-is_new: true
 excerpt: "Learn how to automate AWS resource provisioning and management using Terraform. This guide covers version-controlled infrastructure, consistent deployments, and error-free configuration."
 ---
 

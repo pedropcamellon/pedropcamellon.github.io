@@ -18,8 +18,7 @@ tags:
     "transcribe",
     "html",
   ]
-excerpt: "AI-powered medical call analysis is revolutionizing healthcare delivery. Using Amazon Bedrock and cloud technologies, providers can automatically convert patient conversations into searchable records, reducing administrative work while enabling data-driven decisions and improved patient care.
-"
+excerpt: "AI-powered medical call analysis is revolutionizing healthcare delivery. Using Amazon Bedrock and cloud technologies, providers can automatically convert patient conversations into searchable records, reducing administrative work while enabling data-driven decisions and improved patient care."
 ---
 
 Github Repo: [https://github.com/pedropcamellon/medical-calls-analysis-aws](images/https://github.com/pedropcamellon/medical-calls-analysis-aws)

@@ -61,7 +61,6 @@ title: "Article Title"
 date: 2026-04-07
 tags: ["web-dev", "jekyll"]
 image: "thumbnail.webp"
-is_new: true
 excerpt: "One-sentence summary for blog cards"
 ---
 ```
