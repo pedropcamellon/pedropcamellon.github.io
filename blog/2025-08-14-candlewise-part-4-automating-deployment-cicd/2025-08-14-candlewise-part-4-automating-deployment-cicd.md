@@ -4,7 +4,6 @@ title: "CandleWise - Part 4: Automating Deployment CI/CD"
 date: 2025-08-14
 tags: ["azure", "devops", "github-actions", "terraform", "dotnet", "nextjs", "cicd"]
 image: "candlewise.webp"
-is_new: true
 excerpt: "Automated my entire infrastructure using Terraform for Azure. Implemented a comprehensive CI/CD pipeline with GitHub Actions that handles my complete deployment strategy - automatically deploying the Next.js frontend to Vercel and the .NET Core backend to Azure App Service."
 ---
 
