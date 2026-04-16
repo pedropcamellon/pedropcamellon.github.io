@@ -15,7 +15,7 @@ tags:
 excerpt: "I built clinical transcription twice, once with event-driven choreography on AWS and once with workflow orchestration in Folium. Both are “async,” but they break in different ways. Here’s the tradeoff and why it matters in healthcare."
 ---
 
-I built clinical transcription twice — once with event-driven choreography on AWS, once with workflow orchestration in [Folium EHR](https://github.com/FoliumAI/folium). I wrote about the first approach in the [Medical Calls Analysis series](/blog/2024-04-27-medical-calls-analysis-in-aws-part-1-getting-started/2024-04-27-medical-calls-analysis-in-aws-part-1-getting-started.html).
+I built clinical transcription twice — once with event-driven choreography on AWS, once with workflow orchestration in [Folium EHR](https://github.com/FoliumAI/folium). I wrote about the first approach in the [Medical Calls Analysis series](https://pedropcamellon.github.io/blog/2024-04-27-medical-calls-analysis-in-aws-part-1-getting-started/2024-04-27-medical-calls-analysis-in-aws-part-1-getting-started.html).
 
 The core insight: **choreography and orchestration are not the same thing.** I used to mentally lump them together as "async" until I built both and felt the tradeoffs up close. The difference matters a lot more when you're handling clinical data.
 
@@ -31,7 +31,7 @@ Both are valid. They optimize for different things.
 
 ## The Choreography Approach
 
-The AWS pattern for clinical transcription is well-established. S3 event → Lambda → Transcribe → S3 → Lambda → Bedrock → S3. Fully managed. Scales to zero. Costs almost nothing at low volume. I built a version of this in the [Medical Calls Analysis series](/blog/2024-04-27-medical-calls-analysis-in-aws-part-1-getting-started/2024-04-27-medical-calls-analysis-in-aws-part-1-getting-started.html).
+The AWS pattern for clinical transcription is well-established. S3 event → Lambda → Transcribe → S3 → Lambda → Bedrock → S3. Fully managed. Scales to zero. Costs almost nothing at low volume. I built a version of this in the [Medical Calls Analysis series](https://pedropcamellon.github.io/blog/2024-04-27-medical-calls-analysis-in-aws-part-1-getting-started/2024-04-27-medical-calls-analysis-in-aws-part-1-getting-started.html).
 
 Choreography is a solid default for a lot of systems.
 
@@ -47,19 +47,22 @@ Choreography gives you decoupling and independence. It takes away visibility and
 
 I don’t think orchestration is “better” in a vacuum. It comes with real costs and tradeoffs, and in a lot of systems choreography is the right call.
 
-|                             | Choreography (Event-Driven)                          | Orchestration (Workflow-Driven)                             |
-| --------------------------- | ---------------------------------------------------- | ----------------------------------------------------------- |
-| **Infrastructure**          | Fully managed (S3, Lambda, SQS)                      | You run the engine (or pay for a managed service)           |
-| **Cost at low volume**      | Nearly free (pay-per-invoke)                         | Engine + workers running 24/7                               |
-| **Getting started**         | Wire an event, ship it                               | Stand up the engine, run workers, learn the execution model |
-| **Learning curve**          | Low. Most devs have used queues and events           | Real. Deterministic replay is a new mental model            |
-| **Coupling**                | Services are fully decoupled                         | Coordinator knows all steps — that's the point              |
-| **Failure visibility**      | Bolted on (CloudWatch, X-Ray, DLQs)                  | Built in                                                    |
-| **Retry control**           | Per-queue or per-function                            | Per-step with backoff and error classes                     |
-| **Debugging**               | Correlate logs across services                       | Read one workflow's event history                           |
-| **Blast radius of failure** | Distributed — one function dying doesn't stop others | Coordinator goes down, all workflows pause                  |
+### Where choreography tends to win
 
-That last row is easy to underestimate. With choreography, failure is distributed by design — one Lambda timing out affects that one invocation. With orchestration, the coordinator is load-bearing infrastructure. If it goes down, every workflow in the system pauses.
+- **Infrastructure:** Fully managed primitives (S3, Lambda, SQS)
+- **Cost at low volume:** Nearly free (pay-per-invoke)
+- **Getting started:** Wire an event and ship it
+- **Coupling:** Services are decoupled by default
+- **Failure blast radius:** Distributed. One function timing out does not pause the whole system
+
+### Where orchestration tends to win
+
+- **Failure visibility:** Built-in workflow history and status
+- **Retry control:** Per-step retries with backoff and error classes
+- **Debugging:** You can inspect one workflow run instead of correlating logs across services
+- **State:** Centralized state for a single job ("where is this transcription right now?")
+
+One tradeoff that’s easy to underestimate: with orchestration, the coordinator is load-bearing infrastructure. If it goes down, workflows pause until it comes back. With choreography, failures are more distributed by design.
 
 Orchestration engines also enforce constraints that can trip you up at first. In Temporal, workflow code must be deterministic (no random numbers, no direct I/O, no `datetime.now()`). Side effects go in activities, coordination goes in workflows.
 
