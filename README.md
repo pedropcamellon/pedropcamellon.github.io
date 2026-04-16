@@ -1,30 +1,18 @@
-<!-- TODO Jekyll -->
-# My Blog Website
+# pedropcamellon.github.io
 
-This repository contains the code for my personal blog website, built using vanilla JavaScript, CSS, HTML, and Tailwind CSS.
+Personal blog and portfolio built with Jekyll and GitHub Pages.
 
-## About
+## Structure
 
-This website allows me to share my thoughts, ideas, and experiences. I've used vanilla JavaScript, CSS, and HTML to keep the tech stack simple.
+- `blog/` — blog posts (Markdown) with images grouped per post
+- `_tabs/` — site pages (about, projects)
+- `assets/` — CSS, images
+- `_layouts/default.html` — base layout with sidebar
 
-## Installation
-
-Clone the repository to your local machine:
-
-```bash
-git clone https://github.com/pedropcamellon/pedropcamellon.github.io.git
-```
-
-Navigate to the project directory:
+## Run locally
 
 ```bash
-cd pedropcamellon.github.io
+docker compose up
 ```
 
-## Usage
-
-Open the `index.html` file in your browser to view the site.
-
-## Styling
-
-The site utilizes Tailwind CSS for styling, included via CDN for simplicity. Modify the CSS classes in the HTML files to change the appearance of the site.
+Site available at http://localhost:4000
