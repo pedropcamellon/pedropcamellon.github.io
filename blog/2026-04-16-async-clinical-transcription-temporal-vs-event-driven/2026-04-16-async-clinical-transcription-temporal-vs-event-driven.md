@@ -12,7 +12,9 @@ tags:
     "python",
     "orchestration",
   ]
-excerpt: "I added a voice notes transcription pipeline to Folium EHR and built it as an orchestrated workflow. Event-driven worked for me on AWS/Azure, but once the workflow grew the debugging tax was stitching logs and correlation IDs across services. Orchestration gave me one place to see job state end-to-end, step-level retries, and clear visibility into what's running or failed. Temporal was the engine, but the decision was about the model. For this feature, I traded some decoupling for better observability, step-level retries, and durability."
+image: "folium-ehr-temporal.png"
+is_new: true
+excerpt: "I added a voice notes transcription pipeline to Folium EHR and built it as an orchestrated workflow. Event-driven worked for me on AWS/Azure, but once the workflow grew the debugging tax was stitching logs and correlation IDs across services. Orchestration gave me one place to see job state end-to-end, step-level retries, and clear visibility into what's running or failed."
 ---
 
 <div class="tldr">
