@@ -290,6 +290,34 @@ article blockquote {
   margin: 1rem 0;
 }
 
+/* TL;DR callout */
+article .tldr {
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  border-left: 4px solid #0969da;
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+}
+
+article .tldr::before {
+  content: 'TL;DR';
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #0969da;
+  margin-bottom: 0.5rem;
+}
+
+article .tldr blockquote {
+  border-left: none;
+  padding-left: 0;
+  color: #24292f;
+  margin: 0;
+}
+
 /* Links */
 article a {
   color: #0969da;
