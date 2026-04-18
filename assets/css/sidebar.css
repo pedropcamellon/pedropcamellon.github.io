@@ -1,0 +1,142 @@
+/**
+ * sidebar.css - Sidebar Component
+ *
+ * Styles for the persistent sidebar including:
+ * - Avatar, name, tagline
+ * - Navigation links and active state
+ * - Social/external links
+ * - Responsive collapse on small screens
+ */
+
+/* Sidebar */
+.sidebar {
+  width: 260px;
+  min-width: 260px;
+  background: #f6f8fa;
+  border-right: 1px solid #e1e4e8;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 1.5rem;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.sidebar-profile {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.sidebar-avatar {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center top;
+  border: 3px solid #e1e4e8;
+  margin-bottom: 1rem;
+  transform: translateZ(0);
+}
+
+.sidebar-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 0.25rem;
+}
+
+.sidebar-tagline {
+  font-size: 0.85rem;
+  color: #57606a;
+  line-height: 1.4;
+}
+
+.sidebar-nav {
+  margin-bottom: auto;
+}
+
+.sidebar-nav ul {
+  list-style: none;
+}
+
+.sidebar-nav li {
+  margin-bottom: 0.25rem;
+}
+
+.sidebar-nav a {
+  display: block;
+  padding: 0.6rem 0.75rem;
+  border-radius: 6px;
+  color: #333;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: background 0.15s;
+}
+
+.sidebar-nav a:hover {
+  background: #e1e4e8;
+  color: #0969da;
+}
+
+.sidebar-nav a.active {
+  background: #dbeafe;
+  color: #0969da;
+  font-weight: 600;
+}
+
+.sidebar-links {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e1e4e8;
+  margin-top: 1.5rem;
+}
+
+.sidebar-links a {
+  color: #57606a;
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+
+.sidebar-links a:hover {
+  color: #0969da;
+}
+
+/* Responsive: collapse sidebar on small screens */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    min-width: unset;
+    height: auto;
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 1rem;
+    gap: 1rem;
+  }
+  .sidebar-profile {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0;
+    text-align: left;
+  }
+  .sidebar-avatar {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 0;
+  }
+  .sidebar-nav ul {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .sidebar-links {
+    border-top: none;
+    margin-top: 0;
+    padding-top: 0;
+  }
+}

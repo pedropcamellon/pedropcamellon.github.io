@@ -4,7 +4,6 @@ title: "Evaluating Workflow Orchestration Frameworks"
 date: 2025-12-23
 tags: ["python", "azure", "temporal", "orchestration", "distributed-systems"]
 image: "workflow.webp"
-is_new: true
 excerpt: "Built hands-on POCs comparing Azure Durable Functions, Temporal, Prefect, and Dapr for orchestrating event-driven AI pipelines. Implemented the same invoice processing workflow (PDF → parse → fan-out/fan-in → aggregate) across all frameworks for an apples-to-apples comparison. Key insights on deterministic replay, multi-service architecture patterns, and how local dev experience impacts iteration speed and debugging."
 ---
 
