@@ -1,6 +1,7 @@
 services:
   jekyll:
     image: jekyll/jekyll:4.2.2
+    platform: linux/amd64
     container_name: jekyll-blog
     environment:
       - JEKYLL_ENV=development
