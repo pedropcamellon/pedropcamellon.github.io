@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "Orchestration vs Choreography: Two Ways to Build Clinical Speech-to-Text"
+title: "Trading Decoupling for Observability: Voice Notes Transcription in an EHR"
 date: 2026-04-16
 tags:
   [
@@ -12,93 +12,36 @@ tags:
     "python",
     "orchestration",
   ]
-excerpt: "I built clinical transcription twice, once with event-driven choreography on AWS and once with workflow orchestration in Folium. Both are “async,” but they break in different ways. Here’s the tradeoff and why it matters in healthcare."
+excerpt: "I added a voice notes transcription pipeline to Folium EHR and built it as an orchestrated workflow. Event-driven worked for me on AWS/Azure, but once the workflow grew the debugging tax was stitching logs and correlation IDs across services. Orchestration gave me one place to see job state end-to-end, step-level retries, and clear visibility into what's running or failed. Temporal was the engine, but the decision was about the model. For this feature, I traded some decoupling for better observability, step-level retries, and durability."
 ---
 
-I built clinical transcription twice — once with event-driven choreography on AWS, once with workflow orchestration in [Folium EHR](https://github.com/FoliumAI/folium). I wrote about the first approach in the [Medical Calls Analysis series](https://pedropcamellon.github.io/blog/2024-04-27-medical-calls-analysis-in-aws-part-1-getting-started/2024-04-27-medical-calls-analysis-in-aws-part-1-getting-started.html).
+<div class="tldr">
 
-The core insight: **choreography and orchestration are not the same thing.** I used to mentally lump them together as "async" until I built both and felt the tradeoffs up close. The difference matters a lot more when you're handling clinical data.
+I added a voice notes transcription pipeline to Folium EHR and built it as an orchestrated workflow. Event-driven worked for me on AWS/Azure, but once the workflow grew the debugging tax was stitching logs and correlation IDs across services. Orchestration gave me one place to see job state end-to-end, step-level retries, and clear visibility into what's running or failed. Temporal was the engine, but the decision was about the model. For this feature, I traded some decoupling for better observability, step-level retries, and durability.
 
-## Two Patterns for Async Work
+</div>
 
-Before getting into the specifics, it's worth naming the two patterns clearly.
+Folium EHR is my project to build a modern electronic health record, and voice notes are one of the fastest ways to capture clinical notes. To reduce that documentation burden, I added a voice notes transcription pipeline. I’m trying the project to stay cloud-agnostic: deployable to AWS, Azure, or on‑prem. I wanted voice notes to follow that same pattern.
 
-**Choreography** (event-driven): each service reacts to events independently. No central coordinator. S3 emits an event, Lambda picks it up, writes to S3, another Lambda picks that up. Each service knows its own job and nothing else. The "workflow" is an emergent property of events flowing between services.
+I’d built event-driven pipelines before on AWS and Azure, and I knew the debugging cost once the workflow grows. I’d stitch correlation IDs across logs and queues just to see whether a workflow completed. Then I’d have to decide if (and when) to retry, without a clear view of what had already succeeded.
 
-**Orchestration** (workflow-driven): a central coordinator defines the steps, owns the state, and controls the sequence. Each step is an explicit function call. The workflow is the code — one file, readable, testable, versionable.
+I needed real-time transcription, but with workflow-grade visibility: end-to-end state, step-level retries, and traceable logs. Orchestration matched that. Temporal is the engine I used, but the decision was about the model.
 
-Both are valid. They optimize for different things.
+In practice the flow is simple: the browser records audio and sends it to the backend. Storage depends on where Folium is deployed: **S3 on AWS**, **Blob Storage on Azure**, and **MinIO on‑prem**. The backend (FastAPI) stores the file, then starts a Temporal workflow and passes metadata like a presigned URL. A worker picks up the task, transcribes the audio, and when the transcript is ready I overwrite the encounter note. The UI polls until it sees the update. It’s not push-based yet, but it kept the feature responsive and fast to ship.
 
-## The Choreography Approach
+That design bought me three operational wins:
 
-The AWS pattern for clinical transcription is well-established. S3 event → Lambda → Transcribe → S3 → Lambda → Bedrock → S3. Fully managed. Scales to zero. Costs almost nothing at low volume. I built a version of this in the [Medical Calls Analysis series](https://pedropcamellon.github.io/blog/2024-04-27-medical-calls-analysis-in-aws-part-1-getting-started/2024-04-27-medical-calls-analysis-in-aws-part-1-getting-started.html).
+- **One job state per recording.** One place to look.
+- **Retries per step.** Retry what failed, don’t replay the pipeline.
+- **Visibility.** Running/failed/where in one nice UI.
 
-Choreography is a solid default for a lot of systems.
+One feature I didn’t expect to care about as much as I did: the Temporal Web UI. Having a first-class UI to see workflow state and history felt like a big quality-of-life upgrade. In healthcare, that same traceability is also what you want for HIPAA-style audit questions: what happened, when, and why.
 
-But think about what happens when a Lambda times out mid-pipeline. The message hits the DLQ. No alarm fires. Nobody notices for hours. A clinician's notes from that morning are just... gone. No error surface, no visible status, no obvious place to even start looking.
+There’s real friction with orchestration. In an on‑prem setup you’re running more moving parts: the Temporal server, the Web UI, and your workers. That’s more deployment and more things to keep healthy. The programming model is also different. Determinism isn’t a detail. If your codebase wasn’t written with that separation in mind, adopting orchestration can turn into more refactoring than you expect. I didn’t hit the worst-case here, but it’s a cost I wouldn’t ignore.
 
-To debug it, you correlate CloudWatch logs across three Lambda functions, check the SQS DLQ, inspect S3 prefixes, and piece together what happened from timestamps.
+If I were doing this with a larger team or in a tighter production setting, I’d strongly consider a managed offering instead of running it myself. Temporal’s team also offers a hosted Cloud service.
 
-That's the fundamental tradeoff of choreography: **there's no centralized state.** Each service knows its own slice. Nobody knows the full picture of a single job. To answer "where is this transcription right now?" you have to ask five different systems and hope the correlation IDs line up.
-
-Choreography gives you decoupling and independence. It takes away visibility and coordinated failure handling.
-
-## The Tradeoffs
-
-I don’t think orchestration is “better” in a vacuum. It comes with real costs and tradeoffs, and in a lot of systems choreography is the right call.
-
-### Where choreography tends to win
-
-- **Infrastructure:** Fully managed primitives (S3, Lambda, SQS)
-- **Cost at low volume:** Nearly free (pay-per-invoke)
-- **Getting started:** Wire an event and ship it
-- **Coupling:** Services are decoupled by default
-- **Failure blast radius:** Distributed. One function timing out does not pause the whole system
-
-### Where orchestration tends to win
-
-- **Failure visibility:** Built-in workflow history and status
-- **Retry control:** Per-step retries with backoff and error classes
-- **Debugging:** You can inspect one workflow run instead of correlating logs across services
-- **State:** Centralized state for a single job ("where is this transcription right now?")
-
-One tradeoff that’s easy to underestimate: with orchestration, the coordinator is load-bearing infrastructure. If it goes down, workflows pause until it comes back. With choreography, failures are more distributed by design.
-
-Orchestration engines also enforce constraints that can trip you up at first. In Temporal, workflow code must be deterministic (no random numbers, no direct I/O, no `datetime.now()`). Side effects go in activities, coordination goes in workflows.
-
-A small but important implication: if the workflow fails during step 2, the engine retries step 2. Steps 1 and 3 do not re-run. That is deterministic replay in practice.
-
-This annoyed me at first. Then I realized it forces a clean separation I'd want anyway: **coordination logic vs. real work.** It's just good architecture with the engine enforcing it.
-
-But if your team has never worked with orchestration engines, budget real ramp-up time. The mental model is genuinely different from event-driven.
-
-## Why Healthcare Tips the Scale Toward Orchestration
-
-In most domains, choreography's tradeoffs are acceptable. A lost analytics event or a delayed notification isn't catastrophic.
-
-Healthcare is different.
-
-A lost transcription is a lost patient encounter. A Lambda timeout mid-pipeline can mean the message hits the DLQ, no alarm fires, and nobody finds out until a clinician reports missing notes. That's not a bug report. That's a compliance incident.
-
-Orchestration gives you an audit trail by default. Every event logged, every state transition queryable. HIPAA wants to know where PHI flows and who touched it? It's in the workflow history. In a choreographed setup, building an equivalent audit trail is a separate project — one that's easy to deprioritize until you need it.
-
-The "async trap" is real: choreography gives you non-blocking execution but not durability. A crashed function can lose its in-flight job. A crashed orchestration worker is just a pause. The workflow picks up on the next available worker.
-
-In healthcare, durability isn't a nice-to-have. It's the whole point.
-
-## What I'd Do Differently
-
-Polling for transcription status is the current approach in Folium. WebSocket push would cut latency and reduce server load. That's the natural next step.
-
-I'd also formalize workflow IDs around patient encounter IDs from day one. Orchestration workflows are naturally idempotent when keyed to a business ID. Start the same workflow ID twice and the engine just returns the existing run.
-
-## The Bottom Line
-
-For multi-step AI workflows where failures matter, I’ve found orchestration to be the better fit. The visibility and durability are hard to replicate in a choreographed system, and in healthcare those properties matter a lot.
-
-For a simple event trigger (thumbnail resize, log processor, webhook relay), choreography is usually simpler, cheaper, and perfectly fine when losing one event isn’t the end of the world.
-
-The mistake is treating these as the same category. "Async" is not one thing. Choreography and orchestration solve different problems. I learned that by building the same system twice.
+For this feature, I traded some decoupling for **better observability, step-level retries, and durability**. For a user-facing EHR workflow, that was the right deal.
 
 ## Resources
 
