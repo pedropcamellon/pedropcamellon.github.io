@@ -2,6 +2,9 @@
 	"folders": [
 		{
 			"path": "."
+		},
+		{
+			"path": "../the-long-way-round"
 		}
 	],
 	"settings": {
