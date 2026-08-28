@@ -4,7 +4,6 @@ title: "Terraform Modules for a Cloud-Agnostic EHR"
 date: 2026-04-28
 tags: ["terraform", "devops", "healthcare", "aws", "azure", "infrastructure"]
 image: "folium-ehr-tf.png"
-is_new: true
 excerpt: "Folium EHR’s Terraform implementation uses a lifecycle-based modules with small, stable outputs, because a flat “files + conditionals” setup don’t scale past one environment."
 ---
 
