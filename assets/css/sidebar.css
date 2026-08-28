@@ -96,12 +96,22 @@
 }
 
 .sidebar-links a {
+  align-items: center;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
   color: #57606a;
+  display: inline-flex;
+  font-size: 1.35rem;
+  height: 2.25rem;
+  justify-content: center;
   text-decoration: none;
-  font-size: 0.85rem;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  width: 2.25rem;
 }
 
 .sidebar-links a:hover {
+  background: #dbeafe;
+  border-color: #0969da;
   color: #0969da;
 }
 
