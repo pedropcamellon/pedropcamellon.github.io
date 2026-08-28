@@ -2,6 +2,8 @@
 layout: default
 title: "Trading Decoupling for Observability: Voice Notes Transcription in an EHR"
 date: 2026-04-16
+excerpt: "I added a voice notes transcription pipeline to Folium EHR and built it as an orchestrated workflow. Event-driven worked for me on AWS/Azure, but once the workflow grew the debugging tax was stitching logs and correlation IDs across services. Orchestration gave me one place to see job state end-to-end, step-level retries, and clear visibility into what's running or failed."
+image: "folium-ehr-temporal.png"
 tags:
   [
     "architecture",
@@ -12,9 +14,6 @@ tags:
     "python",
     "orchestration",
   ]
-image: "folium-ehr-temporal.png"
-is_new: true
-excerpt: "I added a voice notes transcription pipeline to Folium EHR and built it as an orchestrated workflow. Event-driven worked for me on AWS/Azure, but once the workflow grew the debugging tax was stitching logs and correlation IDs across services. Orchestration gave me one place to see job state end-to-end, step-level retries, and clear visibility into what's running or failed."
 ---
 
 <div class="tldr">

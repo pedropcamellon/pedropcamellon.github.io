@@ -2,10 +2,9 @@
 layout: default
 title: "Migrating My Portfolio to Jekyll: Why and How"
 date: 2026-04-07
-tags: ["jekyll", "github-pages", "web-development", "devops"]
-image: "jekyll_pages.png"
-is_new: true
 excerpt: "I was embedding Notion pages in my site. Simple, but too dependent. I wanted content in Git, not locked in Notion's database. Jekyll's native GitHub Pages support made the switch effortless. Now I write markdown, commit, and it's live."
+image: "jekyll_pages.png"
+tags: ["jekyll", "github-pages", "web-development", "devops"]
 ---
 
 ## The Problem: Too Dependent on Notion
