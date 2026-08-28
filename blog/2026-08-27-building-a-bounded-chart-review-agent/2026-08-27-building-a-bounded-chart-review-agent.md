@@ -2,6 +2,9 @@
 layout: default
 title: "LangGraph Inside Temporal: Folium's First Chart Review Agent"
 date: 2026-08-27
+excerpt: "Folium's first chart-review agent uses LangGraph for agent logic and Temporal for durable execution, retries, and workflow visibility. It is a foundation for controlled tool calls, evaluations, and specialized agents."
+image: "foliumehr-bg.png"
+is_new: true
 tags:
   [
     "agentic AI",
@@ -11,8 +14,6 @@ tags:
     "python",
     "local AI",
   ]
-is_new: true
-excerpt: "Folium's first chart-review agent uses LangGraph for agent logic and Temporal for durable execution, retries, and workflow visibility. It is a foundation for controlled tool calls, evaluations, and specialized agents."
 ---
 
 <div class="tldr">
