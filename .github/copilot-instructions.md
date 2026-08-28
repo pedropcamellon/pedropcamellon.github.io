@@ -69,7 +69,7 @@ Static portfolio/blog site built with Jekyll. Uses custom CSS (main.css, pages.c
    - Microsoft Clarity (`kykpoeffvx`) in all `<head>` sections
 
 7. **Deployment:**
-   EW Badge:\*\*
+   **NEW Badge:**
 
    - Set `is_new: true` in frontmatter for recent articles
    - Template automatically displays badge
@@ -89,13 +89,13 @@ Static portfolio/blog site built with Jekyll. Uses custom CSS (main.css, pages.c
 
 10. **Analytics:**
 
-    - Microsoft Clarity (`kykpoeffvx`) in all `<head>` sections
+   - Microsoft Clarity (`kykpoeffvx`) in all `<head>` sections
 
 11. **Deployment:**
 
-    - Edit files → commit → push to `main` → GitHub Pages auto-builds
-    - Test locally: `bundle exec jekyll serve` or Docker
-    - Jekyll builds to `_site/` (git ignored)
+   - Edit files → commit → push to `main` → GitHub Pages auto-builds
+   - Preview changes locally with Docker Compose
+   - Jekyll builds to `_site/` (git ignored)
 
 12. **Post Ordering:**
     - Controlled by `date: YYYY-MM-DD` in frontmatter

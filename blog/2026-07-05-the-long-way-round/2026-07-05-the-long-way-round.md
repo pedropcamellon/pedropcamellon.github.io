@@ -2,6 +2,7 @@
 layout: default
 title: "The Long Way Round: A Browser Drive to Nowhere in Particular"
 date: 2026-07-05
+image: "threejs.jpg"
 tags:
   [
     "Three.js",
@@ -11,7 +12,6 @@ tags:
     "WebGL",
     "personal projects",
   ]
-is_new: true
 excerpt: "A small Three.js driving game with no scoring and no opponents — just a truck, a hilly loop, some lakes, and trees to knock over. Built to relearn 3D fundamentals and to have something nostalgic and instantly playable in a browser tab."
 ---
 
