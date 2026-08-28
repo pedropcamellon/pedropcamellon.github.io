@@ -62,4 +62,16 @@ More capable retrieval and agent loops still need approved source blocks and exp
 
 The practical lessons were less glamorous than the diagram: durable workflows serialize data, so worker inputs must be revalidated; container dependencies need explicit service URLs rather than localhost defaults; and internal citation identities should remain internal. The clinician sees stable, readable source references, while the worker validates against canonical snapshot IDs. Those boundaries made the workflow safer to operate and easier to debug.
 
-The implementation lives in [Folium on GitHub](https://github.com/pedropcamellon/folium).
+Explore the implementation in [Folium on GitHub](https://github.com/pedropcamellon/folium).
+
+## Demo
+
+<div style="position: relative; width: 100%; padding-bottom: 56.25%; height: 0;">
+  <iframe
+    src="https://www.youtube-nocookie.com/embed/4CGnDcoIm60"
+    title="Folium chart-review demo"
+    style="position: absolute; inset: 0; width: 100%; height: 100%; border: 0;"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowfullscreen
+  ></iframe>
+</div>
