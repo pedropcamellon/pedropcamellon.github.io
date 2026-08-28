@@ -68,7 +68,7 @@ Explore the implementation in [Folium on GitHub](https://github.com/pedropcamell
 
 <div style="position: relative; width: 100%; padding-bottom: 56.25%; height: 0;">
   <iframe
-    src="https://www.youtube-nocookie.com/embed/4CGnDcoIm60"
+    src="https://www.youtube-nocookie.com/embed/isl5LUkjc3w"
     title="Folium chart-review demo"
     style="position: absolute; inset: 0; width: 100%; height: 100%; border: 0;"
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
