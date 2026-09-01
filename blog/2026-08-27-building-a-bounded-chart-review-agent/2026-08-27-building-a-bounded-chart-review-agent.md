@@ -75,3 +75,13 @@ Explore the implementation in [Folium on GitHub](https://github.com/pedropcamell
     allowfullscreen
   ></iframe>
 </div>
+
+<div style="position: relative; width: 100%; padding-bottom: 56.25%; height: 0; margin-top: 1.5rem;">
+  <iframe
+    src="https://www.youtube-nocookie.com/embed/QfX_-l5aRUc"
+    title="Folium chart-review implementation walkthrough"
+    style="position: absolute; inset: 0; width: 100%; height: 100%; border: 0;"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowfullscreen
+  ></iframe>
+</div>
