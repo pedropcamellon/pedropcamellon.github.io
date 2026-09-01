@@ -34,14 +34,11 @@ Temporal solves a different problem. It runs the workflow durably, records its h
 
 The worker registers the compiled graph through Temporal's `LangGraphPlugin`. The graph's model-facing work is executed through a Temporal Activity, giving that network/model call Temporal-managed timeouts and retries. That is the key detail: agent logic stays in the graph without baking workflow concerns into every node.
 
-```mermaid
-flowchart LR
-  B[Backend: queue review and snapshot] --> T[Temporal workflow]
-  T --> G[LangGraphPlugin: compiled graph]
-  G --> A[Provider node as Temporal Activity]
-  A --> L[Local OpenAI-compatible model]
-  G --> R[Validated result]
-  R --> B
+```text
+Backend --> Temporal workflow --> LangGraphPlugin --> Model Activity --> Local model
+                  ^                                      |
+                  |                                      v
+                  +------- Persist validated result <-----+
 ```
 
 ## Why the integration is useful
