@@ -3,6 +3,7 @@ layout: default
 title: "Prometheus Beyond Defaults: Cutting Temporal Metric Ingestion by 93.9%"
 date: 2026-09-01
 excerpt: "After adding Temporal to Folium, a one-minute allowlist reduced Prometheus's retained Temporal samples from 7,112 to 435 per scrape."
+image: "foliumehr-bg.png"
 is_new: true
 tags: ["prometheus", "temporal", "observability", "docker", "metrics"]
 ---
